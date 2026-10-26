@@ -8,6 +8,9 @@ on:
     # sempre dopo le 17:00 di New York, quando la barra del giorno è definitiva.
     - cron: "30 22 * * 1-5"
   workflow_dispatch:
+  # TEMPORANEO, solo per provare il workflow prima del merge: da rimuovere.
+  push:
+    branches: [claude/focused-davinci-3vldey]
 
 concurrency:
   group: financenow-data   # condiviso con backfill.yml: mai due run sulla stessa cache
