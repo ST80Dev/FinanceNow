@@ -24,7 +24,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      # Punta del branch al momento dell'esecuzione (non il commit che ha avviato il run):
+      # un run rimasto in coda deve vedere i risultati committati dal run precedente.
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref_name }}
 
       - uses: actions/setup-python@v6
         with:
