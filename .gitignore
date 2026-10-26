@@ -1,5 +1,5 @@
 # Dati grezzi: MAI nel repo (licenze). Vivono nella cache di GitHub Actions.
-data/
+/data/
 
 # Python
 __pycache__/

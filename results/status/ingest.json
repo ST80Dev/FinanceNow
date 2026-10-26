@@ -1,0 +1,148 @@
+{
+  "run_started": "2026-10-26T15:15:49+00:00",
+  "run_finished": "2026-10-26T15:16:22+00:00",
+  "mode": "daily",
+  "requests": 13,
+  "max_requests": 200,
+  "disabled_sources": {
+    "stooq": "STOOQ_API_KEY assente (senza chiave Stooq restituisce una pagina anti-bot)"
+  },
+  "summary": {
+    "up_to_date": 13
+  },
+  "missing": [],
+  "stale": [],
+  "deferred": [],
+  "instruments": {
+    "ndx": {
+      "id": "ndx",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
+      "rows": 4228,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-23"
+    },
+    "qqq": {
+      "id": "qqq",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
+      "rows": 4228,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-23"
+    },
+    "spx": {
+      "id": "spx",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
+      "rows": 4228,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-23"
+    },
+    "nvda": {
+      "id": "nvda",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
+      "rows": 4228,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-23"
+    },
+    "aapl": {
+      "id": "aapl",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
+      "rows": 4228,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-23"
+    },
+    "googl": {
+      "id": "googl",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
+      "rows": 4228,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-23"
+    },
+    "msft": {
+      "id": "msft",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
+      "rows": 4228,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-23"
+    },
+    "amzn": {
+      "id": "amzn",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
+      "rows": 4228,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-23"
+    },
+    "meta": {
+      "id": "meta",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
+      "rows": 3629,
+      "first_date": "2012-05-18",
+      "last_date": "2026-10-23"
+    },
+    "avgo": {
+      "id": "avgo",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
+      "rows": 4228,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-23"
+    },
+    "tsla": {
+      "id": "tsla",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
+      "rows": 4106,
+      "first_date": "2010-06-29",
+      "last_date": "2026-10-23"
+    },
+    "mu": {
+      "id": "mu",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
+      "rows": 4228,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-23"
+    },
+    "amd": {
+      "id": "amd",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
+      "rows": 4228,
+      "first_date": "2010-01-04",
+      "last_date": "2026-10-23"
+    }
+  }
+}

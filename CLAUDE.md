@@ -63,6 +63,64 @@ Lavorare sempre su **log-rendimenti**, mai sui livelli di prezzo.
   - `backtest` — walk-forward retroattivo sullo storico;
   - `live` — log delle previsioni fatte da `daily.yml`, con data e versione del modello. È l'unica prova pulita.
 
+### Scelte del passo 2 (implementate)
+- Target volatilità: varianza della somma dei log-rendimenti a h ∈ {1, 5} sedute, proxy realizzato =
+  somma dei rendimenti al quadrato. Modelli: GARCH(1,1)-t, EGARCH(1,1)-t (solo h=1), HAR-RV;
+  baseline `rw` (varianza delle ultime 21 sedute) e `hist_mean` (media storica). Stima su finestra
+  espandente, ri-stima ogni 63 sedute, prima previsione dopo 1000 sedute.
+- **Test finale**: dal **2025-11-03** in poi (`HOLDOUT_START` in `pipeline/backtest.py`), escluso di default.
+  Data fissa: non spostarla. Usarlo (`--use-holdout`) una sola volta, a sviluppo concluso.
+- Registro delle configurazioni provate: `results/backtest/trials.jsonl` (una riga per configurazione).
+- Regimi: HMM gaussiano 3 stati (calmo/normale/turbolento) su rendimento e log-volatilità a 21 sedute;
+  probabilità **filtrate** (forward), parametri ri-stimati ogni 252 sedute: nessun look-ahead.
+- Anomalie: z-score robusto (mediana/MAD sulle 252 sedute precedenti), soglia |z| ≥ 4, su rendimento,
+  gap, range, volume e rendimento in eccesso vs benchmark (beta stimato fino al giorno prima).
+- Nei risultati non finiscono mai prezzi grezzi: solo feature derivate, stati, eventi, metriche.
+
+### Scelte del passo 3 (implementate)
+- `daily.yml`: cron `30 22 * * 1-5` (22:30 UTC = sempre dopo le 17:00 di New York) + avvio manuale.
+  Sequenza: ripristino cache → `ingest daily` (backfill automatico dei ticker senza storico) → salvataggio
+  cache → `analyze --backtest auto` → `live` → riepilogo nel job summary → commit di `results/`.
+  Se il download fallisce per tutti i ticker, i risultati si calcolano sui dati in cache e il run termina rosso.
+- `backfill.yml`: solo manuale (ticker, `--force`, budget di richieste); non committa nulla.
+- Cache dei dati grezzi: chiave `raw-data-v1-<run_id>`, ripristino per prefisso `raw-data-v1-` (l'ultima salvata).
+  Persa la cache, il primo `daily` riscarica tutto da solo. I due workflow condividono un gruppo di
+  `concurrency`, quindi non girano mai insieme.
+- Serie `live`: `results/live/volatility_forecasts.csv` (append-only, chiave origine+strumento+orizzonte+modello,
+  con versione del modello e ora di creazione) e `results/live/volatility_scores.json` (valutazione dei soli
+  target già realizzati). Le previsioni live stimano i parametri su tutto lo storico disponibile la sera stessa.
+- Backtest `auto`: si rifà solo se manca, se cambia la configurazione o per un ticker nuovo.
+- `results/status/ingest.json`: esito dell'ultimo download (ticker senza dati / non aggiornati / rimandati).
+- I cron girano solo sul branch di default (`main`).
+
+### Scelte del passo 4 (implementate)
+- `pipeline/export.py` scrive JSON compatti in `docs/data/` (`index.json`, `models.json`, `tickers/<id>.json`);
+  `daily.yml` lo esegue dopo `live` e `patterns` e committa anche `docs/data/`.
+- Nella dashboard **nessun prezzo né volume assoluto**: solo grandezze derivate (volatilità, drawdown, beta,
+  momentum, regimi, z-score; per le anomalie di volume il rapporto con la mediana). Un test lo verifica.
+- Frontend `docs/` in vanilla JS senza librerie: grafici SVG scritti a mano, routing via hash
+  (`#/`, `#/t/<id>`, `#/modelli`, `#/metodo`), tema chiaro/scuro automatico, layout mobile.
+- `backtest` e `live` in pannelli separati con etichetta e colore propri (viola / verde acqua).
+- GitHub Pages: Settings → Pages → "Deploy from a branch" → `main` / `docs`. URL: https://st80dev.github.io/FinanceNow/
+- **Sintesi automatica** (`pipeline/digest.py`, richiesta del 26/10/2026): ogni sera regole esplicite selezionano
+  cosa merita attenzione (cambi di regime recenti, anomalie delle ultime 5 sedute, volatilità estrema rispetto
+  allo storico del titolo, volatilità in accelerazione, drawdown ≤ -20%, dati non aggiornati), con gravità
+  alta/media/bassa. Volatilità alta diffusa (≥ metà dell'universo) detta una volta sola a livello di mercato.
+  Esce in cima alla dashboard (`docs/data/digest.json`), nel job summary e in `results/digest/latest.md`.
+- **Alert solo in pagina** (decisione del 26/10/2026): nessuna notifica esterna (email/Telegram/issue).
+- **Pattern** (`pipeline/patterns.py`, richiesta del 26/10/2026): studio di eventi descrittivo, non previsione.
+  Eventi (rilevati con soli dati fino al giorno stesso, cooldown 21 sedute): ingresso/uscita dal regime turbolento,
+  crollo/balzo anomalo, volume anomalo, volatilità oltre il 95° percentile dello storico fino a quel giorno,
+  volatilità in accelerazione, discesa sotto -20%. Esiti a 5/21/63 sedute: volatilità rispetto alla tipica del
+  titolo, probabilità di calo ≥ 10%, rendimento (dato debole). Confronto con un giorno qualsiasi dello stesso titolo,
+  solo finestre chiuse prima del test finale. "Netto" = IC 90% (cluster per settimana) esclude lo zero E differenza
+  oltre una soglia minima. **Rendimento e calo misurati dall'apertura del giorno dopo**: l'analisi gira a mercato
+  chiuso, il primo prezzo a cui si può agire è l'apertura successiva. Serie live separata:
+  `results/live/pattern_log.csv` (eventi nuovi con esito atteso) e `results/live/pattern_scores.json`.
+  Le note "storicamente…" compaiono nella sintesi sotto gli strumenti con segnali.
+- Uso EOD: i risultati sono pronti dopo la chiusura USA (circa 23:30–00:30 ora italiana); servono per decidere
+  prima della seduta successiva, non per operare intraday (servirebbero dati intraday, altra architettura).
+
 ## Struttura prevista
 ```
 .github/workflows/daily.yml
@@ -74,9 +132,15 @@ pipeline/
     volatility.py
     regimes.py
     anomalies.py
+  backtest.py      # walk-forward della volatilità, metriche, test finale, registro configurazioni
+  analyze.py       # CLI: feature + regimi + anomalie + backtest → results/
+  live.py          # previsioni live registrate ogni sera e loro valutazione
+  summary.py       # riepilogo Markdown per il job summary di Actions
   export.py        # JSON leggeri per la dashboard
+  digest.py        # sintesi del giorno: segnali con gravità, per dashboard e job summary
+  patterns.py      # studio di eventi: cosa è successo dopo eventi simili (storico + verifica live)
 config/universe.yml
-results/           # output elaborati committati (backtest/, live/)
+results/           # output elaborati committati (analysis/, backtest/, live/, status/)
 docs/              # GitHub Pages: index.html, app.js, style.css, data/
 scripts/           # strumenti diagnostici (es. stooq_probe.py)
 tests/             # test offline (pytest, nessuna chiamata di rete)
@@ -96,7 +160,11 @@ usarli per analisi descrittive per titolo, non per conclusioni su rendimenti att
 2. `features.py` e i tre moduli (volatilità, regimi, anomalie) + backtest walk-forward con baseline.
 3. Workflow Actions (`backfill.yml`, `daily.yml`) con cache dei dati grezzi e commit dei risultati.
 4. Dashboard su Pages (vanilla JS).
-5. Più avanti: moduli predittivi sperimentali, alert (Telegram/email).
+5. Dati di contesto (da proporre dopo la dashboard, richiesta del 26/10/2026). Oggi il sistema usa SOLO
+   prezzi e volumi OHLCV: nessun dato di bilancio, macro, notizie o calendario. Candidati:
+   - date delle trimestrali, per distinguere le anomalie "spiegate" (giorno di utili) da quelle inattese;
+   - VIX e tassi dei Treasury come contesto di mercato (regimi, volatilità).
+6. Più avanti: moduli predittivi sperimentali, alert (Telegram/email).
 
 ## Avvertenza
 Strumento di analisi personale, non consulenza finanziaria.

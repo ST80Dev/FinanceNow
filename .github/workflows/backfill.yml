@@ -1,0 +1,73 @@
+# Backfill manuale dello storico completo. Di norma non serve: daily.yml scarica da solo
+# lo storico dei ticker che non lo hanno (es. cache persa o ticker nuovo). Utile per
+# riscaricare tutto (--force) o per diluire i download su più run con un budget di richieste.
+name: backfill
+
+on:
+  workflow_dispatch:
+    inputs:
+      tickers:
+        description: "id separati da virgola (vuoto = tutto l'universo)"
+        required: false
+        default: ""
+      force:
+        description: "riscarica anche i ticker che hanno già lo storico"
+        type: boolean
+        default: false
+      max_requests:
+        description: "budget di richieste per questo run"
+        type: number
+        default: 200
+
+concurrency:
+  group: financenow-data   # condiviso con daily.yml
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Ripristina i dati grezzi dalla cache
+        uses: actions/cache/restore@v4
+        with:
+          path: data/raw
+          key: raw-data-v1-${{ github.run_id }}
+          restore-keys: raw-data-v1-
+
+      - name: Backfill
+        env:
+          STOOQ_API_KEY: ${{ secrets.STOOQ_API_KEY }}
+          TICKERS: ${{ inputs.tickers }}
+          FORCE: ${{ inputs.force }}
+          MAX_REQUESTS: ${{ inputs.max_requests }}
+        run: |
+          args=(backfill --max-requests "${MAX_REQUESTS:-200}")
+          [ -n "$TICKERS" ] && args+=(--tickers "$TICKERS")
+          [ "$FORCE" = "true" ] && args+=(--force)
+          python -m pipeline.ingest "${args[@]}"
+
+      - name: Salva i dati grezzi nella cache
+        if: always() && hashFiles('data/raw/_state.json') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: data/raw
+          key: raw-data-v1-${{ github.run_id }}
+
+      - name: Riepilogo
+        if: always() && hashFiles('data/raw/_report.json') != ''
+        run: |
+          mkdir -p results/status && cp data/raw/_report.json results/status/ingest.json
+          python -m pipeline.summary >> "$GITHUB_STEP_SUMMARY" || true

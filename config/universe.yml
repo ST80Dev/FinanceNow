@@ -9,7 +9,8 @@
 #
 # Campi:
 #   id           identificativo interno (nome file dei dati)
-#   stooq/yahoo  simbolo per ciascuna sorgente (null = non disponibile)
+#   yahoo        simbolo yfinance (sorgente primaria)
+#   stooq        simbolo Stooq (riserva, usata solo se esiste STOOQ_API_KEY)
 #   asset_class  index | etf | stock
 #   benchmark    id dello strumento per beta/correlazioni (null = nessuno)
 #   listed_since data di quotazione se successiva a `start` (solo informativa:
@@ -36,82 +37,82 @@ instruments:
   - id: ndx
     name: Nasdaq 100
     asset_class: index
-    stooq: ^ndx
     yahoo: ^NDX
+    stooq: ^ndx
     benchmark: null
 
   - id: qqq
     name: Invesco QQQ Trust
     asset_class: etf
-    stooq: qqq.us
     yahoo: QQQ
+    stooq: qqq.us
 
   - id: spx
     name: S&P 500
     asset_class: index
-    stooq: ^spx
     yahoo: ^GSPC
+    stooq: ^spx
     benchmark: null
 
   # --- Top 10 Nasdaq per capitalizzazione (snapshot 2026-10-26) ---
   - id: nvda
     name: NVIDIA
     asset_class: stock
-    stooq: nvda.us
     yahoo: NVDA
+    stooq: nvda.us
 
   - id: aapl
     name: Apple
     asset_class: stock
-    stooq: aapl.us
     yahoo: AAPL
+    stooq: aapl.us
 
   - id: googl
     name: Alphabet (classe A)
     asset_class: stock
-    stooq: googl.us
     yahoo: GOOGL
+    stooq: googl.us
 
   - id: msft
     name: Microsoft
     asset_class: stock
-    stooq: msft.us
     yahoo: MSFT
+    stooq: msft.us
 
   - id: amzn
     name: Amazon
     asset_class: stock
-    stooq: amzn.us
     yahoo: AMZN
+    stooq: amzn.us
 
   - id: meta
     name: Meta Platforms
     asset_class: stock
-    stooq: meta.us
     yahoo: META
+    stooq: meta.us
     listed_since: 2012-05-18
 
   - id: avgo
     name: Broadcom
     asset_class: stock
-    stooq: avgo.us
     yahoo: AVGO
+    stooq: avgo.us
 
   - id: tsla
     name: Tesla
     asset_class: stock
-    stooq: tsla.us
     yahoo: TSLA
+    stooq: tsla.us
     listed_since: 2010-06-29
 
   - id: mu
     name: Micron Technology
     asset_class: stock
-    stooq: mu.us
     yahoo: MU
+    stooq: mu.us
 
   - id: amd
     name: Advanced Micro Devices
     asset_class: stock
-    stooq: amd.us
     yahoo: AMD
+    stooq: amd.us

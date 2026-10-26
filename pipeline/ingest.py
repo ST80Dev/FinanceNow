@@ -31,6 +31,7 @@ import os
 import random
 import sys
 import time
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
@@ -382,10 +383,24 @@ def read_prices(path: Path) -> pd.DataFrame | None:
     return df
 
 
+def json_safe(obj):
+    """NaN/inf -> null (JSON valido per la dashboard), tipi numpy -> tipi Python."""
+    if isinstance(obj, dict):
+        return {str(k): json_safe(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [json_safe(v) for v in obj]
+    if isinstance(obj, np.generic):
+        obj = obj.item()
+    if isinstance(obj, float) and not np.isfinite(obj):
+        return None
+    return obj
+
+
 def write_json(obj, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(obj, indent=2, ensure_ascii=False, default=str), encoding="utf-8")
+    text = json.dumps(json_safe(obj), indent=2, ensure_ascii=False, default=str, allow_nan=False)
+    tmp.write_text(text, encoding="utf-8")
     os.replace(tmp, path)
 
 
@@ -734,6 +749,7 @@ def main(argv: list[str] | None = None) -> int:
                         format="%(asctime)s %(levelname)-7s %(message)s", datefmt="%H:%M:%S")
     if not args.verbose:
         logging.getLogger("yfinance").setLevel(logging.CRITICAL)
+        warnings.filterwarnings("ignore", module="yfinance")
 
     try:
         instruments = load_universe(args.universe)

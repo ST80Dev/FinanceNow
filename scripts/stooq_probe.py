@@ -1,11 +1,15 @@
-"""Sonda Stooq: chiama l'endpoint CSV storico senza API key e mostra cosa risponde.
+"""Diagnostica di Stooq (sorgente di RISERVA; la primaria è yfinance).
+
+Chiama l'endpoint CSV storico senza API key e mostra cosa risponde. Il 26/10/2026,
+da GitHub Actions, Stooq senza chiave rispondeva con una pagina anti-bot invece del CSV:
+lo script serve a ricontrollare la situazione (es. dopo aver ottenuto una chiave).
 
 Solo libreria standard, nessuna dipendenza.
 
 Uso:
-    python scripts/stooq_probe.py                 # prova spy.us
-    python scripts/stooq_probe.py spy.us ^spx xlk.us
-    python scripts/stooq_probe.py --raw spy.us    # stampa anche il corpo completo
+    python scripts/stooq_probe.py                       # prova qqq.us
+    python scripts/stooq_probe.py "^ndx" qqq.us nvda.us
+    python scripts/stooq_probe.py --raw qqq.us          # stampa anche il corpo completo
 """
 
 from __future__ import annotations
@@ -109,7 +113,7 @@ def probe(symbol: str, raw: bool) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("symbols", nargs="*", default=["spy.us"], help="simboli Stooq (default: spy.us)")
+    ap.add_argument("symbols", nargs="*", default=["qqq.us"], help="simboli Stooq (default: qqq.us)")
     ap.add_argument("--raw", action="store_true", help="stampa il corpo completo della risposta")
     ap.add_argument("--pause", type=float, default=3.0, help="secondi di pausa tra un simbolo e l'altro")
     args = ap.parse_args()
