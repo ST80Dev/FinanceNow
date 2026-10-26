@@ -5,6 +5,9 @@ name: backfill
 
 on:
   workflow_dispatch:
+  # TEMPORANEO, solo per provare il workflow prima del merge: da rimuovere.
+  push:
+    branches: [claude/focused-davinci-3vldey]
     inputs:
       tickers:
         description: "id separati da virgola (vuoto = tutto l'universo)"
