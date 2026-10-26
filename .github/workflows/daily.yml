@@ -48,6 +48,10 @@ jobs:
           STOOQ_API_KEY: ${{ secrets.STOOQ_API_KEY }}
         run: python -m pipeline.ingest daily
 
+      - name: Date delle trimestrali (al massimo una volta a settimana per titolo)
+        continue-on-error: true   # senza date nuove si usano quelle in cache
+        run: python -m pipeline.earnings
+
       - name: Salva i dati grezzi nella cache
         if: always() && hashFiles('data/raw/_state.json') != ''
         uses: actions/cache/save@v4

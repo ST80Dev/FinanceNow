@@ -38,7 +38,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from pipeline import backtest
+from pipeline import backtest, earnings
 from pipeline.analyze import DEFAULT_RESULTS_DIR
 from pipeline.features import TRADING_DAYS, compute_features
 from pipeline.ingest import (DEFAULT_DATA_DIR, DEFAULT_UNIVERSE, ConfigError, load_universe, read_json,
@@ -71,7 +71,11 @@ EVENT_TYPES = {
     "vol_estrema": "volatilità a 21 sedute oltre il 95° percentile dello storico fino a quel giorno",
     "vol_accelerazione": "volatilità in accelerazione (5 sedute ≥ 1,5 volte quella a 63)",
     "drawdown_20": "discesa sotto −20% dal massimo",
+    "vigilia_trimestrale": "settimana prima della trimestrale (5 sedute prima della reazione)",
+    "trimestrale_positiva": "reazione positiva alla trimestrale (meglio del benchmark)",
+    "trimestrale_negativa": "reazione negativa alla trimestrale (peggio del benchmark)",
 }
+EARNINGS_LEAD = 5
 
 LOG_FILE = "pattern_log.csv"
 SCORES_FILE = "pattern_scores.json"
@@ -99,8 +103,12 @@ def apply_cooldown(dates: pd.DatetimeIndex, index: pd.DatetimeIndex, sessions: i
 
 
 def detect_events(df: pd.DataFrame, feats: pd.DataFrame, regime_state: pd.Series | None,
-                  anomaly_events: pd.DataFrame | None) -> pd.DataFrame:
-    """Eventi (date, type) usando a ogni data solo informazioni disponibili fino a quella data."""
+                  anomaly_events: pd.DataFrame | None, earnings_rx: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Eventi (date, type) usando a ogni data solo informazioni disponibili fino a quella data.
+
+    `earnings_rx`: reazioni alle trimestrali (pipeline.earnings.reactions). La vigilia usa la
+    data della trimestrale, annunciata settimane prima: non è look-ahead.
+    """
     idx = feats.index
     raw: dict[str, pd.DatetimeIndex] = {}
 
@@ -123,6 +131,14 @@ def detect_events(df: pd.DataFrame, feats: pd.DataFrame, regime_state: pd.Series
         raw["crollo_anomalo"] = pd.DatetimeIndex(a.loc[(a["kind"] == "rendimento") & (a["z"] <= -ANOMALY_Z), "date"])
         raw["balzo_anomalo"] = pd.DatetimeIndex(a.loc[(a["kind"] == "rendimento") & (a["z"] >= ANOMALY_Z), "date"])
         raw["volume_anomalo"] = pd.DatetimeIndex(a.loc[(a["kind"] == "volume") & (a["z"] >= ANOMALY_Z), "date"])
+
+    if earnings_rx is not None and len(earnings_rx):
+        rx = earnings_rx
+        signed = rx["reaction_vs_bench"].where(rx["reaction_vs_bench"].notna(), rx["reaction"])
+        raw["trimestrale_positiva"] = pd.DatetimeIndex(rx.loc[signed > 0, "last"])
+        raw["trimestrale_negativa"] = pd.DatetimeIndex(rx.loc[signed < 0, "last"])
+        pos = idx.get_indexer(pd.DatetimeIndex(rx["first"])) - EARNINGS_LEAD
+        raw["vigilia_trimestrale"] = idx[pos[pos >= 0]]
 
     rows = [(d, t) for t, dates in raw.items() for d in apply_cooldown(dates, idx)]
     return pd.DataFrame(rows, columns=["date", "type"]).sort_values(["date", "type"]).reset_index(drop=True)
@@ -365,7 +381,10 @@ def collect(instruments, data_dir: Path, results_dir: Path) -> dict[str, dict]:
         hist = analysis.get("regime_history", {})
         state = (pd.Series(hist["state"], index=pd.DatetimeIndex(hist["dates"]), dtype=float)
                  if hist.get("dates") else None)
-        events = detect_events(df, feats, state, anomalies.detect(df, bench))
+        ann = earnings.load(data_dir, inst.id)
+        rx = earnings.reactions(earnings.reaction_windows(ann, df.index), df["close"],
+                                bench["close"] if bench is not None else None) if ann else None
+        events = detect_events(df, feats, state, anomalies.detect(df, bench), rx)
         gap = np.log(df["open"] / df["close"].shift(1))
         per_ticker[inst.id] = {"ret": feats["ret"], "gap": gap, "events": events}
     return per_ticker

@@ -127,3 +127,14 @@ def test_intervallo_centrato_sulla_media_pubblicata():
     v = patterns.summarize(rows)["vol_ratio"]
     lo, hi = v["ci90"]
     assert lo < v["excess"] < hi
+
+
+def test_eventi_trimestrali():
+    df, feats, state = _ticker(5, n=600)
+    idx = df.index
+    rx = pd.DataFrame({"first": [idx[100], idx[300]], "last": [idx[100], idx[301]],
+                       "reaction": [0.05, -0.02], "reaction_vs_bench": [np.nan, 0.01]})
+    ev = patterns.detect_events(df, feats, None, None, rx)
+    got = {(t, d) for d, t in zip(ev["date"], ev["type"]) if "trimestrale" in t}
+    assert got == {("trimestrale_positiva", idx[100]), ("trimestrale_positiva", idx[301]),   # vs benchmark > 0
+                   ("vigilia_trimestrale", idx[95]), ("vigilia_trimestrale", idx[295])}
