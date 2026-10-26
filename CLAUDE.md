@@ -24,11 +24,17 @@ Tutto su GitHub, nessun VPS, nessun Supabase.
 
 ## Dati
 - Granularità: **giornaliera (OHLCV)**, prezzi aggiustati per split/dividendi.
-- Fonte primaria: **Stooq**. Dal 2026 richiede API key → secret `STOOQ_API_KEY`. Mai la chiave nel codice.
-  Stooq ha quote di download: il backfill va **diluito** (un ticker alla volta, pause tra richieste,
-  eventualmente su più run) e deve essere riprendibile.
-- Fallback: **yfinance** (può essere bloccato a intermittenza dagli IP dei runner GitHub).
-  Pipeline: primaria → secondaria → segnalare i ticker rimasti senza dati (non fallire tutto il run).
+- Fonte primaria: **yfinance** (decisione del 26/10/2026). Può essere bloccato a intermittenza dagli IP
+  dei runner GitHub: retry con backoff; un ticker non aggiornato resta con lo storico in cache ("stale")
+  e viene recuperato al run successivo grazie alla sovrapposizione dell'incrementale.
+- **Stooq**: senza API key, da GitHub Actions risponde con una pagina anti-bot JavaScript invece del CSV
+  (test del 26/10/2026) ⇒ non usabile senza chiave. Resta supportato come sorgente di riserva e si attiva
+  da solo se esiste il secret `STOOQ_API_KEY`. Mai la chiave nel codice o nei log. Non aggirare protezioni
+  anti-bot. Stooq ha quote di download: con la chiave il backfill va diluito (budget di richieste per run).
+- Pipeline: sorgenti in ordine di priorità → segnalare i ticker rimasti senza dati (non fallire tutto il run).
+  Il download è un ticker alla volta, con pause, riprendibile. La sorgente di un ticker è fissa:
+  non si uniscono serie di fonti diverse (aggiustamenti diversi).
+- Barre incomplete: la seduta in corso si scarta finché il mercato non è chiuso (dopo le 17:00 di New York).
 - **Licenze**: repo pubblico ⇒ **i dati grezzi NON vanno committati**. Stanno nella **cache di Actions**
   (se persa, il workflow rifà il backfill). Nel repo finiscono solo risultati elaborati
   (regimi, volatilità, anomalie, JSON per la dashboard).
@@ -62,7 +68,7 @@ Lavorare sempre su **log-rendimenti**, mai sui livelli di prezzo.
 .github/workflows/daily.yml
 .github/workflows/backfill.yml
 pipeline/
-  ingest.py        # download OHLCV (Stooq + fallback yfinance), incrementale, riprendibile
+  ingest.py        # download OHLCV (yfinance, Stooq con chiave), incrementale, riprendibile
   features.py
   models/
     volatility.py
@@ -72,12 +78,18 @@ pipeline/
 config/universe.yml
 results/           # output elaborati committati (backtest/, live/)
 docs/              # GitHub Pages: index.html, app.js, style.css, data/
+scripts/           # strumenti diagnostici (es. stooq_probe.py)
+tests/             # test offline (pytest, nessuna chiamata di rete)
+data/raw/          # dati grezzi Parquet + _state.json/_report.json — NON committati (cache Actions)
 requirements.txt
 ```
 
-## Universo iniziale (da confermare)
-Una decina di indici/ETF: S&P 500, Nasdaq 100, FTSE MIB, Euro Stoxx 50, DAX, settori USA principali,
-oro, Treasury lunghi; più qualche titolo singolo.
+## Universo (confermato, `config/universe.yml`)
+Mercato USA, centrato sul Nasdaq. Riferimenti: Nasdaq 100 (benchmark di default), QQQ, S&P 500.
+Azioni: le 10 più capitalizzate del Nasdaq al 26/10/2026 (SpaceX esclusa per storico insufficiente,
+sostituita da AMD): NVDA, AAPL, GOOGL, MSFT, AMZN, META, AVGO, TSLA, MU, AMD. Dati dal 2010-01-01.
+Lista **congelata** (non ricalcolata in automatico). Bias di selezione: sono i vincitori di oggi ⇒
+usarli per analisi descrittive per titolo, non per conclusioni su rendimenti attesi.
 
 ## Roadmap (un passo alla volta, conferma alla fine di ciascuno)
 1. Struttura cartelle, `universe.yml`, `requirements.txt`, `ingest.py` con backfill + fallback + incrementale.

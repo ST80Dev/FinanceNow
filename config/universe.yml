@@ -21,7 +21,10 @@ snapshot_date: 2026-10-26
 
 defaults:
   start: 2010-01-01
-  sources: [stooq, yahoo]   # ordine di priorità; da rivedere dopo il test di Stooq
+  # Ordine di priorità. yfinance primario: Stooq senza API key risponde con una
+  # pagina anti-bot (test da GitHub Actions del 26/10/2026). Stooq si attiva da
+  # solo come riserva se esiste il secret STOOQ_API_KEY.
+  sources: [yahoo, stooq]
   region: US
   currency: USD
   calendar: XNYS            # NYSE e Nasdaq hanno le stesse festività
