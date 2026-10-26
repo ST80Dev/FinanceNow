@@ -229,6 +229,22 @@ def build(contexts: list[Context], data_status: dict | None = None) -> dict:
     }
 
 
+def attach_history(dg: dict, current_events: list[dict], labels: dict[str, str]) -> dict:
+    """Aggiunge a ogni strumento della sintesi le note "storicamente…" degli eventi recenti."""
+    by_id = {i["id"]: i for i in dg["instruments"]}
+    for e in current_events:
+        if not e.get("history"):
+            continue
+        inst = by_id.get(e["id"])
+        if inst is None:
+            continue  # nessun segnale oggi per lo strumento: la nota da sola non basta a segnalarlo
+        notes = inst.setdefault("history", [])
+        if not any(n["type"] == e["type"] for n in notes):
+            notes.append({"type": e["type"], "event": labels.get(e["type"], e["type"]),
+                          "date": e["date"], "text": e["history"]})
+    return dg
+
+
 def to_markdown(digest: dict) -> str:
     icons = {"alta": "🔴", "media": "🟠", "bassa": "⚪"}
     lines = [f"### Sintesi del {digest.get('as_of') or '–'}", "", f"**{digest['headline']}**", ""]
@@ -239,6 +255,7 @@ def to_markdown(digest: dict) -> str:
     for inst in digest["instruments"]:
         lines.append(f"**{inst['name']} ({inst['id'].upper()})**")
         lines += [f"- {icons[s['severity']]} {s['text'][0].upper()}{s['text'][1:]}" for s in inst["signals"]]
+        lines += [f"  - _{h['event'].capitalize()} ({h['date']}): {h['text']}_" for h in inst.get("history", [])]
         lines.append("")
     if digest.get("quiet"):
         lines.append(f"Nessuna novità: {', '.join(i.upper() for i in digest['quiet'])}.")

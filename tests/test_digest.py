@@ -87,3 +87,14 @@ def test_nessun_segnale_headline():
 def test_cambio_di_oggi():
     sigs = digest.instrument_signals(ctx(states=[0] * 11 + [2], current="turbolento", days=1))
     assert "oggi" in sigs[0]["text"] and "dal regime calmo" in sigs[0]["text"]
+
+
+def test_note_storiche_solo_su_strumenti_segnalati():
+    dg = digest.build([ctx("hot", pctl=0.97), ctx("calm"), ctx("calm2")])
+    events = [{"id": "hot", "type": "vol_estrema", "date": DATES[-1], "history": "storicamente, ..."},
+              {"id": "calm", "type": "vol_estrema", "date": DATES[-1], "history": "storicamente, ..."},
+              {"id": "hot", "type": "drawdown_20", "date": DATES[-1], "history": None}]
+    digest.attach_history(dg, events, {"vol_estrema": "volatilità estrema"})
+    hot = dg["instruments"][0]
+    assert [h["type"] for h in hot["history"]] == ["vol_estrema"]
+    assert "Volatilità estrema" in digest.to_markdown(dg)

@@ -7,7 +7,7 @@ import math
 
 import pytest
 
-from pipeline import analyze, backtest, export, live
+from pipeline import analyze, backtest, export, live, patterns
 from pipeline.ingest import load_universe
 from tests.test_pipeline_step3 import _universe, _write_data
 
@@ -36,13 +36,14 @@ def exported(tmp_path, monkeypatch):
     args = ["--universe", str(universe), "--data-dir", str(data), "--results-dir", str(results)]
     assert analyze.main(args) == 0
     assert live.main(args) == 0
+    assert patterns.main(args) == 0
     assert export.main(args + ["--out-dir", str(out)]) == 0
     return out, universe, data, results
 
 
 def test_file_prodotti_e_json_validi(exported):
     out, *_ = exported
-    for name in ("index.json", "models.json", "tickers/aaa.json", "tickers/idx.json"):
+    for name in ("index.json", "models.json", "digest.json", "patterns.json", "tickers/aaa.json", "tickers/idx.json"):
         text = (out / name).read_text()
         assert "NaN" not in text and "Infinity" not in text
         json.loads(text)
@@ -93,3 +94,11 @@ def test_rimuove_strumenti_non_piu_esportati(exported):
     (out / "tickers" / "vecchio.json").write_text("{}")
     export.export(load_universe(universe), data, results, out)
     assert not (out / "tickers" / "vecchio.json").exists()
+
+
+def test_patterns_esportati(exported):
+    out, *_ = exported
+    p = json.loads((out / "patterns.json").read_text())
+    assert p["backtest"]["main_horizon"] == patterns.MAIN_HORIZON
+    assert set(p["backtest"]["stats"]) == set(patterns.EVENT_TYPES)
+    assert p["live"]["series"] == "live"

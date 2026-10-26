@@ -1,6 +1,6 @@
 /* FinanceNow — dashboard statica (vanilla JS, nessuna dipendenza).
  * Legge solo i JSON in data/ prodotti da pipeline/export.py.
- * Viste (routing via hash): #/  panoramica · #/t/<id>  strumento · #/modelli · #/metodo
+ * Viste (routing via hash): #/  panoramica · #/t/<id>  strumento · #/pattern · #/modelli · #/metodo
  */
 "use strict";
 
@@ -21,7 +21,7 @@ const MODEL_LABELS = {
 };
 const CLASS_LABELS = { index: "Indice", etf: "ETF", stock: "Azione" };
 
-const state = { index: null, models: null, digest: null, tickers: {}, sort: { key: null, dir: -1 }, horizon: "h1" };
+const state = { index: null, models: null, digest: null, patterns: null, tickers: {}, sort: { key: null, dir: -1 }, horizon: "h1" };
 const app = document.getElementById("app");
 const tooltip = document.getElementById("tooltip");
 
@@ -273,6 +273,7 @@ function digestBlock(dg) {
     <li class="dg-item sev-${esc(inst.max_severity)}">
       <a class="dg-name" href="#/t/${esc(inst.id)}">${esc(inst.name)} <span class="muted">${esc(inst.id.toUpperCase())}</span></a>
       <ul>${inst.signals.map((s) => `<li><span class="sev-dot sev-${esc(s.severity)}" title="${esc(SEV_LABEL[s.severity])}"></span>${esc(cap(s.text))}</li>`).join("")}</ul>
+      ${(inst.history || []).map((h) => `<p class="dg-history"><a href="#/pattern">${esc(cap(h.event))}</a> (${fmtDate(h.date)}): ${esc(h.text)}</p>`).join("")}
     </li>`).join("");
   return `
     <section class="digest">
@@ -483,6 +484,84 @@ function renderModels() {
   });
 }
 
+/* ------------------------------------------------------------------ pattern */
+
+function cmpCell(m, fmt, higherIsWorse = true) {
+  if (!m) return `<td class="num">–</td>`;
+  const worse = higherIsWorse ? m.excess > 0 : m.excess < 0;
+  const cls = m.significant ? (worse ? "lose" : "win") : "";
+  const ci = m.ci90 ? ` · IC 90% eccesso ${fmt(m.ci90[0])} / ${fmt(m.ci90[1])}` : "";
+  return `<td class="num ${cls}" title="eccesso medio ${fmt(m.excess)}${ci}">${fmt(m.event)} <span class="muted small">vs ${fmt(m.baseline)}</span></td>`;
+}
+
+function renderPatterns() {
+  setActiveTab("patterns");
+  const P = state.patterns;
+  if (!P || !P.backtest) {
+    app.innerHTML = `<h1>Pattern</h1><p class="notice">Statistiche non ancora disponibili: compaiono dopo il primo run di daily.yml.</p>`;
+    return;
+  }
+  const bt = P.backtest;
+  const types = Object.entries(bt.event_types || {});
+  const x = (v) => (isNum(v) ? num(v, 2) + "×" : "–");
+  const p0 = (v) => pct(v, 0);
+  const p1 = (v) => pct(v, 1, true);
+  const current = P.current || [];
+  const lv = P.live;
+
+  const cards = types.map(([key, label]) => {
+    const st = bt.stats?.[key] || {};
+    const main = st[`h${bt.main_horizon}`] || {};
+    const rows = (bt.horizons || []).map((h) => {
+      const s = st[`h${h}`];
+      if (!s || !s.n) return `<tr><td class="left">${h} sedute</td><td class="num">0</td><td colspan="3" class="muted left">nessun caso</td></tr>`;
+      return `<tr><td class="left">${h} sedute</td><td class="num">${s.n} <span class="muted small">(${s.n_weeks ?? "–"} sett.)</span></td>
+        ${cmpCell(s.vol_ratio, x)}${cmpCell(s.dd10, p0)}${cmpCell(s.ret, p1, false)}</tr>`;
+    }).join("");
+    const counts = Object.entries(bt.events_by_instrument?.[key] || {}).map(([id, c]) => `${id.toUpperCase()} ${c}`).join(" · ");
+    return `<div class="chart-card">
+      <div class="chart-head"><h3>${esc(label.charAt(0).toUpperCase() + label.slice(1))}</h3><span class="muted small">${main.n || 0} casi a ${bt.main_horizon} sedute</span></div>
+      <div class="table-scroll" style="margin:8px 0"><table>
+        <thead><tr><th class="left">Dopo</th><th>Casi</th><th>Volatilità vs tipica</th><th>Calo ≥ 10%</th><th>Rendimento medio</th></tr></thead>
+        <tbody>${rows}</tbody></table></div>
+      ${counts ? `<p class="muted small">Casi per strumento: ${esc(counts)}</p>` : ""}
+    </div>`;
+  }).join("");
+
+  const liveRows = Object.entries(lv?.by_type || {}).map(([k, v]) => `<tr><td class="left">${esc(bt.event_types[k] || k)}</td><td class="num">${v.n}</td>
+    <td class="num">${x(v.realized_vol_ratio)} <span class="muted small">attesa ${x(v.expected_vol_ratio)} · normale ${x(v.baseline_vol_ratio)}</span></td>
+    <td class="num">${p0(v.realized_dd10)} <span class="muted small">atteso ${p0(v.expected_dd10)} · normale ${p0(v.baseline_dd10)}</span></td></tr>`).join("");
+
+  app.innerHTML = `
+    <h1>Pattern</h1>
+    <p class="muted">Cosa è successo <strong>storicamente</strong> nelle sedute successive a certi eventi, confrontato con un giorno qualsiasi dello stesso titolo
+      (<em>vs</em>). È statistica sul passato, non una previsione. Rendimento e calo sono misurati dall'<strong>apertura del giorno dopo</strong>,
+      il primo prezzo a cui si può agire dopo un'analisi fatta a mercato chiuso. In verde/rosso le differenze statisticamente nette
+      (intervallo al 90% che esclude lo zero e differenza rilevante; eventi della stessa settimana raggruppati).
+      Rosso = più volatilità o più rischio di calo, o rendimento più basso del normale.</p>
+
+    <h2>Eventi delle ultime sedute</h2>
+    ${current.length ? `<div class="table-scroll"><table><thead><tr><th class="left">Strumento</th><th class="left">Evento</th><th class="left">Data</th><th class="left">Storicamente</th></tr></thead>
+      <tbody>${current.map((e) => `<tr><td class="left"><a href="#/t/${esc(e.id)}">${esc(e.id.toUpperCase())}</a></td><td class="left">${esc(bt.event_types[e.type] || e.type)}</td>
+        <td class="left">${fmtDate(e.date)}</td><td class="left wrap-cell">${esc(e.history || "casi storici insufficienti")}</td></tr>`).join("")}</tbody></table></div>`
+      : `<p class="notice">Nessun evento nelle ultime sedute.</p>`}
+
+    <section class="series-panel live">
+      <h2 style="margin-top:0"><span class="series-tag live">LIVE</span>Verifica sugli eventi nuovi</h2>
+      <p class="muted small">Ogni evento nuovo viene registrato con l'esito che lo storico si aspetta; dopo ${bt.main_horizon} sedute si confronta con quello realizzato.
+        Eventi registrati: ${lv?.n_logged ?? 0}, già valutabili: ${lv?.n_evaluated ?? 0}.</p>
+      ${liveRows ? `<div class="table-scroll"><table><thead><tr><th class="left">Evento</th><th>Casi</th><th>Volatilità vs tipica</th><th>Calo ≥ 10%</th></tr></thead><tbody>${liveRows}</tbody></table></div>`
+        : `<p class="notice">In accumulo: servono almeno ${bt.main_horizon} sedute dopo i primi eventi registrati.</p>`}
+    </section>
+
+    <section class="series-panel backtest">
+      <h2 style="margin-top:0"><span class="series-tag backtest">BACKTEST</span>Statistiche storiche per tipo di evento</h2>
+      <p class="muted small">Eventi dal 2010 su tutti gli strumenti dell'universo, solo finestre chiuse prima del periodo di test finale (${fmtDate(bt.holdout_start)}).
+        Volatilità in multipli di quella tipica del titolo (1× = normale). Il rendimento è il dato meno affidabile: rumore e bias di selezione dell'universo.</p>
+      ${cards}
+    </section>`;
+}
+
 /* ------------------------------------------------------------------ metodo */
 
 function renderMethod() {
@@ -525,6 +604,7 @@ async function route() {
   try {
     if (hash.startsWith("#/t/")) await renderTicker(decodeURIComponent(hash.slice(4)));
     else if (hash === "#/modelli") renderModels();
+    else if (hash === "#/pattern") renderPatterns();
     else if (hash === "#/metodo") renderMethod();
     else renderOverview();
   } catch (err) {
@@ -537,6 +617,7 @@ async function init() {
   try {
     [state.index, state.models] = await Promise.all([getJSON("data/index.json"), getJSON("data/models.json")]);
     state.digest = await getJSON("data/digest.json").catch(() => null);
+    state.patterns = await getJSON("data/patterns.json").catch(() => null);
   } catch (err) {
     app.innerHTML = `<p class="notice">Dati non disponibili: ${esc(err.message)}.<br>
       La dashboard si popola dopo il primo run di <code>daily.yml</code>.</p>`;

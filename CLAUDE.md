@@ -95,7 +95,7 @@ Lavorare sempre su **log-rendimenti**, mai sui livelli di prezzo.
 
 ### Scelte del passo 4 (implementate)
 - `pipeline/export.py` scrive JSON compatti in `docs/data/` (`index.json`, `models.json`, `tickers/<id>.json`);
-  `daily.yml` lo esegue dopo `live` e committa anche `docs/data/`.
+  `daily.yml` lo esegue dopo `live` e `patterns` e committa anche `docs/data/`.
 - Nella dashboard **nessun prezzo né volume assoluto**: solo grandezze derivate (volatilità, drawdown, beta,
   momentum, regimi, z-score; per le anomalie di volume il rapporto con la mediana). Un test lo verifica.
 - Frontend `docs/` in vanilla JS senza librerie: grafici SVG scritti a mano, routing via hash
@@ -107,6 +107,19 @@ Lavorare sempre su **log-rendimenti**, mai sui livelli di prezzo.
   allo storico del titolo, volatilità in accelerazione, drawdown ≤ -20%, dati non aggiornati), con gravità
   alta/media/bassa. Volatilità alta diffusa (≥ metà dell'universo) detta una volta sola a livello di mercato.
   Esce in cima alla dashboard (`docs/data/digest.json`), nel job summary e in `results/digest/latest.md`.
+- **Alert solo in pagina** (decisione del 26/10/2026): nessuna notifica esterna (email/Telegram/issue).
+- **Pattern** (`pipeline/patterns.py`, richiesta del 26/10/2026): studio di eventi descrittivo, non previsione.
+  Eventi (rilevati con soli dati fino al giorno stesso, cooldown 21 sedute): ingresso/uscita dal regime turbolento,
+  crollo/balzo anomalo, volume anomalo, volatilità oltre il 95° percentile dello storico fino a quel giorno,
+  volatilità in accelerazione, discesa sotto -20%. Esiti a 5/21/63 sedute: volatilità rispetto alla tipica del
+  titolo, probabilità di calo ≥ 10%, rendimento (dato debole). Confronto con un giorno qualsiasi dello stesso titolo,
+  solo finestre chiuse prima del test finale. "Netto" = IC 90% (cluster per settimana) esclude lo zero E differenza
+  oltre una soglia minima. **Rendimento e calo misurati dall'apertura del giorno dopo**: l'analisi gira a mercato
+  chiuso, il primo prezzo a cui si può agire è l'apertura successiva. Serie live separata:
+  `results/live/pattern_log.csv` (eventi nuovi con esito atteso) e `results/live/pattern_scores.json`.
+  Le note "storicamente…" compaiono nella sintesi sotto gli strumenti con segnali.
+- Uso EOD: i risultati sono pronti dopo la chiusura USA (circa 23:30–00:30 ora italiana); servono per decidere
+  prima della seduta successiva, non per operare intraday (servirebbero dati intraday, altra architettura).
 
 ## Struttura prevista
 ```
@@ -125,6 +138,7 @@ pipeline/
   summary.py       # riepilogo Markdown per il job summary di Actions
   export.py        # JSON leggeri per la dashboard
   digest.py        # sintesi del giorno: segnali con gravità, per dashboard e job summary
+  patterns.py      # studio di eventi: cosa è successo dopo eventi simili (storico + verifica live)
 config/universe.yml
 results/           # output elaborati committati (analysis/, backtest/, live/, status/)
 docs/              # GitHub Pages: index.html, app.js, style.css, data/

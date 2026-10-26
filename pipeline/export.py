@@ -5,7 +5,8 @@ Scrive SOLO dati derivati, mai prezzi o livelli (licenze, repo pubblico):
 - docs/data/tickers/<id>.json   serie storiche derivate (volatilità, drawdown, beta, regime),
                                 statistiche dei regimi, anomalie recenti, ultime previsioni live;
 - docs/data/models.json         volatilità: `backtest` e `live` in due blocchi separati;
-- docs/data/digest.json         sintesi del giorno (pipeline/digest.py), anche in results/digest/latest.md.
+- docs/data/digest.json         sintesi del giorno (pipeline/digest.py), anche in results/digest/latest.md;
+- docs/data/patterns.json       pattern: statistiche storiche (`backtest`) e verifica `live`, separate.
 
 Uso:
     python -m pipeline.export
@@ -24,7 +25,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from pipeline import backtest, digest, live
+from pipeline import backtest, digest, live, patterns
 from pipeline.analyze import DEFAULT_RESULTS_DIR
 from pipeline.features import TRADING_DAYS, compute_features
 from pipeline.ingest import (DEFAULT_DATA_DIR, DEFAULT_UNIVERSE, ROOT, ConfigError, json_safe,
@@ -211,6 +212,17 @@ def export(instruments, data_dir: Path, results_dir: Path, out_dir: Path) -> dic
     write_compact(index, out_dir / "index.json")
     write_compact(models_payload(results_dir), out_dir / "models.json")
     dg = digest.build(contexts, status)
+    current = read_json(results_dir / "patterns" / "current.json").get("events", [])
+    digest.attach_history(dg, current, patterns.EVENT_TYPES)
+    pstats = read_json(results_dir / "patterns" / "stats.json")
+    pscores = read_json(results_dir / "live" / patterns.SCORES_FILE)
+    write_compact({
+        "schema": SCHEMA_VERSION,
+        "backtest": {k: pstats.get(k) for k in ("generated", "holdout_start", "horizons", "main_horizon",
+                                                  "event_types", "stats", "events_by_instrument")} if pstats else None,
+        "live": pscores or None,
+        "current": current,
+    }, out_dir / "patterns.json")
     dg["generated"] = index["generated"]
     write_compact(dg, out_dir / "digest.json")
     md_path = results_dir / "digest" / "latest.md"
