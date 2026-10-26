@@ -1,0 +1,114 @@
+{
+  "series": "live",
+  "generated": "2026-10-26T14:30:08+00:00",
+  "note": "previsioni registrate da daily.yml prima di conoscere il risultato; mai ricalcolate",
+  "n_forecasts_logged": 117,
+  "first_origin": "2026-10-23",
+  "aggregate": {},
+  "instruments": {
+    "aapl": {
+      "h1": {
+        "n": 0
+      },
+      "h5": {
+        "n": 0
+      }
+    },
+    "amd": {
+      "h1": {
+        "n": 0
+      },
+      "h5": {
+        "n": 0
+      }
+    },
+    "amzn": {
+      "h1": {
+        "n": 0
+      },
+      "h5": {
+        "n": 0
+      }
+    },
+    "avgo": {
+      "h1": {
+        "n": 0
+      },
+      "h5": {
+        "n": 0
+      }
+    },
+    "googl": {
+      "h1": {
+        "n": 0
+      },
+      "h5": {
+        "n": 0
+      }
+    },
+    "meta": {
+      "h1": {
+        "n": 0
+      },
+      "h5": {
+        "n": 0
+      }
+    },
+    "msft": {
+      "h1": {
+        "n": 0
+      },
+      "h5": {
+        "n": 0
+      }
+    },
+    "mu": {
+      "h1": {
+        "n": 0
+      },
+      "h5": {
+        "n": 0
+      }
+    },
+    "ndx": {
+      "h1": {
+        "n": 0
+      },
+      "h5": {
+        "n": 0
+      }
+    },
+    "nvda": {
+      "h1": {
+        "n": 0
+      },
+      "h5": {
+        "n": 0
+      }
+    },
+    "qqq": {
+      "h1": {
+        "n": 0
+      },
+      "h5": {
+        "n": 0
+      }
+    },
+    "spx": {
+      "h1": {
+        "n": 0
+      },
+      "h5": {
+        "n": 0
+      }
+    },
+    "tsla": {
+      "h1": {
+        "n": 0
+      },
+      "h5": {
+        "n": 0
+      }
+    }
+  }
+}
