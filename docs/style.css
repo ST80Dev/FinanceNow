@@ -195,3 +195,10 @@ td.lose { color: var(--bad); }
 
 .dg-history { margin: 4px 0 0 16px; font-size: 0.85rem; color: var(--muted); font-style: italic; }
 td.wrap-cell { white-space: normal; min-width: 280px; }
+
+.dg-section { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 14px 0 8px; }
+.dg-situations { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 4px; }
+.dg-situations li { display: flex; gap: 0.75rem; flex-wrap: wrap; padding: 4px 0; border-bottom: 1px dashed var(--border); }
+.dg-situations li:last-child { border-bottom: none; }
+.dg-situations .dg-name { min-width: 3.5rem; }
+.anom { display: inline-block; margin: 1px 14px 1px 0; white-space: nowrap; }
