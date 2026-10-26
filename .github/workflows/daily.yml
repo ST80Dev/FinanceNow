@@ -72,6 +72,9 @@ jobs:
       - name: Pattern (cosa è successo dopo eventi simili)
         run: python -m pipeline.patterns
 
+      - name: Direzione (sperimentale, confrontata con la frequenza storica)
+        run: python -m pipeline.direction
+
       - name: Export per la dashboard (docs/data)
         run: python -m pipeline.export
 
