@@ -7433,7 +7433,7 @@
       0.942,
       0.938,
       0.837,
-      0.544,
+      0.545,
       0.239,
       0.073,
       0.061,
@@ -8540,7 +8540,7 @@
       0.0,
       0.163,
       0.39,
-      0.414,
+      0.413,
       0.361,
       0.457,
       0.303,
@@ -8624,7 +8624,7 @@
       0.968,
       0.974,
       0.931,
-      0.872,
+      0.873,
       0.721,
       0.011,
       0.0,
@@ -9024,7 +9024,7 @@
       0.011,
       0.116,
       0.102,
-      0.365,
+      0.366,
       0.948,
       0.951,
       0.93,
@@ -9245,7 +9245,7 @@
       0.945,
       0.958,
       0.913,
-      0.886,
+      0.885,
       0.831,
       0.763,
       0.639,
@@ -9409,7 +9409,7 @@
       0.325,
       0.389,
       0.343,
-      0.302,
+      0.303,
       0.181,
       0.085,
       0.023,
@@ -10440,14 +10440,14 @@
       0.255,
       0.324,
       0.198,
-      0.296,
+      0.297,
       0.295,
       0.625,
       0.547,
       0.274,
       0.038,
       0.125,
-      0.105
+      0.106
     ]
   },
   "anomalies": {
@@ -10466,7 +10466,8 @@
         "date": "2024-06-27",
         "kind": "volume",
         "z": 4.49,
-        "value": 1.5763
+        "value": 1.5763,
+        "earnings": true
       },
       {
         "date": "2024-07-31",
@@ -10514,25 +10515,29 @@
         "date": "2024-09-26",
         "kind": "gap",
         "z": 12.29,
-        "value": 0.16632
+        "value": 0.16632,
+        "earnings": true
       },
       {
         "date": "2024-09-26",
         "kind": "rendimento",
         "z": 6.23,
-        "value": 0.13744
+        "value": 0.13744,
+        "earnings": true
       },
       {
         "date": "2024-09-26",
         "kind": "rendimento_vs_bench",
         "z": 7.31,
-        "value": 0.12491
+        "value": 0.12491,
+        "earnings": true
       },
       {
         "date": "2024-09-26",
         "kind": "volume",
         "z": 4.22,
-        "value": 1.86487
+        "value": 1.86487,
+        "earnings": true
       },
       {
         "date": "2024-12-18",
@@ -10544,25 +10549,29 @@
         "date": "2024-12-19",
         "kind": "gap",
         "z": -9.6,
-        "value": -0.14273
+        "value": -0.14273,
+        "earnings": true
       },
       {
         "date": "2024-12-19",
         "kind": "rendimento",
         "z": -7.29,
-        "value": -0.17649
+        "value": -0.17649,
+        "earnings": true
       },
       {
         "date": "2024-12-19",
         "kind": "rendimento_vs_bench",
         "z": -8.03,
-        "value": -0.16851
+        "value": -0.16851,
+        "earnings": true
       },
       {
         "date": "2024-12-19",
         "kind": "volume",
         "z": 4.08,
-        "value": 1.59565
+        "value": 1.59565,
+        "earnings": true
       },
       {
         "date": "2025-01-27",
@@ -10592,7 +10601,8 @@
         "date": "2025-03-21",
         "kind": "rendimento_vs_bench",
         "z": -4.03,
-        "value": -0.09129
+        "value": -0.09129,
+        "earnings": true
       },
       {
         "date": "2025-04-03",
@@ -10694,7 +10704,8 @@
         "date": "2025-12-18",
         "kind": "gap",
         "z": 6.65,
-        "value": 0.12884
+        "value": 0.12884,
+        "earnings": true
       },
       {
         "date": "2026-01-02",
@@ -10760,7 +10771,116 @@
         "date": "2026-06-25",
         "kind": "gap",
         "z": 6.92,
-        "value": 0.16208
+        "value": 0.16208,
+        "earnings": true
+      }
+    ],
+    "count_last_365_days_earnings": 2
+  },
+  "earnings": {
+    "available": true,
+    "next": {
+      "date": "2026-12-23",
+      "timing": "dopo la chiusura",
+      "reaction_session": "2026-12-24",
+      "sessions_until": 44
+    },
+    "n_reactions": 67,
+    "typical_move": 0.0650314673274135,
+    "typical_day_move": 0.016958729002483075,
+    "move_ratio": 3.834689929763703,
+    "share_up": 0.417910447761194,
+    "last": {
+      "date": "2026-09-30",
+      "session": "2026-10-01",
+      "reaction": 0.029856536784056864,
+      "reaction_vs_bench": 0.02680086360135636,
+      "sessions_ago": 16
+    },
+    "history": [
+      {
+        "date": "2023-12-20",
+        "timing": "dopo la chiusura",
+        "session": "2023-12-21",
+        "reaction": 0.08276611000262157,
+        "reaction_vs_bench": 0.0705629913652519
+      },
+      {
+        "date": "2024-03-20",
+        "timing": "dopo la chiusura",
+        "session": "2024-03-21",
+        "reaction": 0.13216687259145576,
+        "reaction_vs_bench": 0.12777570535898253
+      },
+      {
+        "date": "2024-06-26",
+        "timing": "dopo la chiusura",
+        "session": "2024-06-27",
+        "reaction": -0.07381608061535605,
+        "reaction_vs_bench": -0.07573709479789148
+      },
+      {
+        "date": "2024-09-25",
+        "timing": "dopo la chiusura",
+        "session": "2024-09-26",
+        "reaction": 0.13743944806398734,
+        "reaction_vs_bench": 0.13030864762969951
+      },
+      {
+        "date": "2024-12-18",
+        "timing": "dopo la chiusura",
+        "session": "2024-12-19",
+        "reaction": -0.1764868026318176,
+        "reaction_vs_bench": -0.1718170898163578
+      },
+      {
+        "date": "2025-03-20",
+        "timing": "dopo la chiusura",
+        "session": "2025-03-21",
+        "reaction": -0.08380370921506497,
+        "reaction_vs_bench": -0.08767681921631798
+      },
+      {
+        "date": "2025-06-25",
+        "timing": "dopo la chiusura",
+        "session": "2025-06-26",
+        "reaction": -0.00987181479999144,
+        "reaction_vs_bench": -0.01925081118917582
+      },
+      {
+        "date": "2025-09-23",
+        "timing": "dopo la chiusura",
+        "session": "2025-09-24",
+        "reaction": -0.02865008676218128,
+        "reaction_vs_bench": -0.025528903608903697
+      },
+      {
+        "date": "2025-12-17",
+        "timing": "dopo la chiusura",
+        "session": "2025-12-18",
+        "reaction": 0.09723512597718909,
+        "reaction_vs_bench": 0.08226474848689058
+      },
+      {
+        "date": "2026-03-18",
+        "timing": "dopo la chiusura",
+        "session": "2026-03-19",
+        "reaction": -0.038547877853744694,
+        "reaction_vs_bench": -0.03568563651507972
+      },
+      {
+        "date": "2026-06-24",
+        "timing": "dopo la chiusura",
+        "session": "2026-06-25",
+        "reaction": 0.14618807969189884,
+        "reaction_vs_bench": 0.13867838413465972
+      },
+      {
+        "date": "2026-09-30",
+        "timing": "dopo la chiusura",
+        "session": "2026-10-01",
+        "reaction": 0.029856536784056864,
+        "reaction_vs_bench": 0.02680086360135636
       }
     ]
   }

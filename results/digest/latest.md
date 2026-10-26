@@ -23,5 +23,6 @@
 
 **Tesla (TSLA)**
 - 🟠 Drawdown di -24% dal massimo storico.
+  - _Reazione negativa alla trimestrale (peggio del benchmark) (2026-10-22): storicamente, dopo eventi simili (285 casi su 10 strumenti, 208 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,0 volte quella tipica (giorno qualsiasi: 1,1)._
 
 Nessuna novità: NDX, QQQ, SPX, NVDA, AAPL, MSFT, AMZN, META.
