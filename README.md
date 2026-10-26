@@ -4,6 +4,7 @@ Analisi automatica del comportamento di azioni e indici di borsa: regimi di merc
 anomalie, correlazioni e rischio, aggiornati ogni giorno.
 
 - **Pipeline**: Python su GitHub Actions (dati giornalieri, aggiornamento serale)
+- **Dati**: OHLCV giornaliero da yfinance; Stooq solo come riserva opzionale (richiede API key)
 - **Dashboard**: pagina statica in vanilla JS su GitHub Pages
 - **Validazione**: backtest walk-forward separato dal log delle previsioni live
 
