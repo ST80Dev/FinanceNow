@@ -100,7 +100,7 @@ def ticker_payload(inst, df: pd.DataFrame, bench: pd.DataFrame | None, analysis:
     }
 
 
-def digest_context(inst, payload: dict, status: dict | None) -> digest.Context:
+def digest_context(inst, payload: dict, status: dict | None, events: list[dict] | None = None) -> digest.Context:
     rv21 = [v for v in payload["series"].get("rv_21", []) if v is not None]
     current = payload["features_latest"].get("rv_21")
     pctl = (sum(v <= current for v in rv21) / len(rv21)) if rv21 and current is not None else None
@@ -114,6 +114,7 @@ def digest_context(inst, payload: dict, status: dict | None) -> digest.Context:
         rv21_percentile=pctl,
         anomalies=payload.get("anomalies", {}).get("recent", []),
         data_status=(status or {}).get("status"),
+        recent_events=[e for e in (events or []) if e.get("id") == inst.id],
     )
 
 
@@ -185,6 +186,7 @@ def export(instruments, data_dir: Path, results_dir: Path, out_dir: Path) -> dic
         return prices[key]
 
     rows, exported, contexts = [], [], []
+    current = read_json(results_dir / "patterns" / "current.json").get("events", [])
     for inst in instruments:
         analysis = read_json(results_dir / "analysis" / f"{inst.id}.json")
         df = load(inst.id)
@@ -197,7 +199,7 @@ def export(instruments, data_dir: Path, results_dir: Path, out_dir: Path) -> dic
         write_compact(payload, out_dir / "tickers" / f"{inst.id}.json")
         inst_status = status.get("instruments", {}).get(inst.id)
         rows.append(summary_row(inst, analysis, inst_status, ll))
-        contexts.append(digest_context(inst, payload, inst_status))
+        contexts.append(digest_context(inst, payload, inst_status, current))
         exported.append(inst.id)
 
     index = {
@@ -212,7 +214,6 @@ def export(instruments, data_dir: Path, results_dir: Path, out_dir: Path) -> dic
     write_compact(index, out_dir / "index.json")
     write_compact(models_payload(results_dir), out_dir / "models.json")
     dg = digest.build(contexts, status)
-    current = read_json(results_dir / "patterns" / "current.json").get("events", [])
     digest.attach_history(dg, current, patterns.EVENT_TYPES)
     pstats = read_json(results_dir / "patterns" / "stats.json")
     pscores = read_json(results_dir / "live" / patterns.SCORES_FILE)

@@ -281,8 +281,11 @@ function digestBlock(dg) {
       <p class="dg-headline">${esc(dg.headline)}</p>
       ${dg.market?.length ? `<ul class="dg-market">${dg.market.map((m) => `<li>${esc(m)}</li>`).join("")}</ul>` : ""}
       ${dg.missing?.length ? `<p class="warn">Senza dati: ${esc(dg.missing.join(", "))}</p>` : ""}
-      ${items ? `<ul class="dg-list">${items}</ul>` : ""}
-      ${dg.quiet?.length ? `<p class="muted small">Nessuna novità: ${esc(dg.quiet.map((q) => q.toUpperCase()).join(", "))}.</p>` : ""}
+      ${items ? `<h2 class="dg-section">Novità</h2><ul class="dg-list">${items}</ul>` : ""}
+      ${(dg.situations || []).length ? `<h2 class="dg-section">Situazioni in corso</h2>
+        <ul class="dg-situations">${dg.situations.map((s) => `<li><a class="dg-name" href="#/t/${esc(s.id)}">${esc(s.id.toUpperCase())}</a>
+          <span>${s.items.map((x) => esc(x.text)).join(" · ")}</span></li>`).join("")}</ul>` : ""}
+      ${dg.quiet?.length ? `<p class="muted small">Nella norma: ${esc(dg.quiet.map((q) => q.toUpperCase()).join(", "))}.</p>` : ""}
       <details class="small muted"><summary>Come vengono scelti i segnali</summary><pre class="dg-rules">${esc(dg.rules)}</pre></details>
     </section>`;
 }
@@ -398,15 +401,34 @@ function regimeTable(reg) {
       parametri ri-stimati ogni anno. Statistiche descrittive dello storico: non sono previsioni.</p>`;
 }
 
+const ANOMALY_ORDER = ["rendimento", "rendimento_vs_bench", "gap", "range", "volume"];
+
+function anomalyValue(a) {
+  if (a.kind === "volume") return isNum(a.value) ? "×" + num(Math.exp(a.value), 1) + " la mediana" : "–";
+  return pct(a.value, 1, true);
+}
+
 function anomalyTable(an) {
-  const recent = [...(an?.recent || [])].reverse();
+  const recent = an?.recent || [];
   if (!recent.length) return `<p class="notice">Nessuna anomalia registrata.</p>`;
+  // Le anomalie dello stesso giorno sono di solito un unico movimento: una riga per giorno.
+  const byDay = new Map();
+  for (const a of recent) {
+    if (!byDay.has(a.date)) byDay.set(a.date, []);
+    byDay.get(a.date).push(a);
+  }
+  const days = [...byDay.keys()].sort().reverse().slice(0, 20);
   const counts = Object.entries(an.count_by_kind || {}).map(([k, c]) => `${esc(ANOMALY_LABELS[k] || k)}: ${c}`).join(" · ");
   return `<p class="muted small">Totale storico per tipo — ${counts}. Ultimi 12 mesi: ${an.count_last_365_days ?? "–"}.</p>
     <div class="table-scroll"><table>
-    <thead><tr><th class="left">Data</th><th class="left">Tipo</th><th>z-score</th><th>Valore</th></tr></thead>
-    <tbody>${recent.slice(0, 25).map((a) => `<tr><td class="left">${fmtDate(a.date)}</td><td class="left">${esc(ANOMALY_LABELS[a.kind] || a.kind)}</td>
-      <td class="num ${signClass(a.z)}">${num(a.z, 1, true)}</td><td class="num">${a.kind === "volume" ? (isNum(a.value) ? "×" + num(Math.exp(a.value), 1) + " mediana" : "–") : pct(a.value, 2, true)}</td></tr>`).join("")}</tbody>
+    <thead><tr><th class="left">Data</th><th class="left">Movimento</th><th>z più estremo</th></tr></thead>
+    <tbody>${days.map((d) => {
+      const items = byDay.get(d).sort((a, b) => ANOMALY_ORDER.indexOf(a.kind) - ANOMALY_ORDER.indexOf(b.kind));
+      const zmax = items.reduce((m, a) => (Math.abs(a.z) > Math.abs(m) ? a.z : m), 0);
+      return `<tr><td class="left">${fmtDate(d)}</td>
+        <td class="left wrap-cell">${items.map((a) => `<span class="anom">${esc(ANOMALY_LABELS[a.kind] || a.kind)} <span class="num ${signClass(a.value)}">${anomalyValue(a)}</span> <span class="muted small">(z ${num(a.z, 1, true)})</span></span>`).join("")}</td>
+        <td class="num ${signClass(zmax)}">${num(zmax, 1, true)}</td></tr>`;
+    }).join("")}</tbody>
     </table></div>
     <p class="muted small" style="margin-top:8px">${esc(an.method || "")}. Per il volume il valore è il rapporto con la mediana dell'ultimo anno.</p>`;
 }
