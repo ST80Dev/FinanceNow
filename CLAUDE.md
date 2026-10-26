@@ -130,7 +130,11 @@ usarli per analisi descrittive per titolo, non per conclusioni su rendimenti att
 2. `features.py` e i tre moduli (volatilità, regimi, anomalie) + backtest walk-forward con baseline.
 3. Workflow Actions (`backfill.yml`, `daily.yml`) con cache dei dati grezzi e commit dei risultati.
 4. Dashboard su Pages (vanilla JS).
-5. Più avanti: moduli predittivi sperimentali, alert (Telegram/email).
+5. Dati di contesto (da proporre dopo la dashboard, richiesta del 26/10/2026). Oggi il sistema usa SOLO
+   prezzi e volumi OHLCV: nessun dato di bilancio, macro, notizie o calendario. Candidati:
+   - date delle trimestrali, per distinguere le anomalie "spiegate" (giorno di utili) da quelle inattese;
+   - VIX e tassi dei Treasury come contesto di mercato (regimi, volatilità).
+6. Più avanti: moduli predittivi sperimentali, alert (Telegram/email).
 
 ## Avvertenza
 Strumento di analisi personale, non consulenza finanziaria.
