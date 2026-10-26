@@ -10755,6 +10755,10 @@
         "z": 4.02,
         "value": 0.03238
       }
-    ]
+    ],
+    "count_last_365_days_earnings": 0
+  },
+  "earnings": {
+    "available": false
   }
 }

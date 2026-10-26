@@ -11,7 +11,9 @@ Segnali per strumento (finestra "recente" = ultime RECENT_SESSIONS sedute):
   >= 90° media; <= 5° percentile bassa: calma insolita);
 - volatilità in accelerazione: 5 sedute >= 1,5 volte quella a 63 sedute (media);
 - drawdown dal massimo <= -20% (media);
+- trimestrale nelle prossime SOON_EARNINGS sedute (entro 5 = media, altrimenti bassa);
 - dati non aggiornati o mancanti (alta).
+Un'anomalia nel giorno di reazione alla trimestrale è "spiegata": al massimo gravità media.
 
 Contro il rumore: se almeno metà degli strumenti ha la volatilità >= 90° percentile, la cosa
 viene detta una volta sola a livello di mercato e per i singoli strumenti restano solo i
@@ -24,6 +26,7 @@ import math
 from dataclasses import dataclass, field
 
 RECENT_SESSIONS = 5
+SOON_EARNINGS = 10
 MARKET_WIDE_SHARE = 0.5
 SEVERITY_RANK = {"alta": 3, "media": 2, "bassa": 1}
 ANOMALY_LABELS = {
@@ -34,6 +37,8 @@ ANOMALY_LABELS = {
     "rendimento_vs_bench": "rendimento rispetto al benchmark",
 }
 REGIME_LEVEL = {"calmo": 0, "normale": 1, "turbolento": 2}
+# Nomi in parole semplici delle fasi (regimi) stimate dal modello.
+PHASE = {"calmo": "calma", "normale": "normale", "turbolento": "agitata"}
 
 
 @dataclass
@@ -51,11 +56,18 @@ class Context:
     rv21_percentile: float | None           # percentile della vol. 21g nel proprio storico (0-1)
     anomalies: list[dict] = field(default_factory=list)   # anomalie recenti (dict con date/kind/z/value)
     data_status: str | None = None
+    description: str | None = None
+    earnings: dict = field(default_factory=dict)           # riassunto trimestrali (pipeline.earnings.summary)
+    direction: dict = field(default_factory=dict)          # previsioni di direzione di oggi, per orizzonte
 
 
 def _pct(v: float, digits: int = 0, signed: bool = False) -> str:
     s = f"{v * 100:.{digits}f}".replace(".", ",") + "%"
     return ("+" + s) if signed and v > 0 else s
+
+
+def _num(v: float, digits: int = 1) -> str:
+    return f"{v:.{digits}f}".replace(".", ",")
 
 
 def _fmt_date(iso: str) -> str:
@@ -91,10 +103,16 @@ def regime_change(ctx: Context) -> dict | None:
         sev = "media"
     else:
         sev = "bassa"
-    verb = "è passato" if up else "è tornato"
     prob = reg.get("probabilities", {}).get(current)
-    prob_txt = f" (probabilità attuale {_pct(prob)})" if prob is not None else ""
-    return _signal(sev, "regime", f"{verb} al regime {current}{prob_txt} {when}, dal regime {previous}.")
+    prob_txt = f" (il modello ne è sicuro al {_pct(prob)})" if prob is not None else ""
+    if current == "turbolento":
+        text = f"è entrato in una fase agitata, con movimenti ampi e nervosi, {when}{prob_txt}; prima era in fase {PHASE.get(previous, previous)}."
+    elif previous == "turbolento":
+        text = f"è uscito dalla fase agitata {when}: ora è in fase {PHASE.get(current, current)}{prob_txt}."
+    else:
+        verb = "è passato" if up else "è tornato"
+        text = f"{verb} a una fase {PHASE.get(current, current)} {when}{prob_txt}; prima era in fase {PHASE.get(previous, previous)}."
+    return _signal(sev, "regime", text)
 
 
 def anomaly_signals(ctx: Context) -> list[dict]:
@@ -111,9 +129,13 @@ def anomaly_signals(ctx: Context) -> list[dict]:
         else:
             val = "n.d."
         sev = "alta" if abs(z) >= 6 else "media"
-        z_txt = f"{z:+.1f}".replace(".", ",")
+        times = f"{abs(z):.0f}"
+        why = " Era il giorno di reazione alla trimestrale: movimento spiegato dai conti." if a.get("earnings") else ""
+        if a.get("earnings") and sev == "alta":
+            sev = "media"
         out.append(_signal(sev, "anomalia",
-                           f"anomalia di {ANOMALY_LABELS.get(kind, kind)} il {_fmt_date(a['date'])}: {val} (z {z_txt})."))
+                           f"giorno insolito il {_fmt_date(a['date'])} per {ANOMALY_LABELS.get(kind, kind)}: {val}, "
+                           f"circa {times} volte lo scarto tipico dell'ultimo anno.{why}"))
     return out
 
 
@@ -123,24 +145,27 @@ def volatility_signals(ctx: Context, market_wide: bool = False) -> list[dict]:
     if market_wide and p is not None and p < 0.99:
         p = None  # già detto a livello di mercato
     if p is not None and rv21 is not None:
-        pct_txt = f"{round(p * 100)}° percentile del proprio storico"
-        if p >= 0.95:
-            out.append(_signal("alta", "volatilità", f"volatilità a 21 sedute {_pct(rv21)}, al {pct_txt}."))
-        elif p >= 0.90:
-            out.append(_signal("media", "volatilità", f"volatilità a 21 sedute {_pct(rv21)}, al {pct_txt}."))
+        month = _pct(rv21 / math.sqrt(12))
+        if p >= 0.90:
+            out.append(_signal("alta" if p >= 0.95 else "media", "volatilità",
+                               f"si muove molto più del solito: oscillazione tipica di ±{month} al mese, "
+                               f"più ampia che nel {round(p * 100)}% della sua storia."))
         elif p <= 0.05:
-            out.append(_signal("bassa", "volatilità", f"volatilità insolitamente bassa: {_pct(rv21)}, al {pct_txt}."))
+            out.append(_signal("bassa", "volatilità",
+                               f"insolitamente calmo: oscillazione tipica di ±{month} al mese, "
+                               f"più bassa che nel {round((1 - p) * 100)}% della sua storia."))
     rv5, rv63 = f.get("rv_5"), f.get("rv_63")
     if rv5 and rv63 and rv63 > 0 and rv5 / rv63 >= 1.5:
         out.append(_signal("media", "volatilità",
-                           f"volatilità in accelerazione: {_pct(rv5)} sulle ultime 5 sedute contro {_pct(rv63)} a 63 sedute."))
+                           f"si sta agitando: nell'ultima settimana si muove {_num(rv5 / rv63)} volte più che negli ultimi 3 mesi."))
     return out
 
 
 def drawdown_signal(ctx: Context) -> dict | None:
     dd = ctx.features.get("drawdown")
     if dd is not None and dd <= -0.20:
-        return _signal("media", "drawdown", f"drawdown di {_pct(dd)} dal massimo storico.")
+        need = 1 / (1 + dd) - 1
+        return _signal("media", "drawdown", f"è a {_pct(dd)} dal suo massimo storico (per tornarci servirebbe {_pct(need, signed=True)}).")
     return None
 
 
@@ -150,8 +175,25 @@ def data_signal(ctx: Context) -> dict | None:
     return None
 
 
+def earnings_signal(ctx: Context) -> dict | None:
+    """Trimestrale nelle prossime sedute: giorni con movimenti di solito molto più ampi."""
+    e = ctx.earnings or {}
+    nxt = e.get("next")
+    if not e.get("available") or not nxt or nxt.get("sessions_until") is None:
+        return None
+    n = nxt["sessions_until"]
+    if n > SOON_EARNINGS:
+        return None
+    when = "domani" if n <= 1 else f"tra {n} sedute"
+    move = e.get("typical_move")
+    move_txt = (f": di solito quel giorno si muove di ±{_pct(math.expm1(move))}, "
+                f"{_num(e['move_ratio'], 0)} volte un giorno normale") if move and e.get("move_ratio") else ""
+    return _signal("media" if n <= 5 else "bassa", "trimestrale",
+                   f"trimestrale in arrivo ({_fmt_date(nxt['date'])}, {nxt.get('timing', 'orario n.d.')}), reazione {when}{move_txt}.")
+
+
 def instrument_signals(ctx: Context, market_wide: bool = False) -> list[dict]:
-    signals = [s for s in (data_signal(ctx), regime_change(ctx)) if s]
+    signals = [s for s in (data_signal(ctx), regime_change(ctx), earnings_signal(ctx)) if s]
     signals += anomaly_signals(ctx)
     signals += volatility_signals(ctx, market_wide)
     if (d := drawdown_signal(ctx)):
@@ -164,20 +206,21 @@ def market_lines(contexts: list[Context], benchmark_id: str = "ndx") -> list[str
     by_id = {c.id: c for c in contexts}
     bench = by_id.get(benchmark_id)
     if bench and bench.regime.get("available"):
-        lines.append(f"{bench.name}: regime {bench.regime['current']} da {bench.regime['days_in_state']} sedute, "
-                     f"volatilità a 21 sedute {_pct(bench.features.get('rv_21', 0))}.")
+        lines.append(f"{bench.name}: fase {PHASE.get(bench.regime['current'], bench.regime['current'])} "
+                     f"da {bench.regime['days_in_state']} sedute, oscillazione tipica ±"
+                     f"{_pct(bench.features.get('rv_21', 0) / math.sqrt(12))} al mese.")
     stocks = [c for c in contexts if c.asset_class == "stock"]
     if stocks:
         turb = [c.id.upper() for c in stocks if c.regime.get("current") == "turbolento"]
         calm = [c for c in stocks if c.regime.get("current") == "calmo"]
-        txt = f"Azioni: {len(turb)} su {len(stocks)} in regime turbolento"
+        txt = f"Azioni: {len(turb)} su {len(stocks)} in fase agitata"
         txt += f" ({', '.join(turb)})" if turb else ""
-        txt += f", {len(calm)} in regime calmo."
+        txt += f", {len(calm)} in fase calma."
         lines.append(txt)
         pcts = sorted(c.rv21_percentile for c in stocks if c.rv21_percentile is not None)
         if pcts:
             med = pcts[len(pcts) // 2]
-            lines.append(f"Volatilità dei titoli: mediana al {round(med * 100)}° percentile del rispettivo storico.")
+            lines.append(f"Il titolo tipico oggi si muove più che nel {round(med * 100)}% della sua storia (50% = nella media).")
     return lines
 
 
@@ -193,8 +236,8 @@ def build(contexts: list[Context], data_status: dict | None = None) -> dict:
     wide, n_high, n_tot = market_wide_high_vol(contexts)
     market = market_lines(contexts)
     if wide:
-        market.insert(0, f"Volatilità elevata su gran parte dell'universo: {n_high} strumenti su {n_tot} "
-                         f"sopra il 90° percentile del proprio storico (singolarmente segnalati solo i casi estremi).")
+        market.insert(0, f"Mercato agitato quasi ovunque: {n_high} strumenti su {n_tot} si muovono più che nel 90% "
+                         f"della loro storia (singolarmente segnalati solo i casi estremi).")
     for ctx in contexts:
         sigs = instrument_signals(ctx, wide)
         if not sigs:

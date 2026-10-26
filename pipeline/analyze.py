@@ -2,7 +2,7 @@
 
 Legge i dati grezzi da data/raw/ (prodotti da pipeline.ingest) e scrive SOLO risultati
 elaborati, mai prezzi grezzi:
-- results/analysis/<id>.json   stato descrittivo: feature recenti, regime, anomalie;
+- results/analysis/<id>.json   stato descrittivo: feature recenti, regime, anomalie, trimestrali;
 - results/backtest/volatility.json   metriche walk-forward per modello e orizzonte;
 - results/backtest/trials.jsonl      registro delle configurazioni provate.
 
@@ -25,7 +25,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from pipeline import backtest
+from pipeline import backtest, earnings
 from pipeline.features import compute_features
 from pipeline.ingest import (DEFAULT_DATA_DIR, DEFAULT_UNIVERSE, ROOT, ConfigError, load_universe,
                              read_json, read_prices, write_json)
@@ -45,7 +45,8 @@ def _num(x, digits: int = 5):
     return round(float(x), digits)
 
 
-def analyze_instrument(inst, df: pd.DataFrame, bench: pd.DataFrame | None) -> dict:
+def analyze_instrument(inst, df: pd.DataFrame, bench: pd.DataFrame | None,
+                       announcements: list | None = None) -> dict:
     feats = compute_features(df, bench)
     latest = feats.iloc[-1]
     ret = feats["ret"]
@@ -56,6 +57,9 @@ def analyze_instrument(inst, df: pd.DataFrame, bench: pd.DataFrame | None) -> di
     turbulent = f"p_{regimes.LABELS[N_STATES][-1]}"
 
     events = anomalies.detect(df, bench)
+    # Anomalie nei giorni di reazione alle trimestrali: "spiegate" dai conti, non inattese.
+    windows = earnings.reaction_windows(announcements or [], df.index)
+    on_earnings = earnings.window_dates(windows, df.index)
     last_year = df.index[-1] - pd.Timedelta(days=365)
     return {
         "id": inst.id,
@@ -80,10 +84,14 @@ def analyze_instrument(inst, df: pd.DataFrame, bench: pd.DataFrame | None) -> di
             "count_by_kind": events["kind"].value_counts().to_dict(),
             "count_last_365_days": int((events["date"] > last_year).sum()),
             "recent": [
-                {"date": r.date.date().isoformat(), "kind": r.kind, "z": _num(r.z, 2), "value": _num(r.value, 5)}
+                {"date": r.date.date().isoformat(), "kind": r.kind, "z": _num(r.z, 2), "value": _num(r.value, 5),
+                 **({"earnings": True} if r.date in on_earnings else {})}
                 for r in events.tail(RECENT_ANOMALIES).itertuples()
             ],
+            "count_last_365_days_earnings": int(sum(d > last_year and d in on_earnings for d in events["date"])),
         },
+        "earnings": earnings.summary(announcements or [], df["close"],
+                                     bench["close"] if bench is not None else None),
     }
 
 
@@ -140,7 +148,7 @@ def main(argv: list[str] | None = None) -> int:
             continue
         bench = prices.get(inst.benchmark) if inst.benchmark else None
         t0 = time.monotonic()
-        result = analyze_instrument(inst, df, bench)
+        result = analyze_instrument(inst, df, bench, earnings.load(args.data_dir, inst.id))
         write_json(result, args.results_dir / "analysis" / f"{inst.id}.json")
         reg = result["regime"]
         log.info("%-6s regime=%s (%s gg) anomalie ultimo anno=%d [%.1fs]", inst.id,

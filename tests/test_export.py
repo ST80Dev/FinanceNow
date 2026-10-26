@@ -7,7 +7,7 @@ import math
 
 import pytest
 
-from pipeline import analyze, backtest, export, live, patterns
+from pipeline import analyze, backtest, direction, export, live, patterns
 from pipeline.ingest import load_universe
 from tests.test_pipeline_step3 import _universe, _write_data
 
@@ -30,6 +30,8 @@ def _all_keys(obj, acc=None):
 def exported(tmp_path, monkeypatch):
     monkeypatch.setattr(backtest, "MIN_TRAIN", 600)
     monkeypatch.setattr(backtest, "REFIT_EVERY", 250)
+    monkeypatch.setattr(direction, "MIN_TRAIN", 600)
+    monkeypatch.setattr(direction, "REFIT_EVERY", 250)
     data, results, out = tmp_path / "raw", tmp_path / "results", tmp_path / "docs_data"
     universe = _universe(tmp_path)
     _write_data(data)
@@ -37,13 +39,15 @@ def exported(tmp_path, monkeypatch):
     assert analyze.main(args) == 0
     assert live.main(args) == 0
     assert patterns.main(args) == 0
+    assert direction.main(args) == 0
     assert export.main(args + ["--out-dir", str(out)]) == 0
     return out, universe, data, results
 
 
 def test_file_prodotti_e_json_validi(exported):
     out, *_ = exported
-    for name in ("index.json", "models.json", "digest.json", "patterns.json", "tickers/aaa.json", "tickers/idx.json"):
+    for name in ("index.json", "models.json", "digest.json", "patterns.json", "assessment.json", "direction.json",
+                 "tickers/aaa.json", "tickers/idx.json"):
         text = (out / name).read_text()
         assert "NaN" not in text and "Infinity" not in text
         json.loads(text)
@@ -51,7 +55,8 @@ def test_file_prodotti_e_json_validi(exported):
 
 def test_nessun_prezzo_pubblicato(exported):
     out, *_ = exported
-    for p in [out / "index.json", out / "models.json", *(out / "tickers").glob("*.json")]:
+    for p in [out / "index.json", out / "models.json", out / "assessment.json", out / "direction.json",
+              *(out / "tickers").glob("*.json")]:
         keys = _all_keys(json.loads(p.read_text()))
         assert not (keys & PRICE_KEYS), (p.name, keys & PRICE_KEYS)
 
@@ -102,3 +107,23 @@ def test_patterns_esportati(exported):
     assert p["backtest"]["main_horizon"] == patterns.MAIN_HORIZON
     assert set(p["backtest"]["stats"]) == set(patterns.EVENT_TYPES)
     assert p["live"]["series"] == "live"
+
+
+def test_valutazione_esportata_e_registrata(exported):
+    out, universe, data, results = exported
+    a = json.loads((out / "assessment.json").read_text())
+    ids = [i["id"] for i in a["instruments"]]
+    assert set(ids) == {"idx", "aaa"}
+    for i in a["instruments"]:
+        assert i["situation"]["key"] in ("tempesta", "pressione", "ripresa", "norma", "tranquillo")
+        assert i["risk"]["level"] in ("alto", "normale", "basso")
+        assert i["outlook"]["p_up"] is not None and i["outlook"]["verdict"]
+    attention = [i["attention"] for i in a["instruments"]]
+    assert attention == sorted(attention, reverse=True)
+    log = (results / "live" / "assessment_log.csv").read_text().splitlines()
+    assert len(log) == 3                                     # intestazione + 2 strumenti
+    export.export(load_universe(universe), data, results, out)
+    assert len((results / "live" / "assessment_log.csv").read_text().splitlines()) == 3   # niente doppioni
+    d = json.loads((out / "direction.json").read_text())
+    assert d["backtest"]["available"] and set(d["today"]) == {"idx", "aaa"}
+    assert "Situazione" in (results / "digest" / "latest.md").read_text()

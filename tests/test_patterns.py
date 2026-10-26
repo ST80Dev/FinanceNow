@@ -112,3 +112,29 @@ def test_differenze_minime_non_sono_nette():
                          "base_vol_ratio": 1.0, "base_dd10": 0.004, "base_ret": 0.0}, index=idx)
     s = patterns.summarize(rows)
     assert not s["dd10"]["significant"]        # -0,4 punti: statisticamente certo ma irrilevante
+
+
+def test_intervallo_centrato_sulla_media_pubblicata():
+    """L'IC deve contenere l'eccesso medio pubblicato anche con settimane di peso diverso."""
+    rng = np.random.default_rng(0)
+    days = pd.bdate_range("2015-01-01", periods=400)
+    # Settimane affollate (es. crollo di mercato) con eccessi più alti: media per evento
+    # e media delle medie settimanali differiscono.
+    idx = days.repeat(np.where(np.arange(400) % 50 < 5, 6, 1))
+    x = rng.normal(0.1, 0.2, len(idx)) + np.where(np.isin(idx, days[np.arange(400) % 50 < 5]), 0.5, 0.0)
+    rows = pd.DataFrame({"id": "a", "vol_ratio": 1.0 + x, "dd10": 0.0, "ret": 0.0,
+                         "base_vol_ratio": 1.0, "base_dd10": 0.0, "base_ret": 0.0}, index=idx)
+    v = patterns.summarize(rows)["vol_ratio"]
+    lo, hi = v["ci90"]
+    assert lo < v["excess"] < hi
+
+
+def test_eventi_trimestrali():
+    df, feats, state = _ticker(5, n=600)
+    idx = df.index
+    rx = pd.DataFrame({"first": [idx[100], idx[300]], "last": [idx[100], idx[301]],
+                       "reaction": [0.05, -0.02], "reaction_vs_bench": [np.nan, 0.01]})
+    ev = patterns.detect_events(df, feats, None, None, rx)
+    got = {(t, d) for d, t in zip(ev["date"], ev["type"]) if "trimestrale" in t}
+    assert got == {("trimestrale_positiva", idx[100]), ("trimestrale_positiva", idx[301]),   # vs benchmark > 0
+                   ("vigilia_trimestrale", idx[95]), ("vigilia_trimestrale", idx[295])}

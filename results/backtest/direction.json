@@ -1,0 +1,595 @@
+{
+  "series": "backtest",
+  "generated": "2026-10-26T16:32:11+00:00",
+  "config": {
+    "module": "direzione",
+    "target": "segno del log-rendimento dall'apertura di t+1 alla chiusura di t+h",
+    "horizons": [
+      5,
+      21
+    ],
+    "model": "logistica L2 panel con offset = frequenza storica del titolo",
+    "features": [
+      "mom_1m",
+      "mom_3m",
+      "mom_12m",
+      "ret_5",
+      "dist_ma50",
+      "dist_ma200",
+      "drawdown",
+      "vol_rel",
+      "rs_3m",
+      "rs_12m",
+      "vol_z5",
+      "p_turb",
+      "earn_soon",
+      "earn_rx"
+    ],
+    "l2": 0.02,
+    "clim_shrink": 252,
+    "min_train": 1260,
+    "refit_every": 63,
+    "embargo": 5,
+    "quantiles": [
+      0.1,
+      0.5,
+      0.9
+    ],
+    "holdout_start": "2025-11-03",
+    "model_version": "0.1.0"
+  },
+  "trial": {
+    "hash": "c76d0cd3f6d5",
+    "n_configurations_tried": 2
+  },
+  "feature_labels": {
+    "mom_1m": "andamento dell'ultimo mese",
+    "mom_3m": "andamento degli ultimi 3 mesi",
+    "mom_12m": "andamento dell'ultimo anno",
+    "ret_5": "andamento dell'ultima settimana",
+    "dist_ma50": "distanza dalla media mobile a 50 sedute",
+    "dist_ma200": "distanza dalla media mobile a 200 sedute",
+    "drawdown": "distanza dal massimo storico",
+    "vol_rel": "volatilità rispetto alla sua mediana dell'ultimo anno",
+    "rs_3m": "forza rispetto al Nasdaq 100 a 3 mesi",
+    "rs_12m": "forza rispetto al Nasdaq 100 a 12 mesi",
+    "vol_z5": "volumi dell'ultima settimana rispetto al solito",
+    "p_turb": "probabilità di fase agitata",
+    "earn_soon": "trimestrale nelle prossime sedute",
+    "earn_rx": "reazione all'ultima trimestrale (se recente)"
+  },
+  "horizons": {
+    "h5": {
+      "n": 32058,
+      "n_dates": 2466,
+      "first_origin": "2016-01-06",
+      "last_origin": "2025-10-24",
+      "up_rate": 0.5763927880716202,
+      "brier": {
+        "modello": 0.24556920865940088,
+        "freq_storica": 0.2444791127806678,
+        "moneta": 0.25
+      },
+      "logloss": {
+        "modello": 0.6842962444769772,
+        "freq_storica": 0.6820627294618848,
+        "moneta": 0.6931471805599453
+      },
+      "skill_vs_freq_storica": -0.004458850763709332,
+      "dm_vs_freq_storica": 1.5223533732707721,
+      "accuracy": {
+        "modello": 0.5688751637656747,
+        "freq_storica": 0.5747083411316988
+      },
+      "calls": {
+        "ottimista": {
+          "n": 3035,
+          "share": 0.09467215671595233,
+          "up_rate": 0.5749588138385503,
+          "base_rate": 0.5574318989080757,
+          "mean_ret": 0.010689239939843114
+        },
+        "pessimista": {
+          "n": 2534,
+          "share": 0.07904423232890387,
+          "up_rate": 0.5588003157063931,
+          "base_rate": 0.5605323216371955,
+          "mean_ret": 0.0046744480699648615
+        },
+        "neutro": {
+          "n": 26489,
+          "share": 0.8262836109551438,
+          "up_rate": 0.5782400241609725,
+          "base_rate": 0.5642188249011595,
+          "mean_ret": 0.005714956330663643
+        }
+      },
+      "calibration": [
+        {
+          "from": 0.4,
+          "to": 0.45,
+          "n": 147,
+          "p_mean": 0.4344701008563048,
+          "up_rate": 0.6122448979591837
+        },
+        {
+          "from": 0.45,
+          "to": 0.5,
+          "n": 2212,
+          "p_mean": 0.48411944657735434,
+          "up_rate": 0.548372513562387
+        },
+        {
+          "from": 0.5,
+          "to": 0.55,
+          "n": 10301,
+          "p_mean": 0.5287306726252299,
+          "up_rate": 0.5723716144063683
+        },
+        {
+          "from": 0.55,
+          "to": 0.6,
+          "n": 14064,
+          "p_mean": 0.573413630059323,
+          "up_rate": 0.5859641638225256
+        },
+        {
+          "from": 0.6,
+          "to": 0.65,
+          "n": 4244,
+          "p_mean": 0.6184784010821605,
+          "up_rate": 0.557492931196984
+        },
+        {
+          "from": 0.65,
+          "to": 1.0,
+          "n": 1076,
+          "p_mean": 0.6719676161300228,
+          "up_rate": 0.620817843866171
+        }
+      ],
+      "coverage_80": 0.804416994198016,
+      "verdict": "nessun vantaggio dimostrato",
+      "instruments": {
+        "aapl": {
+          "n": 2466,
+          "up_rate": 0.5855636658556367,
+          "skill_vs_freq_storica": -0.012111328875307636,
+          "dm_vs_freq_storica": 2.768928785266033,
+          "accuracy": {
+            "modello": 0.5762368207623683,
+            "freq_storica": 0.5855636658556367
+          },
+          "coverage_80": 0.8041362530413625,
+          "verdict": "peggio della baseline"
+        },
+        "amd": {
+          "n": 2466,
+          "up_rate": 0.5494728304947283,
+          "skill_vs_freq_storica": 0.005217153312752076,
+          "dm_vs_freq_storica": -0.8033927762705217,
+          "accuracy": {
+            "modello": 0.5296025952960259,
+            "freq_storica": 0.5275750202757502
+          },
+          "coverage_80": 0.7960259529602596,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "amzn": {
+          "n": 2466,
+          "up_rate": 0.5555555555555556,
+          "skill_vs_freq_storica": -0.0030464397559315515,
+          "dm_vs_freq_storica": 0.608880554122725,
+          "accuracy": {
+            "modello": 0.5502838605028386,
+            "freq_storica": 0.5555555555555556
+          },
+          "coverage_80": 0.8029197080291971,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "avgo": {
+          "n": 2466,
+          "up_rate": 0.5798864557988646,
+          "skill_vs_freq_storica": 0.00013883809237558165,
+          "dm_vs_freq_storica": -0.0330825301913928,
+          "accuracy": {
+            "modello": 0.5766423357664233,
+            "freq_storica": 0.5798864557988646
+          },
+          "coverage_80": 0.8150851581508516,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "googl": {
+          "n": 2466,
+          "up_rate": 0.5697485806974858,
+          "skill_vs_freq_storica": -0.010731509027364972,
+          "dm_vs_freq_storica": 2.350555903212198,
+          "accuracy": {
+            "modello": 0.5409570154095702,
+            "freq_storica": 0.5697485806974858
+          },
+          "coverage_80": 0.8029197080291971,
+          "verdict": "peggio della baseline"
+        },
+        "meta": {
+          "n": 2466,
+          "up_rate": 0.5677210056772101,
+          "skill_vs_freq_storica": 0.0029403569278071418,
+          "dm_vs_freq_storica": -0.6212121582022153,
+          "accuracy": {
+            "modello": 0.5640713706407137,
+            "freq_storica": 0.5677210056772101
+          },
+          "coverage_80": 0.8126520681265207,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "msft": {
+          "n": 2466,
+          "up_rate": 0.5904298459042985,
+          "skill_vs_freq_storica": -0.005175790580683959,
+          "dm_vs_freq_storica": 1.129651887310519,
+          "accuracy": {
+            "modello": 0.589213300892133,
+            "freq_storica": 0.5904298459042985
+          },
+          "coverage_80": 0.8264395782643957,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "mu": {
+          "n": 2466,
+          "up_rate": 0.5409570154095702,
+          "skill_vs_freq_storica": 1.2091804578617804e-05,
+          "dm_vs_freq_storica": -0.0026219022536663776,
+          "accuracy": {
+            "modello": 0.5308191403081914,
+            "freq_storica": 0.5409570154095702
+          },
+          "coverage_80": 0.800081103000811,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "ndx": {
+          "n": 2466,
+          "up_rate": 0.6013787510137875,
+          "skill_vs_freq_storica": -0.009007239646465326,
+          "dm_vs_freq_storica": 1.9752364502874173,
+          "accuracy": {
+            "modello": 0.6017842660178426,
+            "freq_storica": 0.6013787510137875
+          },
+          "coverage_80": 0.8025141930251419,
+          "verdict": "peggio della baseline"
+        },
+        "nvda": {
+          "n": 2466,
+          "up_rate": 0.5993511759935117,
+          "skill_vs_freq_storica": 0.000498291522583294,
+          "dm_vs_freq_storica": -0.09373631222403578,
+          "accuracy": {
+            "modello": 0.5989456609894566,
+            "freq_storica": 0.5993511759935117
+          },
+          "coverage_80": 0.800081103000811,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "qqq": {
+          "n": 2466,
+          "up_rate": 0.6058394160583942,
+          "skill_vs_freq_storica": -0.007283908170787168,
+          "dm_vs_freq_storica": 1.60549867061889,
+          "accuracy": {
+            "modello": 0.6058394160583942,
+            "freq_storica": 0.6058394160583942
+          },
+          "coverage_80": 0.7984590429845905,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "spx": {
+          "n": 2466,
+          "up_rate": 0.6131386861313869,
+          "skill_vs_freq_storica": -0.0035364062411373798,
+          "dm_vs_freq_storica": 0.852770753702004,
+          "accuracy": {
+            "modello": 0.6131386861313869,
+            "freq_storica": 0.6131386861313869
+          },
+          "coverage_80": 0.8094079480940795,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "tsla": {
+          "n": 2466,
+          "up_rate": 0.5340632603406326,
+          "skill_vs_freq_storica": -0.016062054343638943,
+          "dm_vs_freq_storica": 2.750189581109979,
+          "accuracy": {
+            "modello": 0.5178426601784266,
+            "freq_storica": 0.5340632603406326
+          },
+          "coverage_80": 0.786699107866991,
+          "verdict": "peggio della baseline"
+        }
+      },
+      "coefficients": {
+        "mom_1m": 0.0375,
+        "mom_3m": -0.0846,
+        "mom_12m": 0.0015,
+        "ret_5": -0.0374,
+        "dist_ma50": -0.0237,
+        "dist_ma200": -0.0503,
+        "drawdown": -0.0175,
+        "vol_rel": 0.0089,
+        "rs_3m": 0.1182,
+        "rs_12m": 0.0496,
+        "vol_z5": -0.0176,
+        "p_turb": -0.0546,
+        "earn_soon": -0.016,
+        "earn_rx": 0.027
+      }
+    },
+    "h21": {
+      "n": 31850,
+      "n_dates": 2450,
+      "first_origin": "2016-01-06",
+      "last_origin": "2025-10-02",
+      "up_rate": 0.6442700156985871,
+      "brier": {
+        "modello": 0.23370809877346593,
+        "freq_storica": 0.23053877940680378,
+        "moneta": 0.25
+      },
+      "logloss": {
+        "modello": 0.6605974083815639,
+        "freq_storica": 0.6537334542201059,
+        "moneta": 0.6931471805599453
+      },
+      "skill_vs_freq_storica": -0.013747445765164068,
+      "dm_vs_freq_storica": 1.340238466570204,
+      "accuracy": {
+        "modello": 0.6318367346938776,
+        "freq_storica": 0.6408477237048665
+      },
+      "calls": {
+        "ottimista": {
+          "n": 5348,
+          "share": 0.16791208791208792,
+          "up_rate": 0.6217277486910995,
+          "base_rate": 0.6047890802864766,
+          "mean_ret": 0.03480272627706628
+        },
+        "pessimista": {
+          "n": 6424,
+          "share": 0.20169544740973314,
+          "up_rate": 0.6475716064757161,
+          "base_rate": 0.6216630291354656,
+          "mean_ret": 0.02262637322346318
+        },
+        "neutro": {
+          "n": 20078,
+          "share": 0.630392464678179,
+          "up_rate": 0.6492180496065345,
+          "base_rate": 0.6215309291401979,
+          "mean_ret": 0.029267261035136927
+        }
+      },
+      "calibration": [
+        {
+          "from": 0.4,
+          "to": 0.45,
+          "n": 239,
+          "p_mean": 0.42986432216794024,
+          "up_rate": 0.5146443514644351
+        },
+        {
+          "from": 0.45,
+          "to": 0.5,
+          "n": 1254,
+          "p_mean": 0.48125412021969277,
+          "up_rate": 0.6578947368421053
+        },
+        {
+          "from": 0.5,
+          "to": 0.55,
+          "n": 4119,
+          "p_mean": 0.5287771791806672,
+          "up_rate": 0.6193250789026463
+        },
+        {
+          "from": 0.55,
+          "to": 0.6,
+          "n": 7469,
+          "p_mean": 0.5765439936310573,
+          "up_rate": 0.6385058240728344
+        },
+        {
+          "from": 0.6,
+          "to": 0.65,
+          "n": 8861,
+          "p_mean": 0.6256875124857713,
+          "up_rate": 0.6652747996840086
+        },
+        {
+          "from": 0.65,
+          "to": 1.0,
+          "n": 9891,
+          "p_mean": 0.6936908776573867,
+          "up_rate": 0.6421999797795976
+        }
+      ],
+      "coverage_80": 0.802668759811617,
+      "verdict": "nessun vantaggio dimostrato",
+      "instruments": {
+        "aapl": {
+          "n": 2450,
+          "up_rate": 0.6514285714285715,
+          "skill_vs_freq_storica": -0.03760094345757925,
+          "dm_vs_freq_storica": 2.4077988042596115,
+          "accuracy": {
+            "modello": 0.6142857142857143,
+            "freq_storica": 0.6514285714285715
+          },
+          "coverage_80": 0.7489795918367347,
+          "verdict": "peggio della baseline"
+        },
+        "amd": {
+          "n": 2450,
+          "up_rate": 0.5718367346938775,
+          "skill_vs_freq_storica": 0.014603177679940127,
+          "dm_vs_freq_storica": -0.7907938436833303,
+          "accuracy": {
+            "modello": 0.5469387755102041,
+            "freq_storica": 0.5273469387755102
+          },
+          "coverage_80": 0.7722448979591837,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "amzn": {
+          "n": 2450,
+          "up_rate": 0.6502040816326531,
+          "skill_vs_freq_storica": -0.024246983477169692,
+          "dm_vs_freq_storica": 1.6189167806860443,
+          "accuracy": {
+            "modello": 0.6473469387755102,
+            "freq_storica": 0.6502040816326531
+          },
+          "coverage_80": 0.8008163265306123,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "avgo": {
+          "n": 2450,
+          "up_rate": 0.6587755102040816,
+          "skill_vs_freq_storica": 0.0009014199779103782,
+          "dm_vs_freq_storica": -0.05813024535760859,
+          "accuracy": {
+            "modello": 0.6355102040816326,
+            "freq_storica": 0.6587755102040816
+          },
+          "coverage_80": 0.8346938775510204,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "googl": {
+          "n": 2450,
+          "up_rate": 0.6375510204081632,
+          "skill_vs_freq_storica": -0.024825208105578644,
+          "dm_vs_freq_storica": 1.6626353927725157,
+          "accuracy": {
+            "modello": 0.623265306122449,
+            "freq_storica": 0.6375510204081632
+          },
+          "coverage_80": 0.8106122448979591,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "meta": {
+          "n": 2450,
+          "up_rate": 0.6355102040816326,
+          "skill_vs_freq_storica": -0.005307030150132341,
+          "dm_vs_freq_storica": 0.3657328644898686,
+          "accuracy": {
+            "modello": 0.6351020408163265,
+            "freq_storica": 0.6355102040816326
+          },
+          "coverage_80": 0.82,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "msft": {
+          "n": 2450,
+          "up_rate": 0.6669387755102041,
+          "skill_vs_freq_storica": -0.02920538179091925,
+          "dm_vs_freq_storica": 1.934897249645968,
+          "accuracy": {
+            "modello": 0.6506122448979592,
+            "freq_storica": 0.6669387755102041
+          },
+          "coverage_80": 0.8518367346938776,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "mu": {
+          "n": 2450,
+          "up_rate": 0.5738775510204082,
+          "skill_vs_freq_storica": 0.004946464918101134,
+          "dm_vs_freq_storica": -0.36202389645258753,
+          "accuracy": {
+            "modello": 0.5457142857142857,
+            "freq_storica": 0.5738775510204082
+          },
+          "coverage_80": 0.8028571428571428,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "ndx": {
+          "n": 2450,
+          "up_rate": 0.6942857142857143,
+          "skill_vs_freq_storica": -0.03081565564756117,
+          "dm_vs_freq_storica": 2.015900773952334,
+          "accuracy": {
+            "modello": 0.6938775510204082,
+            "freq_storica": 0.6942857142857143
+          },
+          "coverage_80": 0.8195918367346938,
+          "verdict": "peggio della baseline"
+        },
+        "nvda": {
+          "n": 2450,
+          "up_rate": 0.6836734693877551,
+          "skill_vs_freq_storica": 0.002568866455675667,
+          "dm_vs_freq_storica": -0.16168572149473542,
+          "accuracy": {
+            "modello": 0.6836734693877551,
+            "freq_storica": 0.6836734693877551
+          },
+          "coverage_80": 0.786530612244898,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "qqq": {
+          "n": 2450,
+          "up_rate": 0.7012244897959183,
+          "skill_vs_freq_storica": -0.029954124376630142,
+          "dm_vs_freq_storica": 1.9545710881595384,
+          "accuracy": {
+            "modello": 0.7008163265306122,
+            "freq_storica": 0.7012244897959183
+          },
+          "coverage_80": 0.813469387755102,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "spx": {
+          "n": 2450,
+          "up_rate": 0.6979591836734694,
+          "skill_vs_freq_storica": -0.006033218210150348,
+          "dm_vs_freq_storica": 0.49997458218477997,
+          "accuracy": {
+            "modello": 0.6979591836734694,
+            "freq_storica": 0.6979591836734694
+          },
+          "coverage_80": 0.8257142857142857,
+          "verdict": "nessun vantaggio dimostrato"
+        },
+        "tsla": {
+          "n": 2450,
+          "up_rate": 0.5522448979591836,
+          "skill_vs_freq_storica": -0.018552261333087072,
+          "dm_vs_freq_storica": 1.1482754497753755,
+          "accuracy": {
+            "modello": 0.5387755102040817,
+            "freq_storica": 0.5522448979591836
+          },
+          "coverage_80": 0.7473469387755102,
+          "verdict": "nessun vantaggio dimostrato"
+        }
+      },
+      "coefficients": {
+        "mom_1m": 0.0201,
+        "mom_3m": -0.2139,
+        "mom_12m": -0.0022,
+        "ret_5": 0.0137,
+        "dist_ma50": -0.0414,
+        "dist_ma200": 0.0224,
+        "drawdown": -0.079,
+        "vol_rel": 0.002,
+        "rs_3m": 0.2198,
+        "rs_12m": 0.0844,
+        "vol_z5": -0.0394,
+        "p_turb": -0.0842,
+        "earn_soon": -0.0075,
+        "earn_rx": 0.0069
+      }
+    }
+  }
+}
