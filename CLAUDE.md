@@ -77,6 +77,22 @@ Lavorare sempre su **log-rendimenti**, mai sui livelli di prezzo.
   gap, range, volume e rendimento in eccesso vs benchmark (beta stimato fino al giorno prima).
 - Nei risultati non finiscono mai prezzi grezzi: solo feature derivate, stati, eventi, metriche.
 
+### Scelte del passo 3 (implementate)
+- `daily.yml`: cron `30 22 * * 1-5` (22:30 UTC = sempre dopo le 17:00 di New York) + avvio manuale.
+  Sequenza: ripristino cache → `ingest daily` (backfill automatico dei ticker senza storico) → salvataggio
+  cache → `analyze --backtest auto` → `live` → riepilogo nel job summary → commit di `results/`.
+  Se il download fallisce per tutti i ticker, i risultati si calcolano sui dati in cache e il run termina rosso.
+- `backfill.yml`: solo manuale (ticker, `--force`, budget di richieste); non committa nulla.
+- Cache dei dati grezzi: chiave `raw-data-v1-<run_id>`, ripristino per prefisso `raw-data-v1-` (l'ultima salvata).
+  Persa la cache, il primo `daily` riscarica tutto da solo. I due workflow condividono un gruppo di
+  `concurrency`, quindi non girano mai insieme.
+- Serie `live`: `results/live/volatility_forecasts.csv` (append-only, chiave origine+strumento+orizzonte+modello,
+  con versione del modello e ora di creazione) e `results/live/volatility_scores.json` (valutazione dei soli
+  target già realizzati). Le previsioni live stimano i parametri su tutto lo storico disponibile la sera stessa.
+- Backtest `auto`: si rifà solo se manca, se cambia la configurazione o per un ticker nuovo.
+- `results/status/ingest.json`: esito dell'ultimo download (ticker senza dati / non aggiornati / rimandati).
+- I cron girano solo sul branch di default (`main`).
+
 ## Struttura prevista
 ```
 .github/workflows/daily.yml
@@ -90,9 +106,11 @@ pipeline/
     anomalies.py
   backtest.py      # walk-forward della volatilità, metriche, test finale, registro configurazioni
   analyze.py       # CLI: feature + regimi + anomalie + backtest → results/
+  live.py          # previsioni live registrate ogni sera e loro valutazione
+  summary.py       # riepilogo Markdown per il job summary di Actions
   export.py        # JSON leggeri per la dashboard
 config/universe.yml
-results/           # output elaborati committati (backtest/, live/)
+results/           # output elaborati committati (analysis/, backtest/, live/, status/)
 docs/              # GitHub Pages: index.html, app.js, style.css, data/
 scripts/           # strumenti diagnostici (es. stooq_probe.py)
 tests/             # test offline (pytest, nessuna chiamata di rete)

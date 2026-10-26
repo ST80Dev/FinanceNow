@@ -383,10 +383,24 @@ def read_prices(path: Path) -> pd.DataFrame | None:
     return df
 
 
+def _json_safe(obj):
+    """NaN/inf -> null (JSON valido per la dashboard), tipi numpy -> tipi Python."""
+    if isinstance(obj, dict):
+        return {str(k): _json_safe(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_json_safe(v) for v in obj]
+    if isinstance(obj, np.generic):
+        obj = obj.item()
+    if isinstance(obj, float) and not np.isfinite(obj):
+        return None
+    return obj
+
+
 def write_json(obj, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(obj, indent=2, ensure_ascii=False, default=str), encoding="utf-8")
+    text = json.dumps(_json_safe(obj), indent=2, ensure_ascii=False, default=str, allow_nan=False)
+    tmp.write_text(text, encoding="utf-8")
     os.replace(tmp, path)
 
 

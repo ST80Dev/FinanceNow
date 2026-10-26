@@ -7,7 +7,10 @@ elaborati, mai prezzi grezzi:
 - results/backtest/trials.jsonl      registro delle configurazioni provate.
 
 Uso:
-    python -m pipeline.analyze [--tickers nvda,aapl] [--no-backtest] [--use-holdout]
+    python -m pipeline.analyze [--tickers nvda,aapl] [--backtest auto|always|never] [--use-holdout]
+
+Con `--backtest auto` (default) il backtest si rifà solo per gli strumenti che non lo hanno
+o quando la configurazione è cambiata: il run serale non ripete ogni giorno lo stesso calcolo.
 """
 
 from __future__ import annotations
@@ -24,7 +27,8 @@ import pandas as pd
 
 from pipeline import backtest
 from pipeline.features import compute_features
-from pipeline.ingest import DEFAULT_DATA_DIR, DEFAULT_UNIVERSE, ROOT, ConfigError, load_universe, read_prices, write_json
+from pipeline.ingest import (DEFAULT_DATA_DIR, DEFAULT_UNIVERSE, ROOT, ConfigError, load_universe,
+                             read_json, read_prices, write_json)
 from pipeline.models import anomalies, regimes
 
 log = logging.getLogger("financenow.analyze")
@@ -87,7 +91,8 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m pipeline.analyze", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--tickers", help="id separati da virgola (default: tutto l'universo)")
-    ap.add_argument("--no-backtest", action="store_true", help="salta il backtest della volatilità")
+    ap.add_argument("--backtest", choices=["auto", "always", "never"], default="auto",
+                    help="auto: solo se manca o se la configurazione è cambiata (default)")
     ap.add_argument("--use-holdout", action="store_true",
                     help="valuta ANCHE il periodo di test finale (da usare una volta sola, a sviluppo concluso)")
     ap.add_argument("--universe", type=Path, default=DEFAULT_UNIVERSE)
@@ -120,6 +125,12 @@ def main(argv: list[str] | None = None) -> int:
             if key not in prices:
                 prices[key] = read_prices(args.data_dir / f"{key}.parquet")
 
+    bt_path = args.results_dir / "backtest" / "volatility.json"
+    config = backtest.backtest_config()
+    previous = read_json(bt_path)
+    same_config = (previous.get("config") == config and previous.get("use_holdout") == args.use_holdout)
+    # Risultati già validi per la configurazione corrente: si tengono e si integrano.
+    kept = dict(previous.get("instruments", {})) if same_config else {}
     bt_results, done, skipped = {}, 0, []
     for inst in instruments:
         df = prices.get(inst.id)
@@ -135,7 +146,7 @@ def main(argv: list[str] | None = None) -> int:
         log.info("%-6s regime=%s (%s gg) anomalie ultimo anno=%d [%.1fs]", inst.id,
                  reg.get("current"), reg.get("days_in_state"),
                  result["anomalies"]["count_last_365_days"], time.monotonic() - t0)
-        if not args.no_backtest:
+        if args.backtest == "always" or (args.backtest == "auto" and inst.id not in kept):
             t0 = time.monotonic()
             ret = compute_features(df)["ret"]
             bt_results[inst.id] = backtest.volatility_backtest(ret, use_holdout=args.use_holdout)
@@ -143,7 +154,7 @@ def main(argv: list[str] | None = None) -> int:
         done += 1
 
     if bt_results:
-        config = backtest.backtest_config()
+        merged = {**kept, **bt_results}
         trial = backtest.record_trial(args.results_dir / "backtest" / "trials.jsonl", config)
         write_json({
             "series": "backtest",
@@ -151,10 +162,13 @@ def main(argv: list[str] | None = None) -> int:
             "config": config,
             "use_holdout": args.use_holdout,
             "trial": trial,
-            "aggregate": backtest.aggregate(bt_results),
-            "instruments": bt_results,
-        }, args.results_dir / "backtest" / "volatility.json")
-        log.info("configurazioni di backtest provate finora: %d", trial["n_configurations_tried"])
+            "aggregate": backtest.aggregate(merged),
+            "instruments": merged,
+        }, bt_path)
+        log.info("backtest aggiornato per %d strumenti; configurazioni provate finora: %d",
+                 len(bt_results), trial["n_configurations_tried"])
+    elif args.backtest != "never":
+        log.info("backtest già aggiornato per la configurazione corrente: nessun ricalcolo")
 
     if skipped:
         log.warning("senza dati sufficienti: %s", ", ".join(skipped))

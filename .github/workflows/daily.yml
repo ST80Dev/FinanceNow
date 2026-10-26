@@ -1,0 +1,89 @@
+# Aggiornamento serale: dati incrementali, analisi, previsioni live, commit dei risultati.
+# I dati grezzi stanno SOLO nella cache di Actions (licenze, repo pubblico): mai committati.
+name: daily
+
+on:
+  schedule:
+    # 22:30 UTC, lun-ven = 18:30 a New York con l'ora legale, 17:30 con l'ora solare:
+    # sempre dopo le 17:00 di New York, quando la barra del giorno è definitiva.
+    - cron: "30 22 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: financenow-data   # condiviso con backfill.yml: mai due run sulla stessa cache
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Ripristina i dati grezzi dalla cache
+        uses: actions/cache/restore@v4
+        with:
+          path: data/raw
+          key: raw-data-v1-${{ github.run_id }}
+          restore-keys: raw-data-v1-
+
+      - name: Download incrementale (backfill automatico per i ticker senza storico)
+        id: ingest
+        continue-on-error: true   # i risultati si aggiornano comunque con i dati in cache
+        env:
+          STOOQ_API_KEY: ${{ secrets.STOOQ_API_KEY }}
+        run: python -m pipeline.ingest daily
+
+      - name: Salva i dati grezzi nella cache
+        if: always() && hashFiles('data/raw/_state.json') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: data/raw
+          key: raw-data-v1-${{ github.run_id }}
+
+      - name: Stato del download nei risultati
+        if: always() && hashFiles('data/raw/_report.json') != ''
+        run: mkdir -p results/status && cp data/raw/_report.json results/status/ingest.json
+
+      - name: Analisi (feature, regimi, anomalie; backtest solo se serve)
+        run: python -m pipeline.analyze --backtest auto
+
+      - name: Previsioni live e valutazione
+        run: python -m pipeline.live
+
+      - name: Riepilogo
+        if: always()
+        run: python -m pipeline.summary >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Commit dei risultati
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results
+          if git diff --cached --quiet; then
+            echo "Nessun risultato nuovo da committare"
+            exit 0
+          fi
+          git commit -m "Risultati del $(date -u +%F)"
+          for i in 1 2 3; do
+            git pull --rebase --quiet origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && exit 0
+            sleep $((i * 10))
+          done
+          echo "Push dei risultati non riuscito" >&2
+          exit 1
+
+      - name: Segnala il fallimento del download
+        if: steps.ingest.outcome == 'failure'
+        run: |
+          echo "::error::Download fallito per tutti i ticker: risultati calcolati sui dati in cache (vedi results/status/ingest.json)"
+          exit 1
