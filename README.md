@@ -8,6 +8,8 @@ anomalie, correlazioni e rischio, aggiornati ogni giorno.
 - **Dashboard**: pagina statica in vanilla JS su GitHub Pages
 - **Validazione**: backtest walk-forward separato dal log delle previsioni live
 
+**Dashboard**: https://st80dev.github.io/FinanceNow/ (si aggiorna dopo ogni run serale).
+
 Lo stato del progetto e le specifiche tecniche sono in [`CLAUDE.md`](CLAUDE.md).
 
 > Strumento di analisi personale. Non costituisce consulenza finanziaria.

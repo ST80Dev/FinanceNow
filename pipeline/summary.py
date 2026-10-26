@@ -24,6 +24,9 @@ def _fmt(x, pattern="{:.2f}"):
 
 def render(results_dir: Path) -> str:
     lines = ["## FinanceNow — riepilogo del run", ""]
+    digest_md = results_dir / "digest" / "latest.md"
+    if digest_md.exists():
+        lines += [digest_md.read_text(encoding="utf-8"), "---", ""]
 
     ingest = _load(results_dir / "status" / "ingest.json")
     if ingest:

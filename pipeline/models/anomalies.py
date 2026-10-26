@@ -9,7 +9,7 @@ Serie controllate:
 - `rendimento`          log-rendimento close-to-close;
 - `gap`                 log(open / close precedente);
 - `range`               log(high / low) della seduta;
-- `volume`              log-volume;
+- `volume`              log-volume (il valore riportato è log(volume / mediana precedente));
 - `rendimento_vs_bench` rendimento in eccesso rispetto al benchmark, al netto del beta
                         a 63 sedute stimato fino al giorno prima.
 """
@@ -61,6 +61,10 @@ def detect(df: pd.DataFrame, bench: pd.DataFrame | None = None,
     """Eventi con |z| >= threshold: una riga per (data, serie)."""
     inputs = anomaly_inputs(df, bench)
     z = pd.DataFrame({c: robust_zscore(inputs[c], window) for c in inputs.columns}, index=df.index)
+    # Il volume non si pubblica in valore assoluto (dato grezzo): si riporta il
+    # log-rapporto rispetto alla mediana delle sedute precedenti.
+    vol_median = inputs["volume"].shift(1).rolling(window, min_periods=MIN_PERIODS).median()
+    inputs = inputs.assign(volume=inputs["volume"] - vol_median)
     long = z.stack().rename("z").reset_index()
     long.columns = ["date", "kind", "z"]
     long = long[long["z"].abs() >= threshold].copy()

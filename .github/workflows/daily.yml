@@ -1,4 +1,4 @@
-# Aggiornamento serale: dati incrementali, analisi, previsioni live, commit dei risultati.
+# Aggiornamento serale: dati incrementali, analisi, previsioni live, export della dashboard, commit.
 # I dati grezzi stanno SOLO nella cache di Actions (licenze, repo pubblico): mai committati.
 name: daily
 
@@ -65,6 +65,9 @@ jobs:
       - name: Previsioni live e valutazione
         run: python -m pipeline.live
 
+      - name: Export per la dashboard (docs/data)
+        run: python -m pipeline.export
+
       - name: Riepilogo
         if: always()
         run: python -m pipeline.summary >> "$GITHUB_STEP_SUMMARY" || true
@@ -73,7 +76,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add results
+          git add results docs/data
           if git diff --cached --quiet; then
             echo "Nessun risultato nuovo da committare"
             exit 0

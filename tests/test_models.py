@@ -259,3 +259,14 @@ def test_analyze_end_to_end(tmp_path, monkeypatch):
     assert set(bt["instruments"]["aaa"]["h1"]["models"]) == set(backtest.MODELS)
     assert "egarch" not in bt["instruments"]["aaa"]["h5"]["models"]
     assert bt["trial"]["n_configurations_tried"] == 1
+
+
+def test_anomalia_volume_senza_valore_assoluto():
+    ret = simulate_garch(600, seed=9)
+    df = ohlcv_from_returns(ret, 9)
+    day = df.index[500]
+    df.loc[day, "volume"] *= 40
+    ev = anomalies.detect(df)
+    row = ev[(ev["date"] == day) & (ev["kind"] == "volume")].iloc[0]
+    # Log-rapporto con la mediana (~log 40), non il log del volume (~14).
+    assert 3 < row["value"] < 4.5

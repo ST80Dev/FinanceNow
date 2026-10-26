@@ -93,6 +93,21 @@ Lavorare sempre su **log-rendimenti**, mai sui livelli di prezzo.
 - `results/status/ingest.json`: esito dell'ultimo download (ticker senza dati / non aggiornati / rimandati).
 - I cron girano solo sul branch di default (`main`).
 
+### Scelte del passo 4 (implementate)
+- `pipeline/export.py` scrive JSON compatti in `docs/data/` (`index.json`, `models.json`, `tickers/<id>.json`);
+  `daily.yml` lo esegue dopo `live` e committa anche `docs/data/`.
+- Nella dashboard **nessun prezzo né volume assoluto**: solo grandezze derivate (volatilità, drawdown, beta,
+  momentum, regimi, z-score; per le anomalie di volume il rapporto con la mediana). Un test lo verifica.
+- Frontend `docs/` in vanilla JS senza librerie: grafici SVG scritti a mano, routing via hash
+  (`#/`, `#/t/<id>`, `#/modelli`, `#/metodo`), tema chiaro/scuro automatico, layout mobile.
+- `backtest` e `live` in pannelli separati con etichetta e colore propri (viola / verde acqua).
+- GitHub Pages: Settings → Pages → "Deploy from a branch" → `main` / `docs`. URL: https://st80dev.github.io/FinanceNow/
+- **Sintesi automatica** (`pipeline/digest.py`, richiesta del 26/10/2026): ogni sera regole esplicite selezionano
+  cosa merita attenzione (cambi di regime recenti, anomalie delle ultime 5 sedute, volatilità estrema rispetto
+  allo storico del titolo, volatilità in accelerazione, drawdown ≤ -20%, dati non aggiornati), con gravità
+  alta/media/bassa. Volatilità alta diffusa (≥ metà dell'universo) detta una volta sola a livello di mercato.
+  Esce in cima alla dashboard (`docs/data/digest.json`), nel job summary e in `results/digest/latest.md`.
+
 ## Struttura prevista
 ```
 .github/workflows/daily.yml
@@ -109,6 +124,7 @@ pipeline/
   live.py          # previsioni live registrate ogni sera e loro valutazione
   summary.py       # riepilogo Markdown per il job summary di Actions
   export.py        # JSON leggeri per la dashboard
+  digest.py        # sintesi del giorno: segnali con gravità, per dashboard e job summary
 config/universe.yml
 results/           # output elaborati committati (analysis/, backtest/, live/, status/)
 docs/              # GitHub Pages: index.html, app.js, style.css, data/

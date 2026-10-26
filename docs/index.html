@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FinanceNow</title>
+  <meta name="description" content="Analisi del comportamento di azioni e indici: regimi, volatilità, anomalie.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="#/">FinanceNow</a>
+      <nav class="tabs" aria-label="Sezioni">
+        <a href="#/" data-tab="overview">Panoramica</a>
+        <a href="#/modelli" data-tab="models">Modelli di volatilità</a>
+        <a href="#/metodo" data-tab="method">Metodo</a>
+      </nav>
+    </div>
+    <div class="wrap status-row" id="status" aria-live="polite"></div>
+  </header>
+
+  <main class="wrap" id="app">
+    <p class="muted">Caricamento…</p>
+  </main>
+
+  <footer class="wrap site-footer">
+    <p>Strumento di analisi personale: descrive e misura il comportamento dei prezzi.
+      <strong>Non è consulenza finanziaria.</strong></p>
+    <p class="muted">Dati: prezzi e volumi giornalieri (yfinance). Nessun dato di bilancio, macroeconomico o di notizie.</p>
+  </footer>
+
+  <div class="tooltip" id="tooltip" role="status" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
