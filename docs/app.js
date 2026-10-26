@@ -538,7 +538,9 @@ function renderPatterns() {
       (<em>vs</em>). È statistica sul passato, non una previsione. Rendimento e calo sono misurati dall'<strong>apertura del giorno dopo</strong>,
       il primo prezzo a cui si può agire dopo un'analisi fatta a mercato chiuso. In verde/rosso le differenze statisticamente nette
       (intervallo al 90% che esclude lo zero e differenza rilevante; eventi della stessa settimana raggruppati).
-      Rosso = più volatilità o più rischio di calo, o rendimento più basso del normale.</p>
+      Rosso = più volatilità o più rischio di calo, o rendimento più basso del normale.
+      Attenzione ai confronti multipli: le celle sono circa 70, quindi qualche risultato "netto" isolato può essere casuale;
+      contano gli schemi coerenti tra orizzonti ed eventi.</p>
 
     <h2>Eventi delle ultime sedute</h2>
     ${current.length ? `<div class="table-scroll"><table><thead><tr><th class="left">Strumento</th><th class="left">Evento</th><th class="left">Data</th><th class="left">Storicamente</th></tr></thead>
