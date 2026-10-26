@@ -1,0 +1,9 @@
+# Dati grezzi: MAI nel repo (licenze). Vivono nella cache di GitHub Actions.
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/

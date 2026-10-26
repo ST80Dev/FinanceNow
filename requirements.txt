@@ -1,0 +1,10 @@
+# Pipeline FinanceNow (Python 3.12) — passo 1: ingest
+numpy>=1.26
+pandas>=2.2
+pyarrow>=15
+requests>=2.31
+yfinance>=0.2.50
+PyYAML>=6.0
+
+# Test
+pytest>=8

@@ -1,0 +1,117 @@
+# Universo FinanceNow — mercato USA, centrato sul Nasdaq.
+#
+# Le azioni sono le 10 più capitalizzate del Nasdaq al giorno di `snapshot_date`
+# (SpaceX esclusa per storico insufficiente, sostituita da AMD, 11ª).
+# La lista è CONGELATA: non viene ricalcolata in automatico.
+# Attenzione al bias di selezione: sono i "vincitori" di oggi, il loro storico è
+# eccezionale per costruzione. Va bene per analisi descrittive per titolo,
+# non per conclusioni su rendimenti attesi o confronti tra titoli.
+#
+# Campi:
+#   id           identificativo interno (nome file dei dati)
+#   stooq/yahoo  simbolo per ciascuna sorgente (null = non disponibile)
+#   asset_class  index | etf | stock
+#   benchmark    id dello strumento per beta/correlazioni (null = nessuno)
+#   listed_since data di quotazione se successiva a `start` (solo informativa:
+#                lo storico parte dalla prima seduta disponibile)
+#   active       false = non aggiornare più, lo storico resta
+
+version: 1
+snapshot_date: 2026-10-26
+
+defaults:
+  start: 2010-01-01
+  # Ordine di priorità. yfinance primario: Stooq senza API key risponde con una
+  # pagina anti-bot (test da GitHub Actions del 26/10/2026). Stooq si attiva da
+  # solo come riserva se esiste il secret STOOQ_API_KEY.
+  sources: [yahoo, stooq]
+  region: US
+  currency: USD
+  calendar: XNYS            # NYSE e Nasdaq hanno le stesse festività
+  benchmark: ndx
+  active: true
+
+instruments:
+  # --- Indici ed ETF di riferimento ---
+  - id: ndx
+    name: Nasdaq 100
+    asset_class: index
+    stooq: ^ndx
+    yahoo: ^NDX
+    benchmark: null
+
+  - id: qqq
+    name: Invesco QQQ Trust
+    asset_class: etf
+    stooq: qqq.us
+    yahoo: QQQ
+
+  - id: spx
+    name: S&P 500
+    asset_class: index
+    stooq: ^spx
+    yahoo: ^GSPC
+    benchmark: null
+
+  # --- Top 10 Nasdaq per capitalizzazione (snapshot 2026-10-26) ---
+  - id: nvda
+    name: NVIDIA
+    asset_class: stock
+    stooq: nvda.us
+    yahoo: NVDA
+
+  - id: aapl
+    name: Apple
+    asset_class: stock
+    stooq: aapl.us
+    yahoo: AAPL
+
+  - id: googl
+    name: Alphabet (classe A)
+    asset_class: stock
+    stooq: googl.us
+    yahoo: GOOGL
+
+  - id: msft
+    name: Microsoft
+    asset_class: stock
+    stooq: msft.us
+    yahoo: MSFT
+
+  - id: amzn
+    name: Amazon
+    asset_class: stock
+    stooq: amzn.us
+    yahoo: AMZN
+
+  - id: meta
+    name: Meta Platforms
+    asset_class: stock
+    stooq: meta.us
+    yahoo: META
+    listed_since: 2012-05-18
+
+  - id: avgo
+    name: Broadcom
+    asset_class: stock
+    stooq: avgo.us
+    yahoo: AVGO
+
+  - id: tsla
+    name: Tesla
+    asset_class: stock
+    stooq: tsla.us
+    yahoo: TSLA
+    listed_since: 2010-06-29
+
+  - id: mu
+    name: Micron Technology
+    asset_class: stock
+    stooq: mu.us
+    yahoo: MU
+
+  - id: amd
+    name: Advanced Micro Devices
+    asset_class: stock
+    stooq: amd.us
+    yahoo: AMD
