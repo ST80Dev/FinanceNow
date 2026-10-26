@@ -63,6 +63,20 @@ Lavorare sempre su **log-rendimenti**, mai sui livelli di prezzo.
   - `backtest` — walk-forward retroattivo sullo storico;
   - `live` — log delle previsioni fatte da `daily.yml`, con data e versione del modello. È l'unica prova pulita.
 
+### Scelte del passo 2 (implementate)
+- Target volatilità: varianza della somma dei log-rendimenti a h ∈ {1, 5} sedute, proxy realizzato =
+  somma dei rendimenti al quadrato. Modelli: GARCH(1,1)-t, EGARCH(1,1)-t (solo h=1), HAR-RV;
+  baseline `rw` (varianza delle ultime 21 sedute) e `hist_mean` (media storica). Stima su finestra
+  espandente, ri-stima ogni 63 sedute, prima previsione dopo 1000 sedute.
+- **Test finale**: dal **2025-11-03** in poi (`HOLDOUT_START` in `pipeline/backtest.py`), escluso di default.
+  Data fissa: non spostarla. Usarlo (`--use-holdout`) una sola volta, a sviluppo concluso.
+- Registro delle configurazioni provate: `results/backtest/trials.jsonl` (una riga per configurazione).
+- Regimi: HMM gaussiano 3 stati (calmo/normale/turbolento) su rendimento e log-volatilità a 21 sedute;
+  probabilità **filtrate** (forward), parametri ri-stimati ogni 252 sedute: nessun look-ahead.
+- Anomalie: z-score robusto (mediana/MAD sulle 252 sedute precedenti), soglia |z| ≥ 4, su rendimento,
+  gap, range, volume e rendimento in eccesso vs benchmark (beta stimato fino al giorno prima).
+- Nei risultati non finiscono mai prezzi grezzi: solo feature derivate, stati, eventi, metriche.
+
 ## Struttura prevista
 ```
 .github/workflows/daily.yml
@@ -74,6 +88,8 @@ pipeline/
     volatility.py
     regimes.py
     anomalies.py
+  backtest.py      # walk-forward della volatilità, metriche, test finale, registro configurazioni
+  analyze.py       # CLI: feature + regimi + anomalie + backtest → results/
   export.py        # JSON leggeri per la dashboard
 config/universe.yml
 results/           # output elaborati committati (backtest/, live/)

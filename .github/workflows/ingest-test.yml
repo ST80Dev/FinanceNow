@@ -1,4 +1,4 @@
-# Workflow TEMPORANEO di prova: esegue ingest (e più avanti i modelli) su dati veri
+# Workflow TEMPORANEO di prova: esegue ingest e analisi (passo 2) su dati veri
 # dai runner GitHub. NON salva né pubblica i dati grezzi. Va rimosso dopo il test.
 name: ingest-test
 
@@ -59,4 +59,30 @@ jobs:
               print(f"{p.stem:<6} {s.get('source',''):<6} {len(df):>6} {df.index[0].date()!s:<10} "
                     f"{df.index[-1].date()!s:<10} {int(df['volume'].isna().sum()):>7} "
                     f"{r.max():>7.3f} {r.idxmax().date()!s:<10}")
+          PY
+
+      - name: Analisi (feature, regimi, anomalie, backtest volatilità)
+        run: python -m pipeline.analyze
+
+      - name: Riepilogo analisi e backtest
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          res = Path("results")
+          print(f"{'id':<6} {'regime':<11} {'giorni':>6} {'p_turb':>6} {'anom.12m':>8}")
+          for p in sorted((res / "analysis").glob("*.json")):
+              a = json.loads(p.read_text()); r = a["regime"]
+              print(f"{a['id']:<6} {r.get('current',''):<11} {r.get('days_in_state',''):>6} "
+                    f"{r.get('probabilities',{}).get('turbolento',0):>6.2f} {a['anomalies']['count_last_365_days']:>8}")
+          bt = json.loads((res / "backtest" / "volatility.json").read_text())
+          print("\nconfigurazioni provate:", bt["trial"]["n_configurations_tried"], "| holdout dal", bt["config"]["holdout_start"])
+          for h in ("h1", "h5"):
+              print(f"\n== {h}: differenza QLIKE vs rw (negativa = meglio) [t di Diebold-Mariano] | copertura 90%")
+              for tid, r in bt["instruments"].items():
+                  m = r[h]["models"]
+                  cells = [f"{k}={v['qlike_diff_vs_rw']:+.3f}[{v['dm_vs_rw']:+.1f}]" for k, v in m.items() if k != "rw"]
+                  cov = " ".join(f"{k}:{v['coverage_90']:.2f}" for k, v in m.items())
+                  print(f"{tid:<6} n={r[h]['n']:<5} " + "  ".join(cells) + " | " + cov)
+              print("aggregato:", json.dumps(bt["aggregate"][h]))
           PY

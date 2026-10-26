@@ -31,6 +31,7 @@ import os
 import random
 import sys
 import time
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
@@ -734,6 +735,7 @@ def main(argv: list[str] | None = None) -> int:
                         format="%(asctime)s %(levelname)-7s %(message)s", datefmt="%H:%M:%S")
     if not args.verbose:
         logging.getLogger("yfinance").setLevel(logging.CRITICAL)
+        warnings.filterwarnings("ignore", module="yfinance")
 
     try:
         instruments = load_universe(args.universe)
