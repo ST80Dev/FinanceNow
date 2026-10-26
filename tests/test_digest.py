@@ -33,7 +33,7 @@ def test_passaggio_a_turbolento_alta():
     c = ctx(states=[1] * 10 + [2] * 2, current="turbolento", days=2)
     sigs = digest.instrument_signals(c)
     assert kinds(sigs) == [("regime", "alta")]
-    assert "turbolento" in sigs[0]["text"] and "1 seduta fa" in sigs[0]["text"]
+    assert "fase agitata" in sigs[0]["text"] and "1 seduta fa" in sigs[0]["text"]
 
 
 def test_uscita_da_turbolento_media_e_regime_vecchio_ignorato():
@@ -86,7 +86,7 @@ def test_nessun_segnale_headline():
 
 def test_cambio_di_oggi():
     sigs = digest.instrument_signals(ctx(states=[0] * 11 + [2], current="turbolento", days=1))
-    assert "oggi" in sigs[0]["text"] and "dal regime calmo" in sigs[0]["text"]
+    assert "oggi" in sigs[0]["text"] and "prima era in fase calma" in sigs[0]["text"]
 
 
 def test_note_storiche_solo_su_strumenti_segnalati():
@@ -98,3 +98,20 @@ def test_note_storiche_solo_su_strumenti_segnalati():
     hot = dg["instruments"][0]
     assert [h["type"] for h in hot["history"]] == ["vol_estrema"]
     assert "Volatilità estrema" in digest.to_markdown(dg)
+
+
+def test_anomalia_nel_giorno_della_trimestrale_e_spiegata():
+    an = [{"date": DATES[-1], "kind": "rendimento", "z": -7.0, "value": -0.12, "earnings": True}]
+    sigs = digest.instrument_signals(ctx(anomalies=an))
+    assert kinds(sigs) == [("anomalia", "media")] and "trimestrale" in sigs[0]["text"]
+
+
+def test_trimestrale_in_arrivo():
+    c = ctx()
+    c.earnings = {"available": True, "typical_move": 0.06, "move_ratio": 4.2,
+                  "next": {"date": "2026-10-28", "timing": "dopo la chiusura", "sessions_until": 3}}
+    sigs = digest.instrument_signals(c)
+    assert kinds(sigs) == [("trimestrale", "media")]
+    assert "tra 3 sedute" in sigs[0]["text"] and "4 volte" in sigs[0]["text"]
+    c.earnings["next"]["sessions_until"] = 15
+    assert digest.instrument_signals(c) == []

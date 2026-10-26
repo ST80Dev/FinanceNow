@@ -6,7 +6,11 @@ Scrive SOLO dati derivati, mai prezzi o livelli (licenze, repo pubblico):
                                 statistiche dei regimi, anomalie recenti, ultime previsioni live;
 - docs/data/models.json         volatilità: `backtest` e `live` in due blocchi separati;
 - docs/data/digest.json         sintesi del giorno (pipeline/digest.py), anche in results/digest/latest.md;
-- docs/data/patterns.json       pattern: statistiche storiche (`backtest`) e verifica `live`, separate.
+- docs/data/patterns.json       pattern: statistiche storiche (`backtest`) e verifica `live`, separate;
+- docs/data/assessment.json     valutazione automatica (pipeline/assess.py): situazione, rischio, direzione,
+                                prossimi eventi per strumento e mercato; il giudizio è anche registrato
+                                ogni sera nella serie live (results/live/assessment_*.json/csv);
+- docs/data/direction.json      direzione sperimentale: `backtest` e `live` separati, previsioni di oggi.
 
 Uso:
     python -m pipeline.export
@@ -25,11 +29,13 @@ from pathlib import Path
 
 import pandas as pd
 
-from pipeline import backtest, digest, live, patterns
+import numpy as np
+
+from pipeline import assess, backtest, digest, direction, live, patterns
 from pipeline.analyze import DEFAULT_RESULTS_DIR
 from pipeline.features import TRADING_DAYS, compute_features
 from pipeline.ingest import (DEFAULT_DATA_DIR, DEFAULT_UNIVERSE, ROOT, ConfigError, json_safe,
-                             load_universe, read_json, read_prices)
+                             load_universe, read_json, read_prices, write_json)
 
 log = logging.getLogger("financenow.export")
 
@@ -92,15 +98,17 @@ def ticker_payload(inst, df: pd.DataFrame, bench: pd.DataFrame | None, analysis:
         "as_of": analysis.get("as_of"),
         "data_period": analysis.get("data_period"),
         "features_latest": analysis.get("features_latest", {}),
+        "description": inst.description,
         "regime": analysis.get("regime", {}),
         "anomalies": analysis.get("anomalies", {}),
+        "earnings": analysis.get("earnings", {"available": False}),
         "live_latest": live_latest,
         "dates": dates,
         "series": series,
     }
 
 
-def digest_context(inst, payload: dict, status: dict | None) -> digest.Context:
+def digest_context(inst, payload: dict, status: dict | None, direction_today: dict | None = None) -> digest.Context:
     rv21 = [v for v in payload["series"].get("rv_21", []) if v is not None]
     current = payload["features_latest"].get("rv_21")
     pctl = (sum(v <= current for v in rv21) / len(rv21)) if rv21 and current is not None else None
@@ -114,6 +122,9 @@ def digest_context(inst, payload: dict, status: dict | None) -> digest.Context:
         rv21_percentile=pctl,
         anomalies=payload.get("anomalies", {}).get("recent", []),
         data_status=(status or {}).get("status"),
+        description=inst.description,
+        earnings=payload.get("earnings") or {},
+        direction=direction_today or {},
     )
 
 
@@ -126,6 +137,7 @@ def summary_row(inst, analysis: dict, status: dict | None, live_latest: dict | N
     return {
         "id": inst.id,
         "name": inst.name,
+        "description": inst.description,
         "asset_class": inst.asset_class,
         "as_of": analysis.get("as_of"),
         "regime": current,
@@ -133,6 +145,7 @@ def summary_row(inst, analysis: dict, status: dict | None, live_latest: dict | N
         "days_in_state": reg.get("days_in_state"),
         **{k: feats.get(k) for k in SUMMARY_FEATURES},
         "anomalies_12m": analysis.get("anomalies", {}).get("count_last_365_days"),
+        "anomalies_12m_earnings": analysis.get("anomalies", {}).get("count_last_365_days_earnings"),
         "last_anomaly": recent[-1] if recent else None,
         "vol_forecast_h1": {m: forecast.get(m) for m in ("garch", "egarch", "har", "rw") if m in forecast},
         "data_status": (status or {}).get("status"),
@@ -174,6 +187,23 @@ def models_payload(results_dir: Path) -> dict:
     }
 
 
+def direction_payload(results_dir: Path) -> dict:
+    bt = read_json(results_dir / "backtest" / "direction.json")
+    lv = read_json(results_dir / "live" / direction.SCORES_FILE)
+    today = read_json(results_dir / "direction" / "latest.json")
+    return {
+        "schema": SCHEMA_VERSION,
+        "experimental": True,
+        "feature_labels": today.get("feature_labels") or bt.get("feature_labels"),
+        "backtest": {"available": bool(bt), "generated": bt.get("generated"),
+                     "holdout_start": (bt.get("config") or {}).get("holdout_start"),
+                     "n_configurations_tried": (bt.get("trial") or {}).get("n_configurations_tried"),
+                     "horizons": bt.get("horizons", {})},
+        "live": {"available": bool(lv), **{k: lv.get(k) for k in ("generated", "n_logged", "first_origin", "horizons")}},
+        "today": today.get("instruments", {}),
+    }
+
+
 def export(instruments, data_dir: Path, results_dir: Path, out_dir: Path) -> dict:
     status = read_json(results_dir / "status" / "ingest.json")
     log_df = live.read_log(results_dir / "live" / live.FORECASTS_FILE)
@@ -184,7 +214,8 @@ def export(instruments, data_dir: Path, results_dir: Path, out_dir: Path) -> dic
             prices[key] = read_prices(data_dir / f"{key}.parquet")
         return prices[key]
 
-    rows, exported, contexts = [], [], []
+    direction_today = read_json(results_dir / "direction" / "latest.json").get("instruments", {})
+    rows, exported, contexts, returns = [], [], [], {}
     for inst in instruments:
         analysis = read_json(results_dir / "analysis" / f"{inst.id}.json")
         df = load(inst.id)
@@ -197,7 +228,8 @@ def export(instruments, data_dir: Path, results_dir: Path, out_dir: Path) -> dic
         write_compact(payload, out_dir / "tickers" / f"{inst.id}.json")
         inst_status = status.get("instruments", {}).get(inst.id)
         rows.append(summary_row(inst, analysis, inst_status, ll))
-        contexts.append(digest_context(inst, payload, inst_status))
+        contexts.append(digest_context(inst, payload, inst_status, direction_today.get(inst.id)))
+        returns[inst.id] = {"ret": np.log(df["close"]).diff(), "gap": np.log(df["open"] / df["close"].shift(1))}
         exported.append(inst.id)
 
     index = {
@@ -225,9 +257,24 @@ def export(instruments, data_dir: Path, results_dir: Path, out_dir: Path) -> dic
     }, out_dir / "patterns.json")
     dg["generated"] = index["generated"]
     write_compact(dg, out_dir / "digest.json")
+
+    # Valutazione automatica + serie live dei giudizi.
+    dpay = direction_payload(results_dir)
+    write_compact(dpay, out_dir / "direction.json")
+    verdicts = {h: m.get("verdict") for h, m in dpay["backtest"]["horizons"].items()}
+    ass = assess.build(contexts, (pstats or {}).get("stats", {}), current, verdicts)
+    live_dir = results_dir / "live"
+    assess.log_assessment(live_dir / assess.LOG_FILE, ass, index["generated"])
+    ass_scores = {"series": "live", "generated": index["generated"],
+                  **assess.score_log(live_dir / assess.LOG_FILE, returns)}
+    write_json(ass_scores, live_dir / assess.SCORES_FILE)
+    ass.update({"schema": SCHEMA_VERSION, "generated": index["generated"], "as_of": index["as_of"],
+                "live": ass_scores, "rules": assess.__doc__})
+    write_compact(ass, out_dir / "assessment.json")
+
     md_path = results_dir / "digest" / "latest.md"
     md_path.parent.mkdir(parents=True, exist_ok=True)
-    md_path.write_text(digest.to_markdown(dg) + "\n", encoding="utf-8")
+    md_path.write_text(assess.to_markdown(ass) + "\n\n---\n\n" + digest.to_markdown(dg) + "\n", encoding="utf-8")
     # Rimuove i file di strumenti non più esportati (es. tolti dall'universo).
     for p in (out_dir / "tickers").glob("*.json"):
         if p.stem not in exported:
