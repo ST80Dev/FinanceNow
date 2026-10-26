@@ -18,9 +18,6 @@ on:
         description: "budget di richieste per questo run"
         type: number
         default: 200
-  # TEMPORANEO, solo per provare il workflow prima del merge: da rimuovere.
-  push:
-    branches: [claude/focused-davinci-3vldey]
 
 concurrency:
   group: financenow-data   # condiviso con daily.yml
