@@ -1,8 +1,12 @@
 # FinanceNow — istruzioni per Claude Code
 
 Sistema automatico di **analisi del comportamento** di azioni e indici di borsa.
-Obiettivo primario: **descrivere e misurare** (regimi, volatilità, anomalie, correlazioni, rischio),
-non prevedere il prezzo. I moduli predittivi sono sperimentali e vanno sempre confrontati con baseline banali.
+Obiettivo (aggiornato il 26/10/2026): l'app **valuta da sola** la situazione di ogni titolo e la propone
+in parole semplici (situazione, rischio, direzione, prossimi eventi), per un appassionato che conosce i termini
+ma non i meccanismi. Base: **descrivere e misurare** (regimi, volatilità, anomalie, correlazioni, rischio).
+Direzione futura richiesta: un sistema di previsione da affinare su rischio, direzione del prezzo e lettura dei
+prossimi eventi. I moduli predittivi restano sperimentali, sempre confrontati con baseline banali, e la dashboard
+dice chiaramente quando una previsione non batte la baseline ("non affidabile").
 
 ## Modo di lavorare
 - Lingua: italiano (codice, commenti e nomi di variabili possono essere in inglese).
@@ -121,6 +125,31 @@ Lavorare sempre su **log-rendimenti**, mai sui livelli di prezzo.
 - Uso EOD: i risultati sono pronti dopo la chiusura USA (circa 23:30–00:30 ora italiana); servono per decidere
   prima della seduta successiva, non per operare intraday (servirebbero dati intraday, altra architettura).
 
+### Scelte del passo 5 (implementate, richiesta del 26/10/2026)
+- **Linguaggio semplice**: ogni grandezza ha un tooltip (`data-tip`, mouse e tocco) con cosa significa e come leggerla;
+  glossario nella pagina **Guida** (`#/guida`). Nomi completi dei titoli + descrizione (`description` in `universe.yml`).
+  Fasi del regime chiamate calma / normale / agitata; volatilità mostrata come oscillazione tipica al mese (σ/√12);
+  andamenti in % semplice (non log). Il "Metodo" tecnico resta per i dettagli.
+- **Trimestrali** (`pipeline/earnings.py`): date da yfinance (`get_earnings_dates`, pagina calendario Yahoo), solo azioni,
+  in `data/raw/_earnings/<id>.json` (cache, non committate), riscaricate al massimo una volta a settimana o quando la
+  prossima data è passata. Giorno di reazione: prima delle 9:30 NY → stessa seduta; dopo → seduta successiva; orario
+  ignoto (mezzanotte) → finestra di 2 sedute datata all'ultima. Anomalie nei giorni di reazione marcate "spiegate".
+  Eventi nei pattern: vigilia (5 sedute prima), reazione positiva/negativa vs benchmark.
+- **Direzione** (`pipeline/direction.py`, `pipeline/models/direction.py`, SPERIMENTALE): P(log-rendimento da apertura t+1
+  a chiusura t+h > 0), h ∈ {5, 21}. Logistica L2 (0,02·n) panel con offset = frequenza storica di salita del titolo
+  (shrink 252 righe), 14 feature (andamento, medie mobili, drawdown, volatilità relativa, forza relativa, volumi,
+  prob. fase agitata, trimestrali). Walk-forward: prima previsione dopo 1260 sedute, ri-stima ogni 63, embargo 5.
+  Baseline `freq_storica` e `moneta`; metriche Brier, log-loss, Diebold-Mariano, calibrazione, copertura dell'intervallo
+  10–90%. Verdetto "vantaggio" solo se skill > 0 e t < −1,96. Primo risultato (v0.1.0): **nessun vantaggio** a 5 e 21
+  sedute. Serie live: `results/live/direction_forecasts.csv` / `direction_scores.json`.
+- **Valutazione** (`pipeline/assess.py`, chiamata da `export.py`): situazione (tempesta / pressione / ripresa / norma /
+  tranquillo), rischio nel prossimo mese (alto / normale / basso a punti: volatilità rispetto alla propria storia,
+  +1 se un evento attivo ha effetto storico netto nei pattern, +1 se trimestrale entro 10 sedute), tendenza descrittiva,
+  direzione del modello con etichetta di affidabilità, prossimi eventi. Panoramica = verdetti ordinati per attenzione.
+  Serie live dei giudizi: `results/live/assessment_log.csv` / `assessment_scores.json` (esiti a 21 sedute per livello).
+- Pattern: IC al 90% con errore standard robusto ai cluster per settimana, centrato sulla stessa media pubblicata.
+- Registro configurazioni condiviso tra moduli: `results/backtest/trials.jsonl` (campo `module` per la direzione).
+
 ## Struttura prevista
 ```
 .github/workflows/daily.yml
@@ -132,6 +161,7 @@ pipeline/
     volatility.py
     regimes.py
     anomalies.py
+    direction.py
   backtest.py      # walk-forward della volatilità, metriche, test finale, registro configurazioni
   analyze.py       # CLI: feature + regimi + anomalie + backtest → results/
   live.py          # previsioni live registrate ogni sera e loro valutazione
@@ -139,6 +169,9 @@ pipeline/
   export.py        # JSON leggeri per la dashboard
   digest.py        # sintesi del giorno: segnali con gravità, per dashboard e job summary
   patterns.py      # studio di eventi: cosa è successo dopo eventi simili (storico + verifica live)
+  earnings.py      # date delle trimestrali, giorno di reazione, mossa tipica
+  direction.py     # direzione sperimentale: walk-forward vs baseline, previsioni di oggi, serie live
+  assess.py        # valutazione automatica: situazione, rischio, direzione, prossimi eventi
 config/universe.yml
 results/           # output elaborati committati (analysis/, backtest/, live/, status/)
 docs/              # GitHub Pages: index.html, app.js, style.css, data/
@@ -160,11 +193,10 @@ usarli per analisi descrittive per titolo, non per conclusioni su rendimenti att
 2. `features.py` e i tre moduli (volatilità, regimi, anomalie) + backtest walk-forward con baseline.
 3. Workflow Actions (`backfill.yml`, `daily.yml`) con cache dei dati grezzi e commit dei risultati.
 4. Dashboard su Pages (vanilla JS).
-5. Dati di contesto (da proporre dopo la dashboard, richiesta del 26/10/2026). Oggi il sistema usa SOLO
-   prezzi e volumi OHLCV: nessun dato di bilancio, macro, notizie o calendario. Candidati:
-   - date delle trimestrali, per distinguere le anomalie "spiegate" (giorno di utili) da quelle inattese;
-   - VIX e tassi dei Treasury come contesto di mercato (regimi, volatilità).
-6. Più avanti: moduli predittivi sperimentali, alert (Telegram/email).
+5. Linguaggio semplice, trimestrali, direzione sperimentale, valutazione automatica (fatto, vedi sopra).
+6. Da proporre: affinare il sistema di previsione (rischio, direzione, prossimi eventi) — ogni modifica è una nuova
+   configurazione nel registro; contesto di mercato (VIX, tassi dei Treasury, calendario delle riunioni Fed);
+   verifica storica delle regole di rischio; più avanti LightGBM con purged CV, alert (Telegram/email).
 
 ## Avvertenza
 Strumento di analisi personale, non consulenza finanziaria.

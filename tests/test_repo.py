@@ -19,6 +19,7 @@ def _ignored(path: str) -> bool:
 def test_gitignore_dati_grezzi_esclusi_dashboard_inclusa():
     assert _ignored("data/raw/nvda.parquet")
     assert _ignored("data/raw/_state.json")
+    assert _ignored("data/raw/_earnings/nvda.json")
     assert not _ignored("docs/data/index.json")
     assert not _ignored("docs/data/tickers/nvda.json")
     assert not _ignored("results/analysis/nvda.json")
