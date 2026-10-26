@@ -16,6 +16,7 @@
 #   listed_since data di quotazione se successiva a `start` (solo informativa:
 #                lo storico parte dalla prima seduta disponibile)
 #   active       false = non aggiornare più, lo storico resta
+#   description  una riga in parole semplici su cos'è lo strumento (mostrata nella dashboard)
 
 version: 1
 snapshot_date: 2026-10-26
@@ -36,6 +37,7 @@ instruments:
   # --- Indici ed ETF di riferimento ---
   - id: ndx
     name: Nasdaq 100
+    description: "Indice delle 100 maggiori società non finanziarie quotate al Nasdaq: molto tecnologico. È il riferimento con cui si confrontano i titoli."
     asset_class: index
     yahoo: ^NDX
     stooq: ^ndx
@@ -43,12 +45,14 @@ instruments:
 
   - id: qqq
     name: Invesco QQQ Trust
+    description: "Fondo quotato (ETF) che replica il Nasdaq 100: si compra come un'azione e si muove quasi identico all'indice."
     asset_class: etf
     yahoo: QQQ
     stooq: qqq.us
 
   - id: spx
     name: S&P 500
+    description: "Indice delle 500 maggiori società USA di tutti i settori: è il termometro del mercato americano nel suo insieme."
     asset_class: index
     yahoo: ^GSPC
     stooq: ^spx
@@ -57,36 +61,42 @@ instruments:
   # --- Top 10 Nasdaq per capitalizzazione (snapshot 2026-10-26) ---
   - id: nvda
     name: NVIDIA
+    description: "Chip per grafica e intelligenza artificiale (GPU per data center)."
     asset_class: stock
     yahoo: NVDA
     stooq: nvda.us
 
   - id: aapl
     name: Apple
+    description: "iPhone, Mac e servizi digitali (App Store, iCloud, musica)."
     asset_class: stock
     yahoo: AAPL
     stooq: aapl.us
 
   - id: googl
     name: Alphabet (classe A)
+    description: "Motore di ricerca Google, YouTube, pubblicità online e cloud."
     asset_class: stock
     yahoo: GOOGL
     stooq: googl.us
 
   - id: msft
     name: Microsoft
+    description: "Software (Windows, Office), cloud Azure e intelligenza artificiale."
     asset_class: stock
     yahoo: MSFT
     stooq: msft.us
 
   - id: amzn
     name: Amazon
+    description: "Commercio elettronico e cloud (Amazon Web Services)."
     asset_class: stock
     yahoo: AMZN
     stooq: amzn.us
 
   - id: meta
     name: Meta Platforms
+    description: "Social network (Facebook, Instagram, WhatsApp) e pubblicità online."
     asset_class: stock
     yahoo: META
     stooq: meta.us
@@ -94,12 +104,14 @@ instruments:
 
   - id: avgo
     name: Broadcom
+    description: "Chip per reti, telecomunicazioni e IA, più software per aziende."
     asset_class: stock
     yahoo: AVGO
     stooq: avgo.us
 
   - id: tsla
     name: Tesla
+    description: "Auto elettriche, batterie e energia; titolo storicamente molto volatile."
     asset_class: stock
     yahoo: TSLA
     stooq: tsla.us
@@ -107,12 +119,14 @@ instruments:
 
   - id: mu
     name: Micron Technology
+    description: "Chip di memoria (DRAM e flash): settore ciclico, alti e bassi marcati."
     asset_class: stock
     yahoo: MU
     stooq: mu.us
 
   - id: amd
     name: Advanced Micro Devices
+    description: "Processori e chip grafici per PC, server e IA: concorrente di Intel e NVIDIA."
     asset_class: stock
     yahoo: AMD
     stooq: amd.us

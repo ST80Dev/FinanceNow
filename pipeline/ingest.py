@@ -90,6 +90,7 @@ class Instrument:
     benchmark: str | None
     active: bool
     listed_since: dt.date | None = None
+    description: str | None = None   # una riga in parole semplici (solo informativa, per la dashboard)
 
     def symbol_for(self, source: str) -> str | None:
         return self.symbols.get(source)
@@ -157,6 +158,7 @@ def load_universe(path: Path | str = DEFAULT_UNIVERSE) -> list[Instrument]:
                     _as_date(cfg["listed_since"], "listed_since", inst_id)
                     if cfg.get("listed_since") else None
                 ),
+                description=cfg.get("description"),
             )
         )
 

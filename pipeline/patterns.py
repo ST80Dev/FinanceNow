@@ -181,15 +181,18 @@ def outcome_table(ret: pd.Series, h: int, cutoff: dt.date | None, gap: pd.Series
 # ---------------------------------------------------------------------------
 
 def _clustered_ci(excess: pd.Series) -> tuple[float | None, float | None, int]:
-    """Intervallo al 90% della media dell'eccesso, con cluster per settimana."""
+    """Intervallo al 90% della media dell'eccesso (su tutti gli eventi), con errore standard
+    robusto ai cluster per settimana: gli eventi della stessa settimana non contano come
+    osservazioni indipendenti. L'intervallo è centrato sulla stessa media che si pubblica."""
     if excess.empty:
         return None, None, 0
     week = excess.index.to_period("W")
-    clusters = excess.groupby(week).mean()
-    k = len(clusters)
+    m = float(excess.mean())
+    sums = (excess - m).groupby(week).sum()
+    k, n = len(sums), len(excess)
     if k < 5:
         return None, None, k
-    m, se = float(clusters.mean()), float(clusters.std(ddof=1) / math.sqrt(k))
+    se = math.sqrt(k / (k - 1) * float((sums ** 2).sum())) / n
     return m - Z90 * se, m + Z90 * se, k
 
 
