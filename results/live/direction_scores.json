@@ -1,8 +1,8 @@
 {
   "series": "live",
-  "generated": "2026-10-27T01:38:03+00:00",
+  "generated": "2026-10-28T01:35:30+00:00",
   "note": "previsioni di direzione registrate da daily.yml prima di conoscere l'esito; mai ricalcolate",
-  "n_logged": 52,
+  "n_logged": 78,
   "first_origin": "2026-10-23",
   "horizons": {
     "h5": {
