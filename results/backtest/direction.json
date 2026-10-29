@@ -1,6 +1,6 @@
 {
   "series": "backtest",
-  "generated": "2026-10-28T01:35:30+00:00",
+  "generated": "2026-10-29T01:56:44+00:00",
   "config": {
     "module": "direzione",
     "target": "segno del log-rendimento dall'apertura di t+1 alla chiusura di t+h",
