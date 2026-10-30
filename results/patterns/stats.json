@@ -1,6 +1,6 @@
 {
   "series": "backtest",
-  "generated": "2026-10-29T01:56:43+00:00",
+  "generated": "2026-10-30T02:08:29+00:00",
   "note": "studio di eventi sullo storico, finestre chiuse prima del periodo di test finale",
   "holdout_start": "2025-11-03",
   "horizons": [

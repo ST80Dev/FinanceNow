@@ -4,49 +4,49 @@
   "asset_class": "stock",
   "benchmark": "ndx",
   "model_version": "0.1.0",
-  "as_of": "2026-10-28",
+  "as_of": "2026-10-29",
   "data_period": {
     "first": "2010-01-04",
-    "last": "2026-10-28",
-    "sessions": 4231
+    "last": "2026-10-29",
+    "sessions": 4232
   },
   "features_latest": {
-    "ret": -0.0006,
-    "rv_5": 0.22282,
-    "rv_21": 0.19173,
-    "rv_63": 0.23796,
-    "park_21": 0.18949,
-    "gk_21": 0.19268,
-    "park_63": 0.20872,
-    "gk_63": 0.20855,
-    "atr_pct": 0.02033,
-    "mom_1m": 0.04241,
-    "mom_3m": 0.16497,
-    "mom_6m": 0.22801,
-    "mom_12m": 0.00723,
-    "dist_ma50": 0.0381,
-    "dist_ma200": 0.19665,
-    "vol_z": 0.47845,
-    "skew_63": 0.34131,
-    "kurt_63": 0.5492,
-    "drawdown": -0.02289,
-    "beta_63": 0.63262,
-    "corr_63": 0.46619,
-    "beta_252": 0.56153,
-    "corr_252": 0.34352,
-    "rs_3m": 0.10602,
-    "rs_12m": -0.13651
+    "ret": -0.00164,
+    "rv_5": 0.11949,
+    "rv_21": 0.19097,
+    "rv_63": 0.23162,
+    "park_21": 0.20419,
+    "gk_21": 0.20864,
+    "park_63": 0.20947,
+    "gk_63": 0.21208,
+    "atr_pct": 0.02184,
+    "mom_1m": 0.03306,
+    "mom_3m": 0.13359,
+    "mom_6m": 0.26646,
+    "mom_12m": -0.01406,
+    "dist_ma50": 0.03463,
+    "dist_ma200": 0.19429,
+    "vol_z": 1.66597,
+    "skew_63": 0.36851,
+    "kurt_63": 0.80559,
+    "drawdown": -0.02449,
+    "beta_63": 0.6066,
+    "corr_63": 0.46493,
+    "beta_252": 0.55646,
+    "corr_252": 0.34173,
+    "rs_3m": 0.09446,
+    "rs_12m": -0.13658
   },
   "regime": {
     "available": true,
-    "as_of": "2026-10-28",
+    "as_of": "2026-10-29",
     "current": "normale",
     "probabilities": {
-      "calmo": 0.0218,
-      "normale": 0.9777,
+      "calmo": 0.026,
+      "normale": 0.9735,
       "turbolento": 0.0005
     },
-    "days_in_state": 41,
+    "days_in_state": 42,
     "states": [
       {
         "label": "calmo",
@@ -57,14 +57,14 @@
       },
       {
         "label": "normale",
-        "share_of_days": 0.3382,
-        "ret_ann": 0.2133,
-        "vol_ann": 0.2188,
+        "share_of_days": 0.3384,
+        "ret_ann": 0.2128,
+        "vol_ann": 0.2187,
         "expected_duration_days": 21.9
       },
       {
         "label": "turbolento",
-        "share_of_days": 0.3344,
+        "share_of_days": 0.3343,
         "ret_ann": 0.1701,
         "vol_ann": 0.3774,
         "expected_duration_days": 35.3
@@ -3544,7 +3544,8 @@
       "2026-10-23",
       "2026-10-26",
       "2026-10-27",
-      "2026-10-28"
+      "2026-10-28",
+      "2026-10-29"
     ],
     "state": [
       0,
@@ -6960,6 +6961,7 @@
       2,
       2,
       2,
+      1,
       1,
       1,
       1,
@@ -10456,6 +10458,7 @@
       0.002,
       0.001,
       0.0,
+      0.0,
       0.0
     ]
   },
@@ -10792,32 +10795,20 @@
   },
   "earnings": {
     "available": true,
-    "next": {
-      "date": "2026-10-28",
-      "timing": "dopo la chiusura",
-      "reaction_session": "2026-10-29",
-      "sessions_until": 1
-    },
-    "n_reactions": 67,
-    "typical_move": 0.030216801201738974,
-    "typical_day_move": 0.008185498464533314,
-    "move_ratio": 3.6915041072531367,
-    "share_up": 0.582089552238806,
+    "next": null,
+    "n_reactions": 68,
+    "typical_move": 0.030119931399589905,
+    "typical_day_move": 0.008180024061901214,
+    "move_ratio": 3.682132371697374,
+    "share_up": 0.5735294117647058,
     "last": {
-      "date": "2026-07-29",
-      "session": "2026-07-30",
-      "reaction": 0.1441586900249403,
-      "reaction_vs_bench": 0.11109740731708673,
-      "sessions_ago": 63
+      "date": "2026-10-28",
+      "session": "2026-10-29",
+      "reaction": -0.0016397216078782861,
+      "reaction_vs_bench": 0.012230088925308635,
+      "sessions_ago": 0
     },
     "history": [
-      {
-        "date": "2023-10-24",
-        "timing": "dopo la chiusura",
-        "session": "2023-10-25",
-        "reaction": 0.030216801201738974,
-        "reaction_vs_bench": 0.0552268218327967
-      },
       {
         "date": "2024-01-30",
         "timing": "dopo la chiusura",
@@ -10894,6 +10885,13 @@
         "session": "2026-07-30",
         "reaction": 0.1441586900249403,
         "reaction_vs_bench": 0.11109740731708673
+      },
+      {
+        "date": "2026-10-28",
+        "timing": "dopo la chiusura",
+        "session": "2026-10-29",
+        "reaction": -0.0016397216078782861,
+        "reaction_vs_bench": 0.012230088925308635
       }
     ]
   }
