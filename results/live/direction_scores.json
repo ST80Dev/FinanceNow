@@ -1,12 +1,50 @@
 {
   "series": "live",
-  "generated": "2026-10-30T02:08:30+00:00",
+  "generated": "2026-10-31T01:47:59+00:00",
   "note": "previsioni di direzione registrate da daily.yml prima di conoscere l'esito; mai ricalcolate",
-  "n_logged": 130,
+  "n_logged": 156,
   "first_origin": "2026-10-23",
   "horizons": {
     "h5": {
-      "n": 0
+      "n": 13,
+      "n_dates": 1,
+      "first_origin": "2026-10-23",
+      "last_origin": "2026-10-23",
+      "up_rate": 0.23076923076923078,
+      "brier": {
+        "modello": 0.29907907891484614,
+        "freq_storica": 0.29162130974107686,
+        "moneta": 0.25
+      },
+      "logloss": {
+        "modello": 0.7924830822432759,
+        "freq_storica": 0.7771636823647297,
+        "moneta": 0.6931471805599453
+      },
+      "skill_vs_freq_storica": -0.02557347122674547,
+      "dm_vs_freq_storica": null,
+      "accuracy": {
+        "modello": 0.23076923076923078,
+        "freq_storica": 0.23076923076923078
+      },
+      "calls": {
+        "ottimista": {
+          "n": 0
+        },
+        "pessimista": {
+          "n": 0
+        },
+        "neutro": {
+          "n": 13,
+          "share": 1.0,
+          "up_rate": 0.23076923076923078,
+          "base_rate": 0.5642615384615384,
+          "mean_ret": -0.022857784906643492
+        }
+      },
+      "calibration": [],
+      "coverage_80": 0.9230769230769231,
+      "verdict": "non valutabile"
     },
     "h21": {
       "n": 0

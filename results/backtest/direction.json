@@ -1,6 +1,6 @@
 {
   "series": "backtest",
-  "generated": "2026-10-30T02:08:30+00:00",
+  "generated": "2026-10-31T01:47:59+00:00",
   "config": {
     "module": "direzione",
     "target": "segno del log-rendimento dall'apertura di t+1 alla chiusura di t+h",
@@ -76,7 +76,7 @@
         "moneta": 0.6931471805599453
       },
       "skill_vs_freq_storica": -0.004458850763709332,
-      "dm_vs_freq_storica": 1.5223533732707721,
+      "dm_vs_freq_storica": 1.5223533732707712,
       "accuracy": {
         "modello": 0.5688751637656747,
         "freq_storica": 0.5747083411316988
@@ -101,7 +101,7 @@
           "share": 0.8262836109551438,
           "up_rate": 0.5782400241609725,
           "base_rate": 0.5642188249011595,
-          "mean_ret": 0.005714956330663643
+          "mean_ret": 0.005714956330663644
         }
       },
       "calibration": [
@@ -166,8 +166,8 @@
         "amd": {
           "n": 2466,
           "up_rate": 0.5494728304947283,
-          "skill_vs_freq_storica": 0.005217153312752076,
-          "dm_vs_freq_storica": -0.8033927762705217,
+          "skill_vs_freq_storica": 0.005217153312752298,
+          "dm_vs_freq_storica": -0.8033927762705221,
           "accuracy": {
             "modello": 0.5296025952960259,
             "freq_storica": 0.5275750202757502
@@ -179,7 +179,7 @@
           "n": 2466,
           "up_rate": 0.5555555555555556,
           "skill_vs_freq_storica": -0.0030464397559315515,
-          "dm_vs_freq_storica": 0.608880554122725,
+          "dm_vs_freq_storica": 0.6088805541227253,
           "accuracy": {
             "modello": 0.5502838605028386,
             "freq_storica": 0.5555555555555556
@@ -191,7 +191,7 @@
           "n": 2466,
           "up_rate": 0.5798864557988646,
           "skill_vs_freq_storica": 0.00013883809237558165,
-          "dm_vs_freq_storica": -0.0330825301913928,
+          "dm_vs_freq_storica": -0.033082530191392984,
           "accuracy": {
             "modello": 0.5766423357664233,
             "freq_storica": 0.5798864557988646
@@ -215,7 +215,7 @@
           "n": 2466,
           "up_rate": 0.5677210056772101,
           "skill_vs_freq_storica": 0.0029403569278071418,
-          "dm_vs_freq_storica": -0.6212121582022153,
+          "dm_vs_freq_storica": -0.6212121582022145,
           "accuracy": {
             "modello": 0.5640713706407137,
             "freq_storica": 0.5677210056772101
@@ -226,8 +226,8 @@
         "msft": {
           "n": 2466,
           "up_rate": 0.5904298459042985,
-          "skill_vs_freq_storica": -0.005175790580683959,
-          "dm_vs_freq_storica": 1.129651887310519,
+          "skill_vs_freq_storica": -0.005175790580684181,
+          "dm_vs_freq_storica": 1.1296518873105192,
           "accuracy": {
             "modello": 0.589213300892133,
             "freq_storica": 0.5904298459042985
@@ -238,8 +238,8 @@
         "mu": {
           "n": 2466,
           "up_rate": 0.5409570154095702,
-          "skill_vs_freq_storica": 1.2091804578617804e-05,
-          "dm_vs_freq_storica": -0.0026219022536663776,
+          "skill_vs_freq_storica": 1.2091804578728826e-05,
+          "dm_vs_freq_storica": -0.0026219022536674167,
           "accuracy": {
             "modello": 0.5308191403081914,
             "freq_storica": 0.5409570154095702
@@ -251,7 +251,7 @@
           "n": 2466,
           "up_rate": 0.6013787510137875,
           "skill_vs_freq_storica": -0.009007239646465326,
-          "dm_vs_freq_storica": 1.9752364502874173,
+          "dm_vs_freq_storica": 1.975236450287417,
           "accuracy": {
             "modello": 0.6017842660178426,
             "freq_storica": 0.6013787510137875
@@ -263,7 +263,7 @@
           "n": 2466,
           "up_rate": 0.5993511759935117,
           "skill_vs_freq_storica": 0.000498291522583294,
-          "dm_vs_freq_storica": -0.09373631222403578,
+          "dm_vs_freq_storica": -0.09373631222403607,
           "accuracy": {
             "modello": 0.5989456609894566,
             "freq_storica": 0.5993511759935117
@@ -287,7 +287,7 @@
           "n": 2466,
           "up_rate": 0.6131386861313869,
           "skill_vs_freq_storica": -0.0035364062411373798,
-          "dm_vs_freq_storica": 0.852770753702004,
+          "dm_vs_freq_storica": 0.8527707537020034,
           "accuracy": {
             "modello": 0.6131386861313869,
             "freq_storica": 0.6131386861313869
@@ -421,7 +421,7 @@
           "n": 2450,
           "up_rate": 0.6514285714285715,
           "skill_vs_freq_storica": -0.03760094345757925,
-          "dm_vs_freq_storica": 2.4077988042596115,
+          "dm_vs_freq_storica": 2.4077988042596106,
           "accuracy": {
             "modello": 0.6142857142857143,
             "freq_storica": 0.6514285714285715
@@ -433,7 +433,7 @@
           "n": 2450,
           "up_rate": 0.5718367346938775,
           "skill_vs_freq_storica": 0.014603177679940127,
-          "dm_vs_freq_storica": -0.7907938436833303,
+          "dm_vs_freq_storica": -0.7907938436833296,
           "accuracy": {
             "modello": 0.5469387755102041,
             "freq_storica": 0.5273469387755102
@@ -457,7 +457,7 @@
           "n": 2450,
           "up_rate": 0.6587755102040816,
           "skill_vs_freq_storica": 0.0009014199779103782,
-          "dm_vs_freq_storica": -0.05813024535760859,
+          "dm_vs_freq_storica": -0.0581302453576088,
           "accuracy": {
             "modello": 0.6355102040816326,
             "freq_storica": 0.6587755102040816
@@ -469,7 +469,7 @@
           "n": 2450,
           "up_rate": 0.6375510204081632,
           "skill_vs_freq_storica": -0.024825208105578644,
-          "dm_vs_freq_storica": 1.6626353927725157,
+          "dm_vs_freq_storica": 1.6626353927725155,
           "accuracy": {
             "modello": 0.623265306122449,
             "freq_storica": 0.6375510204081632
@@ -481,7 +481,7 @@
           "n": 2450,
           "up_rate": 0.6355102040816326,
           "skill_vs_freq_storica": -0.005307030150132341,
-          "dm_vs_freq_storica": 0.3657328644898686,
+          "dm_vs_freq_storica": 0.365732864489869,
           "accuracy": {
             "modello": 0.6351020408163265,
             "freq_storica": 0.6355102040816326
@@ -492,8 +492,8 @@
         "msft": {
           "n": 2450,
           "up_rate": 0.6669387755102041,
-          "skill_vs_freq_storica": -0.02920538179091925,
-          "dm_vs_freq_storica": 1.934897249645968,
+          "skill_vs_freq_storica": -0.02920538179091947,
+          "dm_vs_freq_storica": 1.9348972496459684,
           "accuracy": {
             "modello": 0.6506122448979592,
             "freq_storica": 0.6669387755102041
@@ -528,8 +528,8 @@
         "nvda": {
           "n": 2450,
           "up_rate": 0.6836734693877551,
-          "skill_vs_freq_storica": 0.002568866455675667,
-          "dm_vs_freq_storica": -0.16168572149473542,
+          "skill_vs_freq_storica": 0.002568866455675445,
+          "dm_vs_freq_storica": -0.16168572149473429,
           "accuracy": {
             "modello": 0.6836734693877551,
             "freq_storica": 0.6836734693877551
@@ -541,7 +541,7 @@
           "n": 2450,
           "up_rate": 0.7012244897959183,
           "skill_vs_freq_storica": -0.029954124376630142,
-          "dm_vs_freq_storica": 1.9545710881595384,
+          "dm_vs_freq_storica": 1.9545710881595388,
           "accuracy": {
             "modello": 0.7008163265306122,
             "freq_storica": 0.7012244897959183
@@ -553,7 +553,7 @@
           "n": 2450,
           "up_rate": 0.6979591836734694,
           "skill_vs_freq_storica": -0.006033218210150348,
-          "dm_vs_freq_storica": 0.49997458218477997,
+          "dm_vs_freq_storica": 0.49997458218478014,
           "accuracy": {
             "modello": 0.6979591836734694,
             "freq_storica": 0.6979591836734694
@@ -565,7 +565,7 @@
           "n": 2450,
           "up_rate": 0.5522448979591836,
           "skill_vs_freq_storica": -0.018552261333087072,
-          "dm_vs_freq_storica": 1.1482754497753755,
+          "dm_vs_freq_storica": 1.1482754497753753,
           "accuracy": {
             "modello": 0.5387755102040817,
             "freq_storica": 0.5522448979591836
