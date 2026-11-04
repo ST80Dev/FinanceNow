@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-03T03:37:08+00:00",
+  "generated": "2026-11-04T02:35:22+00:00",
   "events": [
     {
       "id": "ndx",
@@ -21,6 +21,13 @@
       "date": "2026-10-30",
       "is_last_session": false,
       "history": "storicamente, dopo eventi simili (868 casi su 13 strumenti, 388 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,2 volte quella tipica (giorno qualsiasi: 1,1); calo di almeno il 10% nel 31% dei casi (giorno qualsiasi: 26%)."
+    },
+    {
+      "id": "aapl",
+      "type": "trimestrale_negativa",
+      "date": "2026-11-03",
+      "is_last_session": true,
+      "history": "storicamente, dopo eventi simili (285 casi su 10 strumenti, 208 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,0 volte quella tipica (giorno qualsiasi: 1,1)."
     },
     {
       "id": "googl",
@@ -86,11 +93,11 @@
       "history": "storicamente, dopo eventi simili (332 casi su 10 strumenti, 233 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,0 volte quella tipica (giorno qualsiasi: 1,1)."
     },
     {
-      "id": "meta",
-      "type": "drawdown_20",
-      "date": "2026-10-27",
-      "is_last_session": false,
-      "history": "storicamente, dopo eventi simili (253 casi su 13 strumenti, 195 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,4 volte quella tipica (giorno qualsiasi: 1,1); calo di almeno il 10% nel 45% dei casi (giorno qualsiasi: 35%)."
+      "id": "amzn",
+      "type": "vol_accelerazione",
+      "date": "2026-11-03",
+      "is_last_session": true,
+      "history": "storicamente, dopo eventi simili (868 casi su 13 strumenti, 388 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,2 volte quella tipica (giorno qualsiasi: 1,1); calo di almeno il 10% nel 31% dei casi (giorno qualsiasi: 26%)."
     },
     {
       "id": "meta",
@@ -117,7 +124,7 @@
       "id": "mu",
       "type": "vol_accelerazione",
       "date": "2026-11-02",
-      "is_last_session": true,
+      "is_last_session": false,
       "history": "storicamente, dopo eventi simili (868 casi su 13 strumenti, 388 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,2 volte quella tipica (giorno qualsiasi: 1,1); calo di almeno il 10% nel 31% dei casi (giorno qualsiasi: 26%)."
     },
     {

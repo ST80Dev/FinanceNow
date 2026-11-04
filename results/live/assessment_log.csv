@@ -90,3 +90,16 @@ date,id,situation,risk,trend,outlook,p_up,p_base,created_utc
 2026-11-02,nvda,norma,normale,laterale,neutro,0.64673,0.626468,2026-11-03T03:37:13+00:00
 2026-11-02,spx,norma,normale,laterale,favorevole,0.725218,0.672096,2026-11-03T03:37:13+00:00
 2026-11-02,tsla,tranquillo,basso,su,favorevole,0.609168,0.557068,2026-11-03T03:37:13+00:00
+2026-11-03,amd,tempesta,alto,su,neutro,0.549945,0.540072,2026-11-04T02:35:28+00:00
+2026-11-03,amzn,tempesta,alto,laterale,neutro,0.579975,0.627741,2026-11-04T02:35:28+00:00
+2026-11-03,avgo,tempesta,alto,giu,neutro,0.616756,0.631068,2026-11-04T02:35:28+00:00
+2026-11-03,googl,tempesta,alto,giu,neutro,0.563756,0.611348,2026-11-04T02:35:28+00:00
+2026-11-03,mu,tempesta,alto,laterale,favorevole,0.660679,0.573809,2026-11-04T02:35:28+00:00
+2026-11-03,ndx,tempesta,alto,laterale,neutro,0.710187,0.668131,2026-11-04T02:35:28+00:00
+2026-11-03,qqq,tempesta,alto,laterale,neutro,0.647275,0.675259,2026-11-04T02:35:28+00:00
+2026-11-03,meta,ripresa,normale,laterale,neutro,0.667658,0.629962,2026-11-04T02:35:28+00:00
+2026-11-03,msft,norma,normale,su,neutro,0.634251,0.626316,2026-11-04T02:35:28+00:00
+2026-11-03,nvda,norma,normale,laterale,neutro,0.635552,0.626316,2026-11-04T02:35:28+00:00
+2026-11-03,spx,norma,normale,laterale,neutro,0.719802,0.67217,2026-11-04T02:35:28+00:00
+2026-11-03,aapl,tranquillo,basso,su,neutro,0.643208,0.616337,2026-11-04T02:35:28+00:00
+2026-11-03,tsla,tranquillo,basso,su,neutro,0.605919,0.557172,2026-11-04T02:35:28+00:00
