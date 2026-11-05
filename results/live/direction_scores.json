@@ -1,31 +1,31 @@
 {
   "series": "live",
-  "generated": "2026-11-04T02:35:23+00:00",
+  "generated": "2026-11-05T02:43:10+00:00",
   "note": "previsioni di direzione registrate da daily.yml prima di conoscere l'esito; mai ricalcolate",
-  "n_logged": 208,
+  "n_logged": 234,
   "first_origin": "2026-10-23",
   "horizons": {
     "h5": {
-      "n": 39,
-      "n_dates": 3,
+      "n": 52,
+      "n_dates": 4,
       "first_origin": "2026-10-23",
-      "last_origin": "2026-10-27",
-      "up_rate": 0.10256410256410256,
+      "last_origin": "2026-10-28",
+      "up_rate": 0.17307692307692307,
       "brier": {
-        "modello": 0.3107743484397692,
-        "freq_storica": 0.3076374865444359,
+        "modello": 0.30228709511900004,
+        "freq_storica": 0.29810158639844225,
         "moneta": 0.25
       },
       "logloss": {
-        "modello": 0.8159535639985288,
-        "freq_storica": 0.8093805841660672,
+        "modello": 0.7989244864518349,
+        "freq_storica": 0.7901928513817994,
         "moneta": 0.6931471805599453
       },
-      "skill_vs_freq_storica": -0.010196617878296843,
+      "skill_vs_freq_storica": -0.0140405449401515,
       "dm_vs_freq_storica": null,
       "accuracy": {
-        "modello": 0.10256410256410256,
-        "freq_storica": 0.10256410256410256
+        "modello": 0.19230769230769232,
+        "freq_storica": 0.17307692307692307
       },
       "calls": {
         "ottimista": {
@@ -35,15 +35,15 @@
           "n": 0
         },
         "neutro": {
-          "n": 39,
+          "n": 52,
           "share": 1.0,
-          "up_rate": 0.10256410256410256,
-          "base_rate": 0.564143153846154,
-          "mean_ret": -0.04430089777511472
+          "up_rate": 0.17307692307692307,
+          "base_rate": 0.5641181346153845,
+          "mean_ret": -0.04114480908059029
         }
       },
       "calibration": [],
-      "coverage_80": 0.5641025641025641,
+      "coverage_80": 0.5576923076923077,
       "verdict": "non valutabile"
     },
     "h21": {
