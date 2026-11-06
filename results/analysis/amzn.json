@@ -4,53 +4,53 @@
   "asset_class": "stock",
   "benchmark": "ndx",
   "model_version": "0.1.0",
-  "as_of": "2026-11-04",
+  "as_of": "2026-11-05",
   "data_period": {
     "first": "2010-01-04",
-    "last": "2026-11-04",
-    "sessions": 4236
+    "last": "2026-11-05",
+    "sessions": 4237
   },
   "features_latest": {
-    "ret": 0.05939,
-    "rv_5": 0.62063,
-    "rv_21": 0.41943,
-    "rv_63": 0.30851,
-    "park_21": 0.27008,
-    "gk_21": 0.27165,
-    "park_63": 0.22076,
-    "gk_63": 0.22443,
-    "atr_pct": 0.03224,
-    "mom_1m": 0.0373,
-    "mom_3m": -0.02315,
-    "mom_6m": -0.03313,
-    "mom_12m": 0.04627,
-    "dist_ma50": 0.0467,
-    "dist_ma200": 0.08779,
-    "vol_z": 3.59561,
-    "skew_63": 0.50746,
-    "kurt_63": 1.08793,
-    "drawdown": -0.06334,
-    "beta_63": 0.86989,
-    "corr_63": 0.50409,
-    "beta_252": 0.81959,
-    "corr_252": 0.4968,
-    "rs_3m": 0.00924,
-    "rs_12m": -0.04437
+    "ret": -0.02212,
+    "rv_5": 0.51787,
+    "rv_21": 0.42476,
+    "rv_63": 0.31105,
+    "park_21": 0.31197,
+    "gk_21": 0.31874,
+    "park_63": 0.23945,
+    "gk_63": 0.24412,
+    "atr_pct": 0.03636,
+    "mom_1m": 0.00112,
+    "mom_3m": -0.05339,
+    "mom_6m": -0.04126,
+    "mom_12m": 0.04275,
+    "dist_ma50": 0.02459,
+    "dist_ma200": 0.06508,
+    "vol_z": 2.93078,
+    "skew_63": 0.54692,
+    "kurt_63": 1.03092,
+    "drawdown": -0.08383,
+    "beta_63": 0.68424,
+    "corr_63": 0.483,
+    "beta_252": 0.77227,
+    "corr_252": 0.48957,
+    "rs_3m": 0.05648,
+    "rs_12m": -0.00313
   },
   "regime": {
     "available": true,
-    "as_of": "2026-11-04",
+    "as_of": "2026-11-05",
     "current": "turbolento",
     "probabilities": {
       "calmo": 0.0,
       "normale": 0.0,
       "turbolento": 1.0
     },
-    "days_in_state": 5,
+    "days_in_state": 6,
     "states": [
       {
         "label": "calmo",
-        "share_of_days": 0.3521,
+        "share_of_days": 0.352,
         "ret_ann": 0.2792,
         "vol_ann": 0.2007,
         "expected_duration_days": 34.0
@@ -64,8 +64,8 @@
       },
       {
         "label": "turbolento",
-        "share_of_days": 0.3596,
-        "ret_ann": 0.2447,
+        "share_of_days": 0.3598,
+        "ret_ann": 0.2401,
         "vol_ann": 0.4418,
         "expected_duration_days": 35.1
       }
@@ -3549,7 +3549,8 @@
       "2026-10-30",
       "2026-11-02",
       "2026-11-03",
-      "2026-11-04"
+      "2026-11-04",
+      "2026-11-05"
     ],
     "state": [
       1,
@@ -7006,6 +7007,7 @@
       1,
       1,
       1,
+      2,
       2,
       2,
       2,
@@ -10471,6 +10473,7 @@
       0.997,
       0.999,
       0.999,
+      1.0,
       1.0
     ]
   },
@@ -10479,19 +10482,13 @@
     "threshold": 4.0,
     "count_by_kind": {
       "gap": 145,
-      "range": 114,
+      "range": 115,
       "rendimento_vs_bench": 84,
       "rendimento": 75,
       "volume": 38
     },
-    "count_last_365_days": 18,
+    "count_last_365_days": 19,
     "recent": [
-      {
-        "date": "2025-01-27",
-        "kind": "rendimento_vs_bench",
-        "z": 4.44,
-        "value": 0.04143
-      },
       {
         "date": "2025-02-27",
         "kind": "range",
@@ -10802,24 +10799,35 @@
         "kind": "gap",
         "z": 6.4,
         "value": 0.05483
+      },
+      {
+        "date": "2026-11-05",
+        "kind": "range",
+        "z": 6.09,
+        "value": 0.07981
       }
     ],
     "count_last_365_days_earnings": 10
   },
   "earnings": {
     "available": true,
-    "next": null,
+    "next": {
+      "date": "2027-02-04",
+      "timing": "dopo la chiusura",
+      "reaction_session": "2027-02-05",
+      "sessions_until": 66
+    },
     "n_reactions": 68,
     "typical_move": 0.06628027475028486,
-    "typical_day_move": 0.010724396271677872,
-    "move_ratio": 6.1803268987108275,
+    "typical_day_move": 0.010726942876232437,
+    "move_ratio": 6.178859672790959,
     "share_up": 0.4852941176470588,
     "last": {
       "date": "2026-10-29",
       "session": "2026-10-30",
       "reaction": -0.014210951704902719,
       "reaction_vs_bench": 0.021013617998508316,
-      "sessions_ago": 3
+      "sessions_ago": 4
     },
     "history": [
       {

@@ -4,69 +4,69 @@
   "asset_class": "etf",
   "benchmark": "ndx",
   "model_version": "0.1.0",
-  "as_of": "2026-11-04",
+  "as_of": "2026-11-05",
   "data_period": {
     "first": "2010-01-04",
-    "last": "2026-11-04",
-    "sessions": 4236
+    "last": "2026-11-05",
+    "sessions": 4237
   },
   "features_latest": {
-    "ret": 0.00969,
-    "rv_5": 0.28852,
-    "rv_21": 0.22673,
-    "rv_63": 0.17811,
-    "park_21": 0.15039,
-    "gk_21": 0.15097,
-    "park_63": 0.11732,
-    "gk_63": 0.11928,
-    "atr_pct": 0.01881,
-    "mom_1m": -0.09336,
-    "mom_3m": -0.03124,
-    "mom_6m": -0.00337,
-    "mom_12m": 0.09519,
-    "dist_ma50": -0.04432,
-    "dist_ma200": 0.01824,
-    "vol_z": 2.24105,
-    "skew_63": -0.6489,
-    "kurt_63": 1.26614,
-    "drawdown": -0.08913,
-    "beta_63": 0.99582,
-    "corr_63": 0.99958,
-    "beta_252": 1.00147,
-    "corr_252": 0.99943,
-    "rs_3m": 0.00115,
-    "rs_12m": 0.00454
+    "ret": -0.06709,
+    "rv_5": 0.50557,
+    "rv_21": 0.31354,
+    "rv_63": 0.22079,
+    "park_21": 0.18813,
+    "gk_21": 0.16429,
+    "park_63": 0.13413,
+    "gk_63": 0.12475,
+    "atr_pct": 0.02364,
+    "mom_1m": -0.1579,
+    "mom_3m": -0.10999,
+    "mom_6m": -0.06926,
+    "mom_12m": 0.0486,
+    "dist_ma50": -0.10965,
+    "dist_ma200": -0.04909,
+    "vol_z": 4.66519,
+    "skew_63": -1.9011,
+    "kurt_63": 7.26588,
+    "drawdown": -0.14824,
+    "beta_63": 1.0052,
+    "corr_63": 0.99965,
+    "beta_252": 1.00364,
+    "corr_252": 0.99946,
+    "rs_3m": -0.00012,
+    "rs_12m": 0.00272
   },
   "regime": {
     "available": true,
-    "as_of": "2026-11-04",
+    "as_of": "2026-11-05",
     "current": "turbolento",
     "probabilities": {
       "calmo": 0.0,
-      "normale": 0.0566,
-      "turbolento": 0.9434
+      "normale": 0.0,
+      "turbolento": 1.0
     },
-    "days_in_state": 4,
+    "days_in_state": 5,
     "states": [
       {
         "label": "calmo",
-        "share_of_days": 0.34,
+        "share_of_days": 0.3399,
         "ret_ann": 0.1746,
         "vol_ann": 0.1166,
         "expected_duration_days": 35.5
       },
       {
         "label": "normale",
-        "share_of_days": 0.368,
+        "share_of_days": 0.3679,
         "ret_ann": 0.2899,
         "vol_ann": 0.1638,
         "expected_duration_days": 27.9
       },
       {
         "label": "turbolento",
-        "share_of_days": 0.292,
-        "ret_ann": 0.044,
-        "vol_ann": 0.3163,
+        "share_of_days": 0.2922,
+        "ret_ann": 0.0272,
+        "vol_ann": 0.318,
         "expected_duration_days": 55.4
       }
     ],
@@ -3549,7 +3549,8 @@
       "2026-10-30",
       "2026-11-02",
       "2026-11-03",
-      "2026-11-04"
+      "2026-11-04",
+      "2026-11-05"
     ],
     "state": [
       0,
@@ -7007,6 +7008,7 @@
       1,
       1,
       1,
+      2,
       2,
       2,
       2,
@@ -10471,39 +10473,22 @@
       0.81,
       0.936,
       0.927,
-      0.943
+      0.943,
+      1.0
     ]
   },
   "anomalies": {
     "method": "z-score robusto mediana/MAD su 252 sedute precedenti",
     "threshold": 4.0,
     "count_by_kind": {
-      "range": 125,
+      "range": 126,
       "gap": 93,
-      "rendimento": 77,
-      "rendimento_vs_bench": 46,
+      "rendimento": 78,
+      "rendimento_vs_bench": 47,
       "volume": 17
     },
-    "count_last_365_days": 12,
+    "count_last_365_days": 15,
     "recent": [
-      {
-        "date": "2024-07-31",
-        "kind": "gap",
-        "z": 4.22,
-        "value": 0.02235
-      },
-      {
-        "date": "2024-08-01",
-        "kind": "range",
-        "z": 6.61,
-        "value": 0.04202
-      },
-      {
-        "date": "2024-08-02",
-        "kind": "gap",
-        "z": -4.02,
-        "value": -0.01926
-      },
       {
         "date": "2024-08-05",
         "kind": "gap",
@@ -10785,6 +10770,24 @@
         "kind": "rendimento_vs_bench",
         "z": 4.62,
         "value": 0.00159
+      },
+      {
+        "date": "2026-11-05",
+        "kind": "range",
+        "z": 6.98,
+        "value": 0.05502
+      },
+      {
+        "date": "2026-11-05",
+        "kind": "rendimento",
+        "z": -6.13,
+        "value": -0.06709
+      },
+      {
+        "date": "2026-11-05",
+        "kind": "rendimento_vs_bench",
+        "z": -4.87,
+        "value": -0.0017
       }
     ],
     "count_last_365_days_earnings": 0
