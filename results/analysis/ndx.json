@@ -4,63 +4,63 @@
   "asset_class": "index",
   "benchmark": null,
   "model_version": "0.1.0",
-  "as_of": "2026-11-09",
+  "as_of": "2026-11-10",
   "data_period": {
     "first": "2010-01-04",
-    "last": "2026-11-09",
-    "sessions": 4239
+    "last": "2026-11-10",
+    "sessions": 4240
   },
   "features_latest": {
-    "ret": 0.03343,
-    "rv_5": 0.60119,
-    "rv_21": 0.34483,
-    "rv_63": 0.23232,
-    "park_21": 0.19375,
-    "gk_21": 0.1703,
-    "park_63": 0.13723,
-    "gk_63": 0.12833,
-    "atr_pct": 0.02363,
-    "mom_1m": -0.10131,
-    "mom_3m": -0.05635,
-    "mom_6m": -0.04939,
-    "mom_12m": 0.10484,
-    "dist_ma50": -0.05895,
-    "dist_ma200": -0.00314,
-    "vol_z": -1.98133,
-    "skew_63": -1.4795,
-    "kurt_63": 5.70285,
-    "drawdown": -0.10623
+    "ret": -0.006,
+    "rv_5": 0.59816,
+    "rv_21": 0.34476,
+    "rv_63": 0.23193,
+    "park_21": 0.19797,
+    "gk_21": 0.177,
+    "park_63": 0.13927,
+    "gk_63": 0.1314,
+    "atr_pct": 0.02354,
+    "mom_1m": -0.10021,
+    "mom_3m": -0.06968,
+    "mom_6m": -0.04662,
+    "mom_12m": 0.10164,
+    "dist_ma50": -0.06378,
+    "dist_ma200": -0.0095,
+    "vol_z": -2.16937,
+    "skew_63": -1.44578,
+    "kurt_63": 5.67014,
+    "drawdown": -0.11157
   },
   "regime": {
     "available": true,
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-10",
     "current": "turbolento",
     "probabilities": {
       "calmo": 0.0,
       "normale": 0.0,
       "turbolento": 1.0
     },
-    "days_in_state": 7,
+    "days_in_state": 8,
     "states": [
       {
         "label": "calmo",
-        "share_of_days": 0.3455,
+        "share_of_days": 0.3454,
         "ret_ann": 0.1769,
         "vol_ann": 0.117,
         "expected_duration_days": 35.8
       },
       {
         "label": "normale",
-        "share_of_days": 0.3718,
+        "share_of_days": 0.3716,
         "ret_ann": 0.2552,
         "vol_ann": 0.1683,
         "expected_duration_days": 27.8
       },
       {
         "label": "turbolento",
-        "share_of_days": 0.2828,
-        "ret_ann": 0.048,
-        "vol_ann": 0.3237,
+        "share_of_days": 0.283,
+        "ret_ann": 0.0464,
+        "vol_ann": 0.3236,
         "expected_duration_days": 57.4
       }
     ],
@@ -3546,7 +3546,8 @@
       "2026-11-04",
       "2026-11-05",
       "2026-11-06",
-      "2026-11-09"
+      "2026-11-09",
+      "2026-11-10"
     ],
     "state": [
       0,
@@ -7004,6 +7005,7 @@
       1,
       1,
       1,
+      2,
       2,
       2,
       2,
@@ -10474,6 +10476,7 @@
       0.934,
       1.0,
       1.0,
+      1.0,
       1.0
     ]
   },
@@ -10482,18 +10485,12 @@
     "threshold": 4.0,
     "count_by_kind": {
       "range": 129,
-      "volume": 125,
+      "volume": 126,
       "gap": 98,
       "rendimento": 79
     },
-    "count_last_365_days": 24,
+    "count_last_365_days": 25,
     "recent": [
-      {
-        "date": "2024-12-20",
-        "kind": "volume",
-        "z": 4.96,
-        "value": 0.70216
-      },
       {
         "date": "2025-01-07",
         "kind": "volume",
@@ -10787,6 +10784,12 @@
         "kind": "volume",
         "z": -9.61,
         "value": -1.53807
+      },
+      {
+        "date": "2026-11-10",
+        "kind": "volume",
+        "z": -10.71,
+        "value": -1.71368
       }
     ],
     "count_last_365_days_earnings": 0

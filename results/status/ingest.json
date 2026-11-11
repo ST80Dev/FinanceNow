@@ -1,6 +1,6 @@
 {
-  "run_started": "2026-11-10T04:14:36+00:00",
-  "run_finished": "2026-11-10T04:15:12+00:00",
+  "run_started": "2026-11-11T02:03:37+00:00",
+  "run_finished": "2026-11-11T02:04:08+00:00",
   "mode": "daily",
   "requests": 13,
   "max_requests": 200,
@@ -8,7 +8,8 @@
     "stooq": "STOOQ_API_KEY assente (senza chiave Stooq restituisce una pagina anti-bot)"
   },
   "summary": {
-    "updated": 13
+    "updated": 12,
+    "up_to_date": 1
   },
   "missing": [],
   "stale": [],
@@ -20,9 +21,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4239,
+      "rows": 4240,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-09"
+      "last_date": "2026-11-10"
     },
     "qqq": {
       "id": "qqq",
@@ -30,9 +31,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4239,
+      "rows": 4240,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-09"
+      "last_date": "2026-11-10"
     },
     "spx": {
       "id": "spx",
@@ -40,9 +41,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4239,
+      "rows": 4240,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-09"
+      "last_date": "2026-11-10"
     },
     "nvda": {
       "id": "nvda",
@@ -50,9 +51,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4239,
+      "rows": 4240,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-09"
+      "last_date": "2026-11-10"
     },
     "aapl": {
       "id": "aapl",
@@ -60,9 +61,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4239,
+      "rows": 4240,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-09"
+      "last_date": "2026-11-10"
     },
     "googl": {
       "id": "googl",
@@ -70,9 +71,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4239,
+      "rows": 4240,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-09"
+      "last_date": "2026-11-10"
     },
     "msft": {
       "id": "msft",
@@ -80,9 +81,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4239,
+      "rows": 4240,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-09"
+      "last_date": "2026-11-10"
     },
     "amzn": {
       "id": "amzn",
@@ -90,16 +91,18 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4239,
+      "rows": 4240,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-09"
+      "last_date": "2026-11-10"
     },
     "meta": {
       "id": "meta",
-      "warnings": [],
-      "status": "updated",
+      "warnings": [
+        "scartate 1 barre con prezzi mancanti"
+      ],
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 2,
+      "new_rows": 0,
       "rows": 3640,
       "first_date": "2012-05-18",
       "last_date": "2026-11-09"
@@ -110,9 +113,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4239,
+      "rows": 4240,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-09"
+      "last_date": "2026-11-10"
     },
     "tsla": {
       "id": "tsla",
@@ -120,9 +123,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4117,
+      "rows": 4118,
       "first_date": "2010-06-29",
-      "last_date": "2026-11-09"
+      "last_date": "2026-11-10"
     },
     "mu": {
       "id": "mu",
@@ -130,9 +133,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4239,
+      "rows": 4240,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-09"
+      "last_date": "2026-11-10"
     },
     "amd": {
       "id": "amd",
@@ -140,9 +143,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4239,
+      "rows": 4240,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-09"
+      "last_date": "2026-11-10"
     }
   }
 }
