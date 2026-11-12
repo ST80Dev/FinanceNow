@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-11T02:06:53+00:00",
+  "generated": "2026-11-12T03:16:23+00:00",
   "events": [
     {
       "id": "ndx",
@@ -9,11 +9,25 @@
       "history": "storicamente, dopo eventi simili (294 casi su 13 strumenti, 158 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,5 volte quella tipica (giorno qualsiasi: 1,1)."
     },
     {
+      "id": "ndx",
+      "type": "vol_estrema",
+      "date": "2026-11-11",
+      "is_last_session": true,
+      "history": "storicamente, dopo eventi simili (179 casi su 13 strumenti, 106 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,7 volte quella tipica (giorno qualsiasi: 1,1); calo di almeno il 10% nel 49% dei casi (giorno qualsiasi: 27%)."
+    },
+    {
       "id": "qqq",
       "type": "crollo_anomalo",
       "date": "2026-11-05",
       "is_last_session": false,
       "history": "storicamente, dopo eventi simili (294 casi su 13 strumenti, 158 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,5 volte quella tipica (giorno qualsiasi: 1,1)."
+    },
+    {
+      "id": "qqq",
+      "type": "vol_estrema",
+      "date": "2026-11-11",
+      "is_last_session": true,
+      "history": "storicamente, dopo eventi simili (179 casi su 13 strumenti, 106 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,7 volte quella tipica (giorno qualsiasi: 1,1); calo di almeno il 10% nel 49% dei casi (giorno qualsiasi: 27%)."
     },
     {
       "id": "spx",
@@ -54,34 +68,6 @@
       "id": "nvda",
       "type": "vol_accelerazione",
       "date": "2026-11-05",
-      "is_last_session": false,
-      "history": "storicamente, dopo eventi simili (868 casi su 13 strumenti, 388 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,2 volte quella tipica (giorno qualsiasi: 1,1); calo di almeno il 10% nel 31% dei casi (giorno qualsiasi: 26%)."
-    },
-    {
-      "id": "aapl",
-      "type": "balzo_anomalo",
-      "date": "2026-11-04",
-      "is_last_session": false,
-      "history": "storicamente, dopo eventi simili (253 casi su 13 strumenti, 148 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,3 volte quella tipica (giorno qualsiasi: 1,1)."
-    },
-    {
-      "id": "aapl",
-      "type": "vol_accelerazione",
-      "date": "2026-11-04",
-      "is_last_session": false,
-      "history": "storicamente, dopo eventi simili (868 casi su 13 strumenti, 388 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,2 volte quella tipica (giorno qualsiasi: 1,1); calo di almeno il 10% nel 31% dei casi (giorno qualsiasi: 26%)."
-    },
-    {
-      "id": "msft",
-      "type": "regime_turbolento",
-      "date": "2026-11-04",
-      "is_last_session": false,
-      "history": "storicamente, dopo eventi simili (340 casi su 13 strumenti, 199 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,3 volte quella tipica (giorno qualsiasi: 1,1)."
-    },
-    {
-      "id": "msft",
-      "type": "vol_accelerazione",
-      "date": "2026-11-04",
       "is_last_session": false,
       "history": "storicamente, dopo eventi simili (868 casi su 13 strumenti, 388 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,2 volte quella tipica (giorno qualsiasi: 1,1); calo di almeno il 10% nel 31% dei casi (giorno qualsiasi: 26%)."
     },
@@ -101,13 +87,6 @@
     },
     {
       "id": "tsla",
-      "type": "drawdown_20",
-      "date": "2026-11-04",
-      "is_last_session": false,
-      "history": "storicamente, dopo eventi simili (253 casi su 13 strumenti, 195 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,4 volte quella tipica (giorno qualsiasi: 1,1); calo di almeno il 10% nel 45% dei casi (giorno qualsiasi: 35%)."
-    },
-    {
-      "id": "tsla",
       "type": "crollo_anomalo",
       "date": "2026-11-05",
       "is_last_session": false,
@@ -133,13 +112,6 @@
       "date": "2026-11-05",
       "is_last_session": false,
       "history": "storicamente, dopo eventi simili (179 casi su 13 strumenti, 106 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,7 volte quella tipica (giorno qualsiasi: 1,1); calo di almeno il 10% nel 49% dei casi (giorno qualsiasi: 27%)."
-    },
-    {
-      "id": "amd",
-      "type": "trimestrale_positiva",
-      "date": "2026-11-04",
-      "is_last_session": false,
-      "history": "storicamente, dopo eventi simili (332 casi su 10 strumenti, 233 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,0 volte quella tipica (giorno qualsiasi: 1,1)."
     },
     {
       "id": "amd",
