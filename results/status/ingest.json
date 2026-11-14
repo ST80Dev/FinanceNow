@@ -1,15 +1,14 @@
 {
-  "run_started": "2026-11-13T02:45:12+00:00",
-  "run_finished": "2026-11-13T02:45:48+00:00",
+  "run_started": "2026-11-14T02:35:12+00:00",
+  "run_finished": "2026-11-14T02:35:45+00:00",
   "mode": "daily",
-  "requests": 14,
+  "requests": 13,
   "max_requests": 200,
   "disabled_sources": {
     "stooq": "STOOQ_API_KEY assente (senza chiave Stooq restituisce una pagina anti-bot)"
   },
   "summary": {
-    "updated": 12,
-    "refreshed": 1
+    "updated": 13
   },
   "missing": [],
   "stale": [],
@@ -21,9 +20,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4242,
+      "rows": 4243,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-12"
+      "last_date": "2026-11-13"
     },
     "qqq": {
       "id": "qqq",
@@ -31,9 +30,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4242,
+      "rows": 4243,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-12"
+      "last_date": "2026-11-13"
     },
     "spx": {
       "id": "spx",
@@ -41,9 +40,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4242,
+      "rows": 4243,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-12"
+      "last_date": "2026-11-13"
     },
     "nvda": {
       "id": "nvda",
@@ -51,21 +50,19 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4242,
+      "rows": 4243,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-12"
+      "last_date": "2026-11-13"
     },
     "aapl": {
       "id": "aapl",
-      "warnings": [
-        "close sovrapposti diversi (max 7.59e-04): nuovo aggiustamento"
-      ],
-      "status": "refreshed",
+      "warnings": [],
+      "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4242,
+      "rows": 4243,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-12"
+      "last_date": "2026-11-13"
     },
     "googl": {
       "id": "googl",
@@ -73,9 +70,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4242,
+      "rows": 4243,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-12"
+      "last_date": "2026-11-13"
     },
     "msft": {
       "id": "msft",
@@ -83,9 +80,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4242,
+      "rows": 4243,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-12"
+      "last_date": "2026-11-13"
     },
     "amzn": {
       "id": "amzn",
@@ -93,9 +90,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4242,
+      "rows": 4243,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-12"
+      "last_date": "2026-11-13"
     },
     "meta": {
       "id": "meta",
@@ -103,9 +100,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 3643,
+      "rows": 3644,
       "first_date": "2012-05-18",
-      "last_date": "2026-11-12"
+      "last_date": "2026-11-13"
     },
     "avgo": {
       "id": "avgo",
@@ -113,9 +110,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4242,
+      "rows": 4243,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-12"
+      "last_date": "2026-11-13"
     },
     "tsla": {
       "id": "tsla",
@@ -123,9 +120,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4120,
+      "rows": 4121,
       "first_date": "2010-06-29",
-      "last_date": "2026-11-12"
+      "last_date": "2026-11-13"
     },
     "mu": {
       "id": "mu",
@@ -133,9 +130,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4242,
+      "rows": 4243,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-12"
+      "last_date": "2026-11-13"
     },
     "amd": {
       "id": "amd",
@@ -143,9 +140,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4242,
+      "rows": 4243,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-12"
+      "last_date": "2026-11-13"
     }
   }
 }

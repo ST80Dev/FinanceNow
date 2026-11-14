@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-13T02:48:34+00:00",
+  "generated": "2026-11-14T02:38:33+00:00",
   "events": [
     {
       "id": "ndx",
@@ -19,7 +19,7 @@
       "id": "nvda",
       "type": "volume_anomalo",
       "date": "2026-11-12",
-      "is_last_session": true,
+      "is_last_session": false,
       "history": "storicamente, dopo eventi simili (207 casi su 13 strumenti, 146 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): nessuna differenza netta di volatilità o rischio rispetto a un giorno qualsiasi."
     },
     {
