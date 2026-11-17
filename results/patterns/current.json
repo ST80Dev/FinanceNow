@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-14T02:38:33+00:00",
+  "generated": "2026-11-17T04:45:35+00:00",
   "events": [
     {
       "id": "ndx",
@@ -21,13 +21,6 @@
       "date": "2026-11-12",
       "is_last_session": false,
       "history": "storicamente, dopo eventi simili (207 casi su 13 strumenti, 146 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): nessuna differenza netta di volatilità o rischio rispetto a un giorno qualsiasi."
-    },
-    {
-      "id": "avgo",
-      "type": "vol_estrema",
-      "date": "2026-11-09",
-      "is_last_session": false,
-      "history": "storicamente, dopo eventi simili (179 casi su 13 strumenti, 106 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,7 volte quella tipica (giorno qualsiasi: 1,1); calo di almeno il 10% nel 49% dei casi (giorno qualsiasi: 27%)."
     }
   ]
 }

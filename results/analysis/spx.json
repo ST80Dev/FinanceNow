@@ -4,63 +4,63 @@
   "asset_class": "index",
   "benchmark": null,
   "model_version": "0.1.0",
-  "as_of": "2026-11-13",
+  "as_of": "2026-11-16",
   "data_period": {
     "first": "2010-01-04",
-    "last": "2026-11-13",
-    "sessions": 4243
+    "last": "2026-11-16",
+    "sessions": 4244
   },
   "features_latest": {
-    "ret": -0.00406,
-    "rv_5": 0.19897,
-    "rv_21": 0.21861,
-    "rv_63": 0.14684,
-    "park_21": 0.13942,
-    "gk_21": 0.12093,
-    "park_63": 0.09826,
-    "gk_63": 0.09077,
-    "atr_pct": 0.01429,
-    "mom_1m": -0.02383,
-    "mom_3m": -0.02396,
-    "mom_6m": 0.02046,
-    "mom_12m": 0.09871,
-    "dist_ma50": -0.01389,
-    "dist_ma200": 0.02971,
-    "vol_z": -2.39886,
-    "skew_63": -1.45077,
-    "kurt_63": 7.74931,
-    "drawdown": -0.0329
+    "ret": -0.01937,
+    "rv_5": 0.18183,
+    "rv_21": 0.22521,
+    "rv_63": 0.15115,
+    "park_21": 0.13904,
+    "gk_21": 0.11943,
+    "park_63": 0.09992,
+    "gk_63": 0.09185,
+    "atr_pct": 0.01509,
+    "mom_1m": -0.03222,
+    "mom_3m": -0.03643,
+    "mom_6m": 0.00183,
+    "mom_12m": 0.09603,
+    "dist_ma50": -0.03248,
+    "dist_ma200": 0.01001,
+    "vol_z": -1.74066,
+    "skew_63": -1.39273,
+    "kurt_63": 6.71039,
+    "drawdown": -0.05146
   },
   "regime": {
     "available": true,
-    "as_of": "2026-11-13",
+    "as_of": "2026-11-16",
     "current": "turbolento",
     "probabilities": {
       "calmo": 0.0,
-      "normale": 0.0004,
-      "turbolento": 0.9996
+      "normale": 0.0,
+      "turbolento": 1.0
     },
-    "days_in_state": 7,
+    "days_in_state": 8,
     "states": [
       {
         "label": "calmo",
-        "share_of_days": 0.4256,
+        "share_of_days": 0.4254,
         "ret_ann": 0.0955,
         "vol_ann": 0.0943,
         "expected_duration_days": 38.2
       },
       {
         "label": "normale",
-        "share_of_days": 0.3534,
+        "share_of_days": 0.3533,
         "ret_ann": 0.1875,
         "vol_ann": 0.1377,
         "expected_duration_days": 24.3
       },
       {
         "label": "turbolento",
-        "share_of_days": 0.221,
-        "ret_ann": 0.0493,
-        "vol_ann": 0.2872,
+        "share_of_days": 0.2212,
+        "ret_ann": 0.0428,
+        "vol_ann": 0.2873,
         "expected_duration_days": 51.3
       }
     ],
@@ -3550,7 +3550,8 @@
       "2026-11-10",
       "2026-11-11",
       "2026-11-12",
-      "2026-11-13"
+      "2026-11-13",
+      "2026-11-16"
     ],
     "state": [
       0,
@@ -7012,6 +7013,7 @@
       1,
       1,
       1,
+      2,
       2,
       2,
       2,
@@ -10486,6 +10488,7 @@
       0.999,
       1.0,
       1.0,
+      1.0,
       1.0
     ]
   },
@@ -10495,17 +10498,11 @@
     "count_by_kind": {
       "gap": 218,
       "range": 145,
-      "volume": 125,
+      "volume": 126,
       "rendimento": 97
     },
-    "count_last_365_days": 26,
+    "count_last_365_days": 27,
     "recent": [
-      {
-        "date": "2025-04-04",
-        "kind": "gap",
-        "z": -6.27,
-        "value": -0.01953
-      },
       {
         "date": "2025-04-04",
         "kind": "range",
@@ -10799,6 +10796,12 @@
         "kind": "volume",
         "z": -5.67,
         "value": -0.64394
+      },
+      {
+        "date": "2026-11-16",
+        "kind": "volume",
+        "z": -4.45,
+        "value": -0.5236
       }
     ],
     "count_last_365_days_earnings": 0
