@@ -4,68 +4,68 @@
   "asset_class": "stock",
   "benchmark": "ndx",
   "model_version": "0.1.0",
-  "as_of": "2026-11-16",
+  "as_of": "2026-11-17",
   "data_period": {
     "first": "2010-01-04",
-    "last": "2026-11-16",
-    "sessions": 4244
+    "last": "2026-11-17",
+    "sessions": 4245
   },
   "features_latest": {
-    "ret": -0.01131,
-    "rv_5": 0.20047,
-    "rv_21": 0.35778,
-    "rv_63": 0.26882,
-    "park_21": 0.25858,
-    "gk_21": 0.2552,
-    "park_63": 0.22344,
-    "gk_63": 0.22453,
-    "atr_pct": 0.02881,
-    "mom_1m": -0.02113,
-    "mom_3m": 0.07466,
-    "mom_6m": 0.20535,
-    "mom_12m": 0.03698,
-    "dist_ma50": -0.00265,
-    "dist_ma200": 0.16104,
-    "vol_z": 1.07621,
-    "skew_63": 0.72145,
-    "kurt_63": 2.13962,
-    "drawdown": -0.06803,
-    "beta_63": 0.60286,
-    "corr_63": 0.53854,
-    "beta_252": 0.54877,
-    "corr_252": 0.35246,
-    "rs_3m": 0.15563,
-    "rs_12m": -0.04751
+    "ret": -0.02295,
+    "rv_5": 0.20297,
+    "rv_21": 0.36382,
+    "rv_63": 0.27295,
+    "park_21": 0.26867,
+    "gk_21": 0.26768,
+    "park_63": 0.22667,
+    "gk_63": 0.22834,
+    "atr_pct": 0.03041,
+    "mom_1m": -0.05249,
+    "mom_3m": 0.04617,
+    "mom_6m": 0.19696,
+    "mom_12m": 0.00044,
+    "dist_ma50": -0.02607,
+    "dist_ma200": 0.13712,
+    "vol_z": 0.7866,
+    "skew_63": 0.7244,
+    "kurt_63": 1.97228,
+    "drawdown": -0.08917,
+    "beta_63": 0.6116,
+    "corr_63": 0.53872,
+    "beta_252": 0.55176,
+    "corr_252": 0.35405,
+    "rs_3m": 0.13214,
+    "rs_12m": -0.07626
   },
   "regime": {
     "available": true,
-    "as_of": "2026-11-16",
+    "as_of": "2026-11-17",
     "current": "turbolento",
     "probabilities": {
       "calmo": 0.0,
       "normale": 0.0,
       "turbolento": 1.0
     },
-    "days_in_state": 9,
+    "days_in_state": 10,
     "states": [
       {
         "label": "calmo",
-        "share_of_days": 0.3262,
+        "share_of_days": 0.3261,
         "ret_ann": 0.3157,
         "vol_ann": 0.1573,
         "expected_duration_days": 30.1
       },
       {
         "label": "normale",
-        "share_of_days": 0.338,
+        "share_of_days": 0.3379,
         "ret_ann": 0.2085,
         "vol_ann": 0.2193,
         "expected_duration_days": 21.9
       },
       {
         "label": "turbolento",
-        "share_of_days": 0.3357,
-        "ret_ann": 0.1676,
+        "share_of_days": 0.3359,
+        "ret_ann": 0.1625,
         "vol_ann": 0.3781,
         "expected_duration_days": 35.3
       }
@@ -3557,7 +3557,8 @@
       "2026-11-11",
       "2026-11-12",
       "2026-11-13",
-      "2026-11-16"
+      "2026-11-16",
+      "2026-11-17"
     ],
     "state": [
       0,
@@ -7018,6 +7019,7 @@
       1,
       1,
       1,
+      2,
       2,
       2,
       2,
@@ -10495,6 +10497,7 @@
       1.0,
       1.0,
       1.0,
+      1.0,
       1.0
     ]
   },
@@ -10833,19 +10836,19 @@
       "date": "2027-01-27",
       "timing": "dopo la chiusura",
       "reaction_session": "2027-01-28",
-      "sessions_until": 53
+      "sessions_until": 52
     },
     "n_reactions": 68,
     "typical_move": 0.030119931399589905,
-    "typical_day_move": 0.008198586982461897,
-    "move_ratio": 3.673795431337291,
+    "typical_day_move": 0.008204238300145938,
+    "move_ratio": 3.67126481431605,
     "share_up": 0.5735294117647058,
     "last": {
       "date": "2026-10-28",
       "session": "2026-10-29",
       "reaction": -0.0016397216078782861,
       "reaction_vs_bench": 0.012230088925308635,
-      "sessions_ago": 12
+      "sessions_ago": 13
     },
     "history": [
       {
