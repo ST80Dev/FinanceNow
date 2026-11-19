@@ -1,36 +1,36 @@
 {
   "series": "live",
-  "generated": "2026-11-18T03:51:37+00:00",
+  "generated": "2026-11-19T03:47:41+00:00",
   "note": "previsioni di direzione registrate da daily.yml prima di conoscere l'esito; mai ricalcolate",
-  "n_logged": 464,
+  "n_logged": 490,
   "first_origin": "2026-10-23",
   "horizons": {
     "h5": {
-      "n": 167,
-      "n_dates": 13,
+      "n": 180,
+      "n_dates": 14,
       "first_origin": "2026-10-23",
-      "last_origin": "2026-11-10",
-      "up_rate": 0.3592814371257485,
+      "last_origin": "2026-11-11",
+      "up_rate": 0.3333333333333333,
       "brier": {
-        "modello": 0.27579676942638315,
-        "freq_storica": 0.275546547418515,
+        "modello": 0.2784915466524222,
+        "freq_storica": 0.2786013858229222,
         "moneta": 0.25
       },
       "logloss": {
-        "modello": 0.7454157575097318,
-        "freq_storica": 0.7447498815919863,
+        "modello": 0.7508327133280606,
+        "freq_storica": 0.7508969091083086,
         "moneta": 0.6931471805599453
       },
-      "skill_vs_freq_storica": -0.0009080934245497829,
-      "dm_vs_freq_storica": 0.039746252662502236,
+      "skill_vs_freq_storica": 0.0003942520607913558,
+      "dm_vs_freq_storica": -0.0531769263528884,
       "accuracy": {
-        "modello": 0.3772455089820359,
-        "freq_storica": 0.3592814371257485
+        "modello": 0.35,
+        "freq_storica": 0.3333333333333333
       },
       "calls": {
         "ottimista": {
           "n": 5,
-          "share": 0.029940119760479042,
+          "share": 0.027777777777777776,
           "up_rate": 0.8,
           "base_rate": 0.5361534,
           "mean_ret": 0.0735400116539608
@@ -39,30 +39,30 @@
           "n": 0
         },
         "neutro": {
-          "n": 162,
-          "share": 0.9700598802395209,
-          "up_rate": 0.345679012345679,
-          "base_rate": 0.5647357345679013,
-          "mean_ret": -0.021643044250161916
+          "n": 175,
+          "share": 0.9722222222222222,
+          "up_rate": 0.32,
+          "base_rate": 0.5646354,
+          "mean_ret": -0.02203904029636165
         }
       },
       "calibration": [
         {
           "from": 0.5,
           "to": 0.55,
-          "n": 49,
-          "p_mean": 0.5353659795918367,
-          "up_rate": 0.42857142857142855
+          "n": 54,
+          "p_mean": 0.5347694444444444,
+          "up_rate": 0.3888888888888889
         },
         {
           "from": 0.55,
           "to": 0.6,
-          "n": 87,
-          "p_mean": 0.5746774022988506,
-          "up_rate": 0.3448275862068966
+          "n": 94,
+          "p_mean": 0.5746253085106383,
+          "up_rate": 0.3191489361702128
         }
       ],
-      "coverage_80": 0.6467065868263473,
+      "coverage_80": 0.6722222222222223,
       "verdict": "nessun vantaggio dimostrato"
     },
     "h21": {
