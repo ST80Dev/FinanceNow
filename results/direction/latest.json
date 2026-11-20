@@ -1,6 +1,6 @@
 {
-  "generated": "2026-11-20T03:40:49+00:00",
-  "model_version": "0.1.0",
+  "generated": "2026-11-20T15:28:28+00:00",
+  "model_version": "0.2.0",
   "experimental": true,
   "feature_labels": {
     "mom_1m": "andamento dell'ultimo mese",
@@ -19,262 +19,158 @@
     "earn_rx": "reazione all'ultima trimestrale (se recente)"
   },
   "instruments": {
+    "lrcx": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.6141412295196286,
+        "p_base": 0.5538990144244632,
+        "q10": -0.17427286687367025,
+        "q50": 0.017514896104940246,
+        "q90": 0.19129674056644413,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.3609
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.315
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.1053
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6552617084409276,
+        "p_base": 0.5953703692657911,
+        "q10": -0.3402721926815499,
+        "q50": 0.07030901945577188,
+        "q90": 0.44167553184936753,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.5484
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.4803
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.2262
+          }
+        ]
+      }
+    },
+    "meli": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5533176570706377,
+        "p_base": 0.526521152729868,
+        "q10": -0.10034678248356532,
+        "q50": 0.01008512398512808,
+        "q90": 0.11014917445152902,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.2994
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.2391
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.0776
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.5978875389793158,
+        "p_base": 0.5562801062949311,
+        "q10": -0.19592963791071996,
+        "q50": 0.040484121300853174,
+        "q90": 0.2543179516001733,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.4549
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.3646
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.1946
+          }
+        ]
+      }
+    },
     "meta": {
       "h5": {
-        "origin": "2026-11-18",
-        "p_up": 0.5966020120180019,
-        "p_base": 0.5610124668705284,
-        "q10": -0.06869707818929467,
-        "q50": 0.008069742543393283,
-        "q90": 0.07670468279591695,
+        "origin": "2026-11-19",
+        "p_up": 0.605457978232814,
+        "p_base": 0.5604370874426747,
+        "q10": -0.07071001954580507,
+        "q50": 0.007106548874420241,
+        "q90": 0.07761733944680813,
         "drivers": [
           {
             "feature": "rs_3m",
             "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": 0.1333
+            "effect": 0.159
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.0444
           },
           {
             "feature": "mom_1m",
             "label": "andamento dell'ultimo mese",
-            "effect": -0.0499
-          },
-          {
-            "feature": "dist_ma200",
-            "label": "distanza dalla media mobile a 200 sedute",
-            "effect": 0.0336
+            "effect": -0.0406
           }
         ]
       },
       "h21": {
-        "origin": "2026-11-18",
-        "p_up": 0.7091812182893078,
-        "p_base": 0.6277975631703401,
-        "q10": -0.1310386816002242,
-        "q50": 0.033308155515288373,
-        "q90": 0.18055020637325606,
+        "origin": "2026-11-19",
+        "p_up": 0.6902818273996522,
+        "p_base": 0.6264655794232205,
+        "q10": -0.13806310659276533,
+        "q50": 0.028527402051450025,
+        "q90": 0.17920681543967357,
         "drivers": [
           {
             "feature": "rs_3m",
             "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": 0.2556
+            "effect": 0.2424
           },
           {
             "feature": "dist_ma50",
             "label": "distanza dalla media mobile a 50 sedute",
-            "effect": 0.0767
-          },
-          {
-            "feature": "vol_z5",
-            "label": "volumi dell'ultima settimana rispetto al solito",
-            "effect": 0.0707
-          }
-        ]
-      }
-    },
-    "qqq": {
-      "h5": {
-        "origin": "2026-11-19",
-        "p_up": 0.6058245269636423,
-        "p_base": 0.592155618238136,
-        "q10": -0.06034713031608767,
-        "q50": 0.007088886714243402,
-        "q90": 0.06738143179516926,
-        "drivers": [
-          {
-            "feature": "mom_3m",
-            "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.0772
-          },
-          {
-            "feature": "p_turb",
-            "label": "probabilità di fase agitata",
-            "effect": -0.0772
-          },
-          {
-            "feature": "ret_5",
-            "label": "andamento dell'ultima settimana",
-            "effect": 0.0599
-          }
-        ]
-      },
-      "h21": {
-        "origin": "2026-11-19",
-        "p_up": 0.666574355277413,
-        "p_base": 0.6732723936988798,
-        "q10": -0.11511127697726965,
-        "q50": 0.02925963744674742,
-        "q90": 0.15860480707171215,
-        "drivers": [
-          {
-            "feature": "mom_3m",
-            "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.1594
-          },
-          {
-            "feature": "p_turb",
-            "label": "probabilità di fase agitata",
-            "effect": -0.1204
-          },
-          {
-            "feature": "dist_ma50",
-            "label": "distanza dalla media mobile a 50 sedute",
-            "effect": 0.0786
-          }
-        ]
-      }
-    },
-    "nvda": {
-      "h5": {
-        "origin": "2026-11-19",
-        "p_up": 0.5636470217751186,
-        "p_base": 0.5640697083962668,
-        "q10": -0.08518819215525976,
-        "q50": 0.010006928919681319,
-        "q90": 0.09511806658241675,
-        "drivers": [
-          {
-            "feature": "rs_3m",
-            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": -0.2401
+            "effect": 0.1114
           },
           {
             "feature": "mom_3m",
             "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.2134
-          },
-          {
-            "feature": "mom_1m",
-            "label": "andamento dell'ultimo mese",
-            "effect": -0.1573
-          }
-        ]
-      },
-      "h21": {
-        "origin": "2026-11-19",
-        "p_up": 0.6063495435200789,
-        "p_base": 0.6244687926564728,
-        "q10": -0.16249524262403583,
-        "q50": 0.04130396265988257,
-        "q90": 0.2238922830431758,
-        "drivers": [
-          {
-            "feature": "rs_3m",
-            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": -0.4606
-          },
-          {
-            "feature": "mom_3m",
-            "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.4403
-          },
-          {
-            "feature": "dist_ma50",
-            "label": "distanza dalla media mobile a 50 sedute",
-            "effect": 0.2448
-          }
-        ]
-      }
-    },
-    "ndx": {
-      "h5": {
-        "origin": "2026-11-19",
-        "p_up": 0.6179496727191995,
-        "p_base": 0.5864912330599439,
-        "q10": -0.05943227284237554,
-        "q50": 0.006981419781568142,
-        "q90": 0.06635993489640453,
-        "drivers": [
-          {
-            "feature": "mom_3m",
-            "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.0774
-          },
-          {
-            "feature": "p_turb",
-            "label": "probabilità di fase agitata",
-            "effect": -0.0772
-          },
-          {
-            "feature": "ret_5",
-            "label": "andamento dell'ultima settimana",
-            "effect": 0.0599
-          }
-        ]
-      },
-      "h21": {
-        "origin": "2026-11-19",
-        "p_up": 0.704027542084337,
-        "p_base": 0.6661650731587234,
-        "q10": -0.11336619959745714,
-        "q50": 0.028816063777940697,
-        "q90": 0.15620037139504925,
-        "drivers": [
-          {
-            "feature": "mom_3m",
-            "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.1597
-          },
-          {
-            "feature": "p_turb",
-            "label": "probabilità di fase agitata",
-            "effect": -0.1204
-          },
-          {
-            "feature": "vol_z5",
-            "label": "volumi dell'ultima settimana rispetto al solito",
-            "effect": 0.0936
-          }
-        ]
-      }
-    },
-    "mu": {
-      "h5": {
-        "origin": "2026-11-19",
-        "p_up": 0.5993982053004803,
-        "p_base": 0.5345677022598495,
-        "q10": -0.17365339664887666,
-        "q50": 0.02039880355436375,
-        "q90": 0.1938951270923389,
-        "drivers": [
-          {
-            "feature": "rs_3m",
-            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": -0.2027
-          },
-          {
-            "feature": "mom_3m",
-            "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.1903
-          },
-          {
-            "feature": "rs_12m",
-            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
-            "effect": 0.1343
-          }
-        ]
-      },
-      "h21": {
-        "origin": "2026-11-19",
-        "p_up": 0.6535279723889048,
-        "p_base": 0.5721115313439876,
-        "q10": -0.3312413388174584,
-        "q50": 0.08419680274320888,
-        "q90": 0.45639723593451836,
-        "drivers": [
-          {
-            "feature": "mom_3m",
-            "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.3928
-          },
-          {
-            "feature": "rs_3m",
-            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": -0.3888
-          },
-          {
-            "feature": "rs_12m",
-            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
-            "effect": 0.2278
+            "effect": -0.0355
           }
         ]
       }
@@ -282,259 +178,571 @@
     "msft": {
       "h5": {
         "origin": "2026-11-19",
-        "p_up": 0.5762905486922872,
-        "p_base": 0.5737463664090117,
-        "q10": -0.061965886702770236,
-        "q50": 0.007279039594472267,
-        "q90": 0.06918887686324349,
+        "p_up": 0.6037411040526427,
+        "p_base": 0.5732523304499529,
+        "q10": -0.06241533505737593,
+        "q50": 0.0062729105711988396,
+        "q90": 0.06851238733849305,
         "drivers": [
           {
             "feature": "rs_3m",
             "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": 0.0836
-          },
-          {
-            "feature": "p_turb",
-            "label": "probabilità di fase agitata",
-            "effect": -0.0772
+            "effect": 0.1137
           },
           {
             "feature": "ret_5",
             "label": "andamento dell'ultima settimana",
-            "effect": 0.0442
+            "effect": 0.0374
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0291
           }
         ]
       },
       "h21": {
         "origin": "2026-11-19",
-        "p_up": 0.6230577370830692,
-        "p_base": 0.6263640781338479,
-        "q10": -0.11819903133791843,
-        "q50": 0.03004450036799741,
-        "q90": 0.16285923546062006,
+        "p_up": 0.6639627214623877,
+        "p_base": 0.6252211155344478,
+        "q10": -0.12186752474969274,
+        "q50": 0.02518097673844243,
+        "q90": 0.15818484427071738,
         "drivers": [
           {
             "feature": "rs_3m",
             "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": 0.1602
-          },
-          {
-            "feature": "p_turb",
-            "label": "probabilità di fase agitata",
-            "effect": -0.1204
+            "effect": 0.1733
           },
           {
             "feature": "dist_ma50",
             "label": "distanza dalla media mobile a 50 sedute",
-            "effect": 0.0404
+            "effect": 0.0444
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0444
           }
         ]
       }
     },
-    "amzn": {
+    "mu": {
       "h5": {
         "origin": "2026-11-19",
-        "p_up": 0.5643802882126678,
-        "p_base": 0.5513248417453345,
-        "q10": -0.07338329121497475,
-        "q50": 0.008620224945520064,
-        "q90": 0.08193713944652455,
+        "p_up": 0.6141609439674491,
+        "p_base": 0.5340736663007909,
+        "q10": -0.17491293213765133,
+        "q50": 0.017579224401135293,
+        "q90": 0.1919993307111173,
         "drivers": [
           {
-            "feature": "p_turb",
-            "label": "probabilità di fase agitata",
-            "effect": -0.0772
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.2896
           },
           {
             "feature": "rs_3m",
             "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": 0.0545
+            "effect": -0.227
           },
           {
             "feature": "ret_5",
             "label": "andamento dell'ultima settimana",
-            "effect": 0.0372
+            "effect": 0.1109
           }
         ]
       },
       "h21": {
         "origin": "2026-11-19",
-        "p_up": 0.6259575262798622,
-        "p_base": 0.6277855422418791,
-        "q10": -0.1399775650690499,
-        "q50": 0.035580291628661616,
-        "q90": 0.19286654865733632,
+        "p_up": 0.6655693508730649,
+        "p_base": 0.5709685687445876,
+        "q10": -0.34152193634355105,
+        "q50": 0.07056724875965331,
+        "q90": 0.44329770729732226,
         "drivers": [
           {
-            "feature": "p_turb",
-            "label": "probabilità di fase agitata",
-            "effect": -0.1204
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.44
           },
           {
             "feature": "rs_3m",
             "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": 0.1045
+            "effect": -0.3462
           },
           {
-            "feature": "mom_3m",
-            "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.0659
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.2313
           }
         ]
       }
     },
-    "avgo": {
+    "ndx": {
       "h5": {
         "origin": "2026-11-19",
-        "p_up": 0.5854612846838195,
-        "p_base": 0.5652497886417235,
-        "q10": -0.12136229909243385,
-        "q50": 0.01425624690254805,
-        "q90": 0.13550877126996944,
+        "p_up": 0.6308769270226777,
+        "p_base": 0.5859971971008853,
+        "q10": -0.05986334449584207,
+        "q50": 0.006016428593551366,
+        "q90": 0.06571110515879698,
         "drivers": [
-          {
-            "feature": "p_turb",
-            "label": "probabilità di fase agitata",
-            "effect": -0.0772
-          },
           {
             "feature": "mom_3m",
             "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.0578
+            "effect": 0.1126
           },
           {
             "feature": "ret_5",
             "label": "andamento dell'ultima settimana",
-            "effect": 0.0471
+            "effect": 0.0509
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.0356
           }
         ]
       },
       "h21": {
         "origin": "2026-11-19",
-        "p_up": 0.6280609947163636,
-        "p_base": 0.6294439170345822,
-        "q10": -0.23149682764124987,
-        "q50": 0.058843177008562536,
-        "q90": 0.3189653581291087,
+        "p_up": 0.6996023888620274,
+        "p_base": 0.6650221105593235,
+        "q10": -0.11688469845175145,
+        "q50": 0.02415139618892466,
+        "q90": 0.1517171031429083,
         "drivers": [
-          {
-            "feature": "p_turb",
-            "label": "probabilità di fase agitata",
-            "effect": -0.1204
-          },
           {
             "feature": "mom_3m",
             "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.1194
+            "effect": 0.1712
           },
           {
-            "feature": "drawdown",
-            "label": "distanza dal massimo storico",
-            "effect": 0.068
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.0895
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0444
           }
         ]
       }
     },
-    "amd": {
+    "nflx": {
       "h5": {
         "origin": "2026-11-19",
-        "p_up": 0.5891561605306196,
-        "p_base": 0.526543156590744,
-        "q10": -0.21051134872741642,
-        "q50": 0.024728451798368592,
-        "q90": 0.23504938863023453,
+        "p_up": 0.57450232622051,
+        "p_base": 0.5395020354298916,
+        "q10": -0.05620498526732092,
+        "q50": 0.0056487535621390144,
+        "q90": 0.06169537850672685,
         "drivers": [
           {
-            "feature": "ret_5",
-            "label": "andamento dell'ultima settimana",
-            "effect": 0.1588
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.2687
           },
           {
             "feature": "rs_3m",
             "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": 0.084
+            "effect": -0.2012
           },
           {
             "feature": "rs_12m",
             "label": "forza rispetto al Nasdaq 100 a 12 mesi",
-            "effect": 0.0834
+            "effect": -0.0813
           }
         ]
       },
       "h21": {
         "origin": "2026-11-19",
-        "p_up": 0.5876928066792995,
-        "p_base": 0.5387071248052527,
-        "q10": -0.40154734853664237,
-        "q50": 0.10206758316307193,
-        "q90": 0.5532675982509314,
+        "p_up": 0.6187449416590045,
+        "p_base": 0.5766544251767127,
+        "q10": -0.1097416592705113,
+        "q50": 0.022675459889783207,
+        "q90": 0.14244539156244515,
         "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.4083
+          },
           {
             "feature": "rs_3m",
             "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": 0.161
+            "effect": -0.3068
           },
           {
-            "feature": "rs_12m",
-            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
-            "effect": 0.1414
-          },
-          {
-            "feature": "p_turb",
-            "label": "probabilità di fase agitata",
-            "effect": -0.1204
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.1262
           }
         ]
       }
     },
-    "aapl": {
+    "tmus": {
       "h5": {
         "origin": "2026-11-19",
-        "p_up": 0.61032919079908,
-        "p_base": 0.5718582380162809,
-        "q10": -0.04503506438551535,
-        "q50": 0.0052902013389105424,
-        "q90": 0.05028453057153403,
+        "p_up": 0.5773084622157696,
+        "p_base": 0.5402100835771656,
+        "q10": -0.07819058644732095,
+        "q50": 0.00785836615060634,
+        "q90": 0.08582864675769632,
         "drivers": [
-          {
-            "feature": "rs_3m",
-            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": 0.1528
-          },
-          {
-            "feature": "p_turb",
-            "label": "probabilità di fase agitata",
-            "effect": 0.0333
-          },
           {
             "feature": "mom_3m",
             "label": "andamento degli ultimi 3 mesi",
-            "effect": -0.0288
+            "effect": 0.1223
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0408
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": -0.038
           }
         ]
       },
       "h21": {
         "origin": "2026-11-19",
-        "p_up": 0.6780895246663832,
-        "p_base": 0.6171245614316446,
-        "q10": -0.08590373300299647,
-        "q50": 0.021835498215228694,
-        "q90": 0.11836151381041951,
+        "p_up": 0.5957078234839314,
+        "p_base": 0.574285318329994,
+        "q10": -0.15266910319879476,
+        "q50": 0.03154537801784154,
+        "q90": 0.19816549457333846,
         "drivers": [
-          {
-            "feature": "rs_3m",
-            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": 0.2931
-          },
           {
             "feature": "mom_3m",
             "label": "andamento degli ultimi 3 mesi",
-            "effect": -0.0592
+            "effect": 0.186
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": -0.0513
           },
           {
             "feature": "drawdown",
             "label": "distanza dal massimo storico",
-            "effect": -0.057
+            "effect": 0.0511
+          }
+        ]
+      }
+    },
+    "panw": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5763618938606014,
+        "p_base": 0.5579610915483868,
+        "q10": -0.12064308802243356,
+        "q50": 0.012124957776839855,
+        "q90": 0.13242812793853773,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.0935
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": -0.0821
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": 0.0487
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6875576537262361,
+        "p_base": 0.6200218856303169,
+        "q10": -0.23555868925381693,
+        "q50": 0.04867250636969475,
+        "q90": 0.3057567194604343,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.1425
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": 0.0658
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.0452
+          }
+        ]
+      }
+    },
+    "pep": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5787953219334605,
+        "p_base": 0.5444583724608097,
+        "q10": -0.05048388167330112,
+        "q50": 0.005073767123616172,
+        "q90": 0.05541540796620487,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.0642
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.0535
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0291
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6162828274781923,
+        "p_base": 0.5908690662570254,
+        "q10": -0.09857105939791845,
+        "q50": 0.02036732557652829,
+        "q90": 0.1279458798599967,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.0977
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.0814
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0444
+          }
+        ]
+      }
+    },
+    "pltr": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5841556433206859,
+        "p_base": 0.5400326967491523,
+        "q10": -0.08912644682986216,
+        "q50": 0.008957449799452196,
+        "q90": 0.09783277846218202,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.1558
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0847
+          },
+          {
+            "feature": "mom_1m",
+            "label": "andamento dell'ultimo mese",
+            "effect": -0.0676
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6366037486977633,
+        "p_base": 0.5748571711739647,
+        "q10": -0.1740216479636895,
+        "q50": 0.03595736500236196,
+        "q90": 0.2258812373469432,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.2368
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.1491
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.0946
+          }
+        ]
+      }
+    },
+    "qcom": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5863978754027025,
+        "p_base": 0.5387939872826176,
+        "q10": -0.11578709824082052,
+        "q50": 0.011636917624420385,
+        "q90": 0.12709777999561947,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.0958
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0692
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.0337
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.5980437160155762,
+        "p_base": 0.5482251430160873,
+        "q10": -0.2260772460419688,
+        "q50": 0.04671339542972292,
+        "q90": 0.2934497441525467,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.1461
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.0847
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0444
+          }
+        ]
+      }
+    },
+    "qqq": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.6317121822220225,
+        "p_base": 0.5916615822790774,
+        "q10": -0.06078483757517751,
+        "q50": 0.006109041148996853,
+        "q90": 0.06672261444130158,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.1123
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.051
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.0356
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.7080414622283165,
+        "p_base": 0.6721294310994799,
+        "q10": -0.11868393706113087,
+        "q50": 0.024523165334665063,
+        "q90": 0.15405252662685218,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.1708
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.0895
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0444
+          }
+        ]
+      }
+    },
+    "sbux": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5842211947361253,
+        "p_base": 0.5501227576390019,
+        "q10": -0.059936766727048424,
+        "q50": 0.006023807727058733,
+        "q90": 0.06579169965274693,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.0663
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.0517
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0291
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.618005032929356,
+        "p_base": 0.5934750837884161,
+        "q10": -0.11702805722040172,
+        "q50": 0.024181017811469703,
+        "q90": 0.15190318376233797,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.101
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.0788
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0444
           }
         ]
       }
@@ -542,103 +750,311 @@
     "spx": {
       "h5": {
         "origin": "2026-11-19",
-        "p_up": 0.6204294575051714,
-        "p_base": 0.5978200034163281,
-        "q10": -0.03897261000429458,
-        "q50": 0.004578053932834369,
-        "q90": 0.04351541240038127,
+        "p_up": 0.6321749145752923,
+        "p_base": 0.5973259674572695,
+        "q10": -0.039255284494617605,
+        "q50": 0.003945262632257626,
+        "q90": 0.043089943423449635,
         "drivers": [
-          {
-            "feature": "p_turb",
-            "label": "probabilità di fase agitata",
-            "effect": -0.0772
-          },
           {
             "feature": "mom_3m",
             "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.0616
+            "effect": 0.0879
           },
           {
             "feature": "ret_5",
             "label": "andamento dell'ultima settimana",
-            "effect": 0.0528
-          }
-        ]
-      },
-      "h21": {
-        "origin": "2026-11-19",
-        "p_up": 0.6911829828437694,
-        "p_base": 0.6706663761674891,
-        "q10": -0.07433968908270541,
-        "q50": 0.018896083924891234,
-        "q90": 0.10242812306792311,
-        "drivers": [
-          {
-            "feature": "mom_3m",
-            "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.1273
+            "effect": 0.0448
           },
           {
             "feature": "p_turb",
             "label": "probabilità di fase agitata",
-            "effect": -0.1204
-          },
-          {
-            "feature": "vol_z5",
-            "label": "volumi dell'ultima settimana rispetto al solito",
-            "effect": 0.0923
-          }
-        ]
-      }
-    },
-    "googl": {
-      "h5": {
-        "origin": "2026-11-19",
-        "p_up": 0.5674012371793439,
-        "p_base": 0.5581693071689833,
-        "q10": -0.09220016514166861,
-        "q50": 0.010830614849461746,
-        "q90": 0.1029473830231245,
-        "drivers": [
-          {
-            "feature": "mom_3m",
-            "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.1414
-          },
-          {
-            "feature": "rs_3m",
-            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": -0.1233
-          },
-          {
-            "feature": "dist_ma200",
-            "label": "distanza dalla media mobile a 200 sedute",
-            "effect": 0.0935
+            "effect": -0.0291
           }
         ]
       },
       "h21": {
         "origin": "2026-11-19",
-        "p_up": 0.6185292459962424,
-        "p_base": 0.6095434195221444,
-        "q10": -0.1758704795303791,
-        "q50": 0.04470375625891664,
-        "q90": 0.24232120612330038,
+        "p_up": 0.6883628270549257,
+        "p_base": 0.6695234135680892,
+        "q10": -0.07664693861382546,
+        "q50": 0.015837236230667184,
+        "q90": 0.09948822767474633,
         "drivers": [
           {
             "feature": "mom_3m",
             "label": "andamento degli ultimi 3 mesi",
-            "effect": 0.2919
-          },
-          {
-            "feature": "rs_3m",
-            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": -0.2366
+            "effect": 0.1338
           },
           {
             "feature": "dist_ma50",
             "label": "distanza dalla media mobile a 50 sedute",
-            "effect": 0.1247
+            "effect": 0.061
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0444
+          }
+        ]
+      }
+    },
+    "lin": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.605408029877174,
+        "p_base": 0.5609794958972034,
+        "q10": -0.0316476003960346,
+        "q50": 0.0031806697327646824,
+        "q90": 0.0347391014511703,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.1286
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0205
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": 0.0143
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6617654166467911,
+        "p_base": 0.6166923308862602,
+        "q10": -0.06179274245642864,
+        "q50": 0.012767975829457524,
+        "q90": 0.08020738389991264,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.1959
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": 0.0217
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": 0.0145
+          }
+        ]
+      }
+    },
+    "nvda": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.6066942881714823,
+        "p_base": 0.5635756724372081,
+        "q10": -0.08580607555584223,
+        "q50": 0.008623743474781217,
+        "q90": 0.09418805617359476,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.3257
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.2716
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.1138
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6832001701130134,
+        "p_base": 0.6233258300570728,
+        "q10": -0.16753853883605574,
+        "q50": 0.034617787289012686,
+        "q90": 0.21746611929271853,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.4949
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.4141
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.2856
+          }
+        ]
+      }
+    },
+    "klac": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.6321140144421732,
+        "p_base": 0.5682959934190349,
+        "q10": -0.14954533011706272,
+        "q50": 0.01502971154929152,
+        "q90": 0.16415369031063504,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.2332
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.1575
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0805
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6694824554076055,
+        "p_base": 0.6091111889767601,
+        "q10": -0.29199104999578795,
+        "q50": 0.06033288895363286,
+        "q90": 0.37900629283227827,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.3544
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.2402
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.151
+          }
+        ]
+      }
+    },
+    "bkng": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.586055278007229,
+        "p_base": 0.5472905650499058,
+        "q10": -0.08256174925437233,
+        "q50": 0.008297679876240879,
+        "q90": 0.09062680732322112,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.2999
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.2398
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0698
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6076653510725514,
+        "p_base": 0.5875523166716191,
+        "q10": -0.16120390944606677,
+        "q50": 0.033308889322605374,
+        "q90": 0.20924372890917511,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.4557
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.3656
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.0785
+          }
+        ]
+      }
+    },
+    "intu": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5668707960273878,
+        "p_base": 0.5626316082408428,
+        "q10": -0.0780662961829013,
+        "q50": 0.007845874641702985,
+        "q90": 0.08569221517833372,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.1605
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": -0.0872
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0718
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6246469268772312,
+        "p_base": 0.6084004569227445,
+        "q10": -0.15242642330512143,
+        "q50": 0.03149523408679816,
+        "q90": 0.1978504944839611,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.244
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": -0.1179
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.1035
           }
         ]
       }
@@ -646,11 +1062,323 @@
     "tsla": {
       "h5": {
         "origin": "2026-11-19",
-        "p_up": 0.5892894896131291,
-        "p_base": 0.5394807665795825,
-        "q10": -0.09854809240386231,
-        "q50": 0.011576296325884033,
-        "q90": 0.11003524992943492,
+        "p_up": 0.5873929503428926,
+        "p_base": 0.5389720836248969,
+        "q10": -0.09926287726916895,
+        "q50": 0.009976188569315373,
+        "q90": 0.1089593877778106,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.1126
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0472
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": -0.0193
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.602030502942893,
+        "p_base": 0.5564914195342533,
+        "q10": -0.19381328548834903,
+        "q50": 0.04004682825475639,
+        "q90": 0.2515709123126986,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.1715
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": -0.0261
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.0218
+          }
+        ]
+      }
+    },
+    "aapl": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.6123788264029725,
+        "p_base": 0.5713642020572223,
+        "q10": -0.04536171081413374,
+        "q50": 0.004558975050475477,
+        "q90": 0.04979287700334744,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.1962
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": -0.0536
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": 0.0159
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6672989832551058,
+        "p_base": 0.6159815988322446,
+        "q10": -0.08856989088095207,
+        "q50": 0.018300825971319823,
+        "q90": 0.11496429770649919,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.2991
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": -0.0813
+          },
+          {
+            "feature": "drawdown",
+            "label": "distanza dal massimo storico",
+            "effect": -0.0229
+          }
+        ]
+      }
+    },
+    "adbe": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5890946093734657,
+        "p_base": 0.5626316082408428,
+        "q10": -0.06424524810895335,
+        "q50": 0.006456821799345939,
+        "q90": 0.07052105574779001,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.1998
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.1164
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0573
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6362539382584306,
+        "p_base": 0.5932381731037442,
+        "q10": -0.12544047639527625,
+        "q50": 0.02591924078753845,
+        "q90": 0.16282255887765867,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.3037
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.1775
+          },
+          {
+            "feature": "drawdown",
+            "label": "distanza dal massimo storico",
+            "effect": 0.1096
+          }
+        ]
+      }
+    },
+    "adi": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5936420774385666,
+        "p_base": 0.5520108860317325,
+        "q10": -0.11067876323414613,
+        "q50": 0.011123516092006342,
+        "q90": 0.12149043644278375,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.0971
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0631
+          },
+          {
+            "feature": "earn_soon",
+            "label": "trimestrale nelle prossime sedute",
+            "effect": -0.0564
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6278417102075896,
+        "p_base": 0.5785497106540878,
+        "q10": -0.21610309237791597,
+        "q50": 0.04465247779054032,
+        "q90": 0.2805032274548374,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.148
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": 0.0546
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.0504
+          }
+        ]
+      }
+    },
+    "amat": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.6194760092432091,
+        "p_base": 0.556495190964468,
+        "q10": -0.15156461161421547,
+        "q50": 0.015232654820173134,
+        "q90": 0.1663702256532909,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.316
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.2597
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0886
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6464934835228628,
+        "p_base": 0.5823402816088378,
+        "q10": -0.2959337483343396,
+        "q50": 0.06114755221485591,
+        "q90": 0.3841239410652361,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.4802
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.3959
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.1908
+          }
+        ]
+      }
+    },
+    "amd": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.6039655809653593,
+        "p_base": 0.5260491206316853,
+        "q10": -0.212038220758881,
+        "q50": 0.02131041666721604,
+        "q90": 0.23275120926360543,
+        "drivers": [
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.1362
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.1142
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": 0.0659
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6139709834829427,
+        "p_base": 0.5375641622058527,
+        "q10": -0.4140100039911592,
+        "q50": 0.08554515488352135,
+        "q90": 0.5373876932543976,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.1741
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.1092
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": 0.089
+          }
+        ]
+      }
+    },
+    "amgn": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5781004502121975,
+        "p_base": 0.5409181317244397,
+        "q10": -0.04606004975451653,
+        "q50": 0.004629160009306188,
+        "q90": 0.050559433298095785,
         "drivers": [
           {
             "feature": "rs_3m",
@@ -660,37 +1388,661 @@
           {
             "feature": "ret_5",
             "label": "andamento dell'ultima settimana",
-            "effect": 0.0556
+            "effect": 0.0492
           },
           {
-            "feature": "rs_12m",
-            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
-            "effect": -0.0351
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.0385
           }
         ]
       },
       "h21": {
         "origin": "2026-11-19",
-        "p_up": 0.6244585707333958,
-        "p_base": 0.5576684005374413,
-        "q10": -0.18797905883618152,
-        "q50": 0.04778158364287423,
-        "q90": 0.25900487895831326,
+        "p_up": 0.6022946681025912,
+        "p_base": 0.5700209260059,
+        "q10": -0.08993341537413217,
+        "q50": 0.01858256533228236,
+        "q90": 0.11673416141757408,
         "drivers": [
           {
             "feature": "rs_3m",
             "label": "forza rispetto al Nasdaq 100 a 3 mesi",
-            "effect": 0.1583
+            "effect": 0.1258
           },
           {
-            "feature": "rs_12m",
-            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
-            "effect": -0.0595
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.0587
           },
           {
             "feature": "p_turb",
             "label": "probabilità di fase agitata",
-            "effect": 0.049
+            "effect": -0.0444
+          }
+        ]
+      }
+    },
+    "amzn": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5857588282054841,
+        "p_base": 0.5508308057862759,
+        "q10": -0.0739155518061985,
+        "q50": 0.007428713566543683,
+        "q90": 0.08113600465381574,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.0791
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.0413
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0314
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.656180941703869,
+        "p_base": 0.6266425796424792,
+        "q10": -0.14432198963361303,
+        "q50": 0.029820648866661272,
+        "q90": 0.18733088656656846,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.1206
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.0629
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0444
+          }
+        ]
+      }
+    },
+    "asml": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.6075951031528911,
+        "p_base": 0.5581473033081074,
+        "q10": -0.10887300305887028,
+        "q50": 0.010942032293479505,
+        "q90": 0.1195082802874864,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.2334
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.1577
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0763
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6465122476804493,
+        "p_base": 0.5930012624190724,
+        "q10": -0.21257729983590457,
+        "q50": 0.043923958029699055,
+        "q90": 0.2759267256728043,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.3547
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.2405
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.154
+          }
+        ]
+      }
+    },
+    "avgo": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.6008860758945482,
+        "p_base": 0.5647557526826649,
+        "q10": -0.12224255899898369,
+        "q50": 0.012285708951016903,
+        "q90": 0.13418384350076848,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.082
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0399
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0291
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.654726556689246,
+        "p_base": 0.6283009544351823,
+        "q10": -0.2386816969031703,
+        "q50": 0.04931780037344075,
+        "q90": 0.30981040381714775,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.1247
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0444
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.0442
+          }
+        ]
+      }
+    },
+    "cmcsa": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5655323917796934,
+        "p_base": 0.5343096823498822,
+        "q10": -0.05794381672453082,
+        "q50": 0.005823510842852772,
+        "q90": 0.06360406800111486,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.0838
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0291
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.0268
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6173605742827295,
+        "p_base": 0.5856570311942441,
+        "q10": -0.11313677179297511,
+        "q50": 0.02337697778495791,
+        "q90": 0.1468522698243166,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.1274
+          },
+          {
+            "feature": "drawdown",
+            "label": "distanza dal massimo storico",
+            "effect": 0.0711
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": -0.0523
+          }
+        ]
+      }
+    },
+    "cost": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.6066451811279623,
+        "p_base": 0.5770285872354144,
+        "q10": -0.039097338668660817,
+        "q50": 0.003929388648077131,
+        "q90": 0.04291656863348012,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.2173
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": -0.0708
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0287
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6589156836074487,
+        "p_base": 0.6328022574439479,
+        "q10": -0.07633854538263947,
+        "q50": 0.01577351422764187,
+        "q90": 0.09908793124344113,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.3313
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": -0.1073
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": -0.0687
+          }
+        ]
+      }
+    },
+    "crwd": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.600636701396834,
+        "p_base": 0.5600806251968048,
+        "q10": -0.10788996428319624,
+        "q50": 0.010843234228514293,
+        "q90": 0.1184292132071635,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.3031
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": -0.1403
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": 0.0541
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6913656214579728,
+        "p_base": 0.6099990946212916,
+        "q10": -0.21065789169343066,
+        "q50": 0.04352735875613142,
+        "q90": 0.27343532134886483,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.462
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": -0.213
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": 0.0731
+          }
+        ]
+      }
+    },
+    "csco": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.6038153680012026,
+        "p_base": 0.5628676242899341,
+        "q10": -0.084221455085885,
+        "q50": 0.008464484816821674,
+        "q90": 0.09244864179213842,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.1539
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.0598
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0581
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6448078565109746,
+        "p_base": 0.5989240295358693,
+        "q10": -0.16444452717748076,
+        "q50": 0.033978484605520366,
+        "q90": 0.21345007192170062,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.234
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.103
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.0912
+          }
+        ]
+      }
+    },
+    "gild": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5735272313428531,
+        "p_base": 0.5354897625953389,
+        "q10": -0.05261206395787528,
+        "q50": 0.005287655219195109,
+        "q90": 0.05775148208763079,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.2095
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": -0.0644
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0291
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6038996474645526,
+        "p_base": 0.5652827123124625,
+        "q10": -0.10272638928597853,
+        "q50": 0.021225924005163883,
+        "q90": 0.13333952523505713,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.3194
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": -0.0977
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0444
+          }
+        ]
+      }
+    },
+    "googl": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5941927854611249,
+        "p_base": 0.5576752712099247,
+        "q10": -0.09286890748882597,
+        "q50": 0.009333577252878972,
+        "q90": 0.10194082200677401,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.213
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.1326
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0707
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6455384886226213,
+        "p_base": 0.6084004569227445,
+        "q10": -0.18132889732094698,
+        "q50": 0.03746723136310926,
+        "q90": 0.2353660948099893,
+        "drivers": [
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.3237
+          },
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": -0.2021
+          },
+          {
+            "feature": "dist_ma50",
+            "label": "distanza dalla media mobile a 50 sedute",
+            "effect": 0.1439
+          }
+        ]
+      }
+    },
+    "hon": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5923909606638413,
+        "p_base": 0.5536629983753719,
+        "q10": -0.05640137475461708,
+        "q50": 0.005668491238621885,
+        "q90": 0.06191095233342303,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.0948
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0291
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.0286
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6362086751158877,
+        "p_base": 0.6041360645986507,
+        "q10": -0.11012511472551516,
+        "q50": 0.022754691686051435,
+        "q90": 0.14294311925125416,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.1444
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0444
+          },
+          {
+            "feature": "mom_3m",
+            "label": "andamento degli ultimi 3 mesi",
+            "effect": 0.0436
+          }
+        ]
+      }
+    },
+    "isrg": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.5832392760826839,
+        "p_base": 0.5444583724608097,
+        "q10": -0.07826993931615572,
+        "q50": 0.00786634132929137,
+        "q90": 0.08591575122458783,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.1504
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0602
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": -0.0426
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6301383040192428,
+        "p_base": 0.5967918333738224,
+        "q10": -0.15282404168783414,
+        "q50": 0.03157739230956039,
+        "q90": 0.19836660574557716,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.2293
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": -0.0576
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0444
+          }
+        ]
+      }
+    },
+    "txn": {
+      "h5": {
+        "origin": "2026-11-19",
+        "p_up": 0.6163540245497239,
+        "p_base": 0.555787142817194,
+        "q10": -0.09936376568487124,
+        "q50": 0.009986328128908999,
+        "q90": 0.10907013149501098,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.16
+          },
+          {
+            "feature": "ret_5",
+            "label": "andamento dell'ultima settimana",
+            "effect": 0.0693
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": 0.0519
+          }
+        ]
+      },
+      "h21": {
+        "origin": "2026-11-19",
+        "p_up": 0.6333237596789179,
+        "p_base": 0.5854201205095723,
+        "q10": -0.19401027267885682,
+        "q50": 0.04008753089372551,
+        "q90": 0.2518266029744873,
+        "drivers": [
+          {
+            "feature": "rs_3m",
+            "label": "forza rispetto al Nasdaq 100 a 3 mesi",
+            "effect": 0.2438
+          },
+          {
+            "feature": "rs_12m",
+            "label": "forza rispetto al Nasdaq 100 a 12 mesi",
+            "effect": 0.0701
+          },
+          {
+            "feature": "p_turb",
+            "label": "probabilità di fase agitata",
+            "effect": -0.0444
           }
         ]
       }
