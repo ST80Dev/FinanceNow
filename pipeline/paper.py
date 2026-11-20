@@ -10,7 +10,9 @@ prezzo a cui si può agire è l'apertura del giorno dopo).
 Strategie (passo 6a, solo long, nessun LLM):
 - `buy_hold`     un solo simbolo (QQQ) tenuto fisso: il benchmark da battere;
 - `assess_rule`  azioni dell'universo con situazione e rischio ammessi da `config/paper.yml`,
-                 stesso peso (con tetto), il resto in liquidità.
+                 stesso peso (con tetto), il resto in liquidità;
+- `hedge_rule`   ETF inverso 1x (PSQ) quando il Nasdaq 100 è in tempesta con rischio alto,
+                 tenuto finché non torna nella norma o tranquillo; il resto in liquidità.
 
 Serie `paper` (append-only, in `results/paper/`, separata da `backtest` e `live`):
 - decisions.csv  pesi obiettivo per data e strategia, con il motivo;
@@ -74,7 +76,7 @@ class PaperError(Exception):
 # Configurazione
 # ---------------------------------------------------------------------------
 
-KINDS = ("buy_hold", "assess_rule")
+KINDS = ("buy_hold", "assess_rule", "hedge_rule")
 
 
 @dataclass(frozen=True)
@@ -111,8 +113,10 @@ def load_config(path: Path | str = DEFAULT_CONFIG) -> PaperConfig:
         if not item.get("secret_prefix"):
             raise PaperError(f"{sid}: manca 'secret_prefix'")
         params = {k: v for k, v in item.items() if k not in ("id", "name", "kind", "secret_prefix")}
-        if item["kind"] == "buy_hold" and not params.get("symbol"):
-            raise PaperError(f"{sid}: buy_hold richiede 'symbol'")
+        if item["kind"] in ("buy_hold", "hedge_rule") and not params.get("symbol"):
+            raise PaperError(f"{sid}: {item['kind']} richiede 'symbol'")
+        if item["kind"] == "hedge_rule" and not 0 < float(params.get("weight", 0.2)) <= 0.5:
+            raise PaperError(f"{sid}: hedge_rule richiede 0 < weight <= 0,5")
         strategies.append(Strategy(sid, item.get("name", sid), item["kind"], item["secret_prefix"], params))
     min_delta = float(raw.get("min_delta", 0.02))
     if not 0 <= min_delta < 0.5:
@@ -149,6 +153,14 @@ def target_buy_hold(strategy: Strategy) -> Target:
     return Target({symbol: weight}, {symbol: "benchmark: tenuto sempre"}, "benchmark")
 
 
+STALE_STATUSES = ("stale", "no_data")
+
+
+def is_fresh(inst: dict, as_of: str) -> bool:
+    """Valutazione calcolata su dati della seduta `as_of` (updated, refreshed o up_to_date vanno tutti bene)."""
+    return inst.get("data_status") not in STALE_STATUSES and inst.get("as_of", as_of) == as_of
+
+
 def target_assess_rule(strategy: Strategy, assessment: dict, symbols_by_id: dict[str, str]) -> Target:
     """Azioni con situazione ammessa, rischio non bloccato e dati aggiornati, a pari peso (con tetto)."""
     p = strategy.params
@@ -162,7 +174,7 @@ def target_assess_rule(strategy: Strategy, assessment: dict, symbols_by_id: dict
         if symbol is None:              # indici, ETF o strumenti non negoziabili: fuori dalla regola
             continue
         n_stocks += 1
-        if inst.get("data_status") != "updated":
+        if not is_fresh(inst, assessment["as_of"]):
             continue
         sit = inst["situation"]["key"]
         risk = inst["risk"]["level"]
@@ -175,17 +187,54 @@ def target_assess_rule(strategy: Strategy, assessment: dict, symbols_by_id: dict
                   f"{len(eligible)} titoli su {n_stocks}, peso {weight:.1%} ciascuno")
 
 
+def target_hedge_rule(strategy: Strategy, assessment: dict, held: bool) -> Target:
+    """Copertura ribassista con un ETF inverso 1x (solo long), guidata dalla valutazione di un indice.
+
+    Entra quando l'indice è in una situazione di ingresso (tempesta) E con rischio di ingresso (alto);
+    una volta dentro resta finché l'indice è in una situazione di mantenimento (tempesta, pressione,
+    ripresa) ed esce quando torna nella norma o tranquillo. Lo stato "dentro/fuori" è la posizione
+    sul conto Alpaca (`held`). Dati dell'indice non aggiornati: non entra, e se è già dentro resta.
+    """
+    p = strategy.params
+    symbol = str(p["symbol"]).upper()
+    weight = float(p.get("weight", 0.20))
+    signal = p.get("signal", "ndx")
+    enter_sit = set(p.get("enter_situations", ["tempesta"]))
+    enter_risk = set(p.get("enter_risk", ["alto"]))
+    hold_sit = set(p.get("hold_situations", ["tempesta", "pressione", "ripresa"]))
+    inst = next((i for i in assessment["instruments"] if i["id"] == signal), None)
+    if inst is None or not is_fresh(inst, assessment["as_of"]):
+        if held:
+            return Target({symbol: weight}, {symbol: f"{signal}: dati non aggiornati, mantengo"},
+                          f"{signal} senza dati aggiornati: resto com'ero")
+        return Target({}, {}, f"{signal} senza dati aggiornati: non entro, tutto in liquidità")
+    sit, risk = inst["situation"]["key"], inst["risk"]["level"]
+    label = f"{inst['situation']['label']}, rischio {risk}"
+    if sit in enter_sit and risk in enter_risk:
+        why = "segnale di ingresso" if not held else "segnale ancora attivo"
+        return Target({symbol: weight}, {symbol: f"{signal}: {label} ({why})"},
+                      f"{signal} {label.lower()}: copertura al {weight:.0%}")
+    if held and sit in hold_sit:
+        return Target({symbol: weight}, {symbol: f"{signal}: {label} (mantengo)"},
+                      f"{signal} {label.lower()}: copertura mantenuta al {weight:.0%}")
+    return Target({}, {}, f"{signal} {label.lower()}: nessuna copertura, tutto in liquidità")
+
+
 def stock_symbols(universe_path: Path | str = DEFAULT_UNIVERSE) -> dict[str, str]:
     """id interno -> simbolo negoziabile (solo azioni attive; il simbolo yfinance coincide con quello US)."""
     return {i.id: i.symbols["yahoo"] for i in load_universe(universe_path)
             if i.asset_class == "stock" and i.active and "yahoo" in i.symbols}
 
 
-def compute_target(strategy: Strategy, assessment: dict, symbols_by_id: dict[str, str]) -> Target:
+def compute_target(strategy: Strategy, assessment: dict, symbols_by_id: dict[str, str],
+                   positions: dict[str, tuple[float, float]] | None = None) -> Target:
     if strategy.kind == "buy_hold":
         return target_buy_hold(strategy)
     if strategy.kind == "assess_rule":
         return target_assess_rule(strategy, assessment, symbols_by_id)
+    if strategy.kind == "hedge_rule":
+        held = (positions or {}).get(str(strategy.params["symbol"]).upper(), (0.0, 0.0))[1] > 0
+        return target_hedge_rule(strategy, assessment, held)
     raise PaperError(f"kind non gestito: {strategy.kind}")
 
 
@@ -422,7 +471,10 @@ def run_strategy(strategy: Strategy, assessment: dict, symbols_by_id: dict[str, 
                  broker, out_dir: Path, send: bool) -> dict:
     as_of = assessment["as_of"]
     now = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
-    target = compute_target(strategy, assessment, symbols_by_id)
+    if broker is not None:
+        equity, cash = broker.account()
+        positions = broker.positions()
+    target = compute_target(strategy, assessment, symbols_by_id, positions if broker is not None else None)
     print(f"\n[{strategy.id}] {strategy.name}: {target.note}")
     for s, w in sorted(target.weights.items()):
         print(f"    {s:6s} peso {w:6.1%}  ({target.reasons.get(s, '')})")
@@ -432,8 +484,6 @@ def run_strategy(strategy: Strategy, assessment: dict, symbols_by_id: dict[str, 
         print(f"    (nessun conto: mancano {strategy.secret_prefix}_KEY / {strategy.secret_prefix}_SECRET)")
         return result
 
-    equity, cash = broker.account()
-    positions = broker.positions()
     orders = plan_orders(equity, positions, target.weights, cfg.min_delta)
     result["orders"] = orders
     print(f"    conto: valore {equity:,.2f}, liquidità {cash:,.2f}, posizioni {len(positions)}")
@@ -545,7 +595,8 @@ def dashboard_payload(cfg: PaperConfig, out_dir: Path, last_run: dict | None = N
     bench = next((s for s in strategies if s["is_benchmark"] and s["n_sessions"]), None)
     comparisons = []
     for s in strategies:
-        if s["is_benchmark"] or not bench or not s["n_sessions"]:
+        # La copertura non ha lo scopo di battere QQQ: il confronto ha senso solo per le regole di investimento.
+        if s["is_benchmark"] or s["kind"] == "hedge_rule" or not bench or not s["n_sessions"]:
             continue
         a, b = eq_by[s["id"]], eq_by[bench["id"]]
         common = sorted(set(a) & set(b))

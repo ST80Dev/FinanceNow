@@ -34,7 +34,51 @@ RULE = Strategy("regola_assess", "regola", "assess_rule", "ALPACA_RULE",
                 {"allowed_situations": ["norma", "tranquillo", "ripresa"], "block_risk": ["alto"], "max_weight": 0.15})
 
 
+HEDGE = Strategy("copertura_psq", "copertura", "hedge_rule", "ALPACA_HEDGE",
+                 {"symbol": "PSQ", "signal": "ndx", "weight": 0.2, "enter_situations": ["tempesta"],
+                  "enter_risk": ["alto"], "hold_situations": ["tempesta", "pressione", "ripresa"]})
+
+
 # --- pesi obiettivo ---------------------------------------------------------
+
+def test_regola_accetta_dati_refreshed_e_up_to_date():
+    a = assessment(inst("aapl", status="refreshed"), inst("msft", status="up_to_date"), inst("nvda", status="stale"))
+    assert set(paper.target_assess_rule(RULE, a, SYMBOLS).weights) == {"AAPL", "MSFT"}
+
+
+@pytest.mark.parametrize("sit,risk,held,expected", [
+    ("tempesta", "alto", False, 0.2),       # ingresso
+    ("tempesta", "normale", False, None),   # tempesta senza rischio alto: non entra
+    ("pressione", "alto", False, None),     # pressione: non è un ingresso
+    ("pressione", "alto", True, 0.2),       # ma se già dentro resta
+    ("ripresa", "normale", True, 0.2),
+    ("norma", "normale", True, None),       # esce
+    ("tranquillo", "basso", True, None),
+])
+def test_copertura_entra_resta_esce(sit, risk, held, expected):
+    a = assessment(inst("ndx", sit, risk, asset_class="index"), inst("aapl"))
+    t = paper.target_hedge_rule(HEDGE, a, held)
+    assert t.weights.get("PSQ") == expected
+
+
+def test_copertura_con_dati_vecchi_non_entra_ma_non_esce():
+    a = assessment(inst("ndx", "norma", "normale", status="stale", asset_class="index"))
+    assert paper.target_hedge_rule(HEDGE, a, held=False).weights == {}
+    assert paper.target_hedge_rule(HEDGE, a, held=True).weights == {"PSQ": 0.2}
+
+
+def test_copertura_usa_la_posizione_del_conto_come_stato(tmp_path):
+    class FakeBroker(BaseFake):
+        def positions(self): return {"PSQ": (20_000.0, 500.0)}
+        def submit(self, plan, coid): return "id", "accettato (accepted)"
+    cfg = paper.PaperConfig(0.02, (HEDGE,))
+    a = assessment(inst("ndx", "pressione", "alto", asset_class="index"))
+    res = paper.run_strategy(HEDGE, a, SYMBOLS, cfg, FakeBroker(), tmp_path, send=False)
+    assert res["weights"] == {"PSQ": 0.2} and res["orders"] == []          # già dentro: nessun ordine
+    a = assessment(inst("ndx", "norma", "normale", asset_class="index"))
+    res = paper.run_strategy(HEDGE, a, SYMBOLS, cfg, FakeBroker(), tmp_path, send=False)
+    assert [(o.side, o.symbol, o.qty) for o in res["orders"]] == [("sell", "PSQ", 500.0)]
+
 
 def test_regola_esclude_tempesta_rischio_alto_e_dati_vecchi():
     a = assessment(inst("aapl"), inst("msft", "tempesta"), inst("nvda", "norma", "alto"),
@@ -125,7 +169,7 @@ def test_append_rows_non_duplica_e_non_riscrive(tmp_path):
 
 def test_config_del_repo_valida():
     cfg = paper.load_config(ROOT / "config" / "paper.yml")
-    assert {s.id for s in cfg.strategies} == {"bench_qqq", "regola_assess"}
+    assert {s.id for s in cfg.strategies} == {"bench_qqq", "regola_assess", "copertura_psq"}
     prefixes = [s.secret_prefix for s in cfg.strategies]
     assert len(set(prefixes)) == len(prefixes)                        # un conto per strategia
 
@@ -302,3 +346,13 @@ def test_json_dashboard_solo_percentuali_e_confronto_col_benchmark(tmp_path):
     text = json.dumps(out)
     for forbidden in ("273.51", "filled_avg_price", "15075", "100500", "100000"):   # niente prezzi né importi
         assert forbidden not in text
+
+
+def test_copertura_fuori_dal_confronto_col_benchmark(tmp_path):
+    bench = Strategy("bench_qqq", "Benchmark", "buy_hold", "ALPACA_BENCH", {"symbol": "QQQ"})
+    cfg = paper.PaperConfig(0.02, (bench, HEDGE))
+    paper.append_rows(tmp_path / paper.EQUITY_FILE, paper.EQUITY_COLUMNS,
+                      [{"as_of": "2026-11-20", "strategy": s, "equity": 100_000, "cash": 100_000}
+                       for s in ("bench_qqq", "copertura_psq")], ("as_of", "strategy"))
+    out = paper.dashboard_payload(cfg, tmp_path)
+    assert out["comparisons"] == [] and out["strategies"][1]["kind"] == "hedge_rule"

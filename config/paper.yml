@@ -6,7 +6,7 @@
 #
 # Campi comuni:
 #   id            identificativo (niente trattini: finisce nei client_order_id)
-#   kind          buy_hold | assess_rule
+#   kind          buy_hold | assess_rule | hedge_rule
 #   secret_prefix prefisso delle variabili d'ambiente con le chiavi del conto
 # Solo long, nessuna leva: il lato short e le decisioni di Claude arrivano nei passi successivi.
 
@@ -33,3 +33,18 @@ strategies:
     block_risk: [alto]
     max_weight: 0.15
     secret_prefix: ALPACA_RULE
+
+  # Copertura ribassista sul Nasdaq (richiesta di Simone del 20/11/2026): ETF inverso 1x, sempre "solo long".
+  # Entra quando il Nasdaq 100 è in tempesta con rischio alto; resta finché è in tempesta, sotto pressione o
+  # in ripresa; esce quando torna nella norma o tranquillo. Il resto del conto in liquidità.
+  # Niente ETF a leva (SQQQ): perdono valore se tenuti per giorni.
+  - id: copertura_psq
+    name: Copertura ribassista (PSQ quando il Nasdaq è in tempesta)
+    kind: hedge_rule
+    symbol: PSQ
+    signal: ndx
+    weight: 0.20
+    enter_situations: [tempesta]
+    enter_risk: [alto]
+    hold_situations: [tempesta, pressione, ripresa]
+    secret_prefix: ALPACA_HEDGE

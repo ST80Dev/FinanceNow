@@ -162,10 +162,17 @@ aspettarsi un rendimento migliore del benchmark**; se la regola non batte QQQ co
   Un conto paper per strategia (le chiavi sono separate); GitHub Secrets `ALPACA_BENCH_KEY/SECRET` e `ALPACA_RULE_KEY/SECRET`
   (mai nel codice, nei log o in chat). Alpaca copre solo titoli/ETF USA: coerente con l'universo.
 - **Modulo** `pipeline/paper.py` + `config/paper.yml` + `.github/workflows/paper.yml` (parte dopo un `daily` riuscito sul branch
-  di default, oppure a mano; di default a mano è una prova senza ordini).
+  di default, oppure a mano; di default a mano è una prova senza ordini). Primo invio reale: 20/11/2026 alle 9:28 di New York.
 - **Strategie** (solo long, nessuna leva, nessun LLM in questo passo): `bench_qqq` (QQQ tenuto al 99%, il benchmark) e
   `regola_assess` (azioni con situazione norma/tranquillo/ripresa e rischio non alto, pari peso con tetto 15%, il resto
   liquidità). Dati di ingresso: solo `docs/data/assessment.json`; se più vecchio di 4 giorni non si opera.
+- **Copertura ribassista** (`copertura_psq`, kind `hedge_rule`, richiesta del 20/11/2026, terzo conto con Secrets
+  `ALPACA_HEDGE_KEY/SECRET`): PSQ (ETF inverso 1x sul Nasdaq 100, resta "solo long"; niente ETF a leva) al 20% del conto.
+  Entra quando `ndx` è in tempesta **e** con rischio alto; resta finché è in tempesta, pressione o ripresa; esce quando torna
+  nella norma o tranquillo. Lo stato dentro/fuori è la posizione sul conto. Dati di `ndx` non aggiornati: non entra, non esce.
+  Fuori dal confronto con QQQ nella pagina (non serve a batterlo). Lo svantaggio è strutturale: il Nasdaq nel lungo periodo sale.
+- Dati "aggiornati" per le regole: `data_status` diverso da `stale`/`no_data` e `as_of` uguale a quello della valutazione
+  (prima si accettava solo `updated` e si escludevano a torto `refreshed`/`up_to_date`).
 - **Esecuzione**: ordini a mercato `day` per **importo** (azioni frazionarie) inviati la sera dopo la chiusura; Alpaca li
   accoda per l'apertura successiva (stessa convenzione dei pattern). Posizioni fuori dall'obiettivo chiuse per quantità,
   scostamenti sotto il 2% del conto ignorati. `client_order_id = fn-<strategia>-<as_of>-<simbolo>`: prima di inviare si leggono

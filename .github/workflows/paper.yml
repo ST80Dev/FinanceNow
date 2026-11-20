@@ -55,6 +55,8 @@ jobs:
           ALPACA_BENCH_SECRET: ${{ secrets.ALPACA_BENCH_SECRET }}
           ALPACA_RULE_KEY: ${{ secrets.ALPACA_RULE_KEY }}
           ALPACA_RULE_SECRET: ${{ secrets.ALPACA_RULE_SECRET }}
+          ALPACA_HEDGE_KEY: ${{ secrets.ALPACA_HEDGE_KEY }}
+          ALPACA_HEDGE_SECRET: ${{ secrets.ALPACA_HEDGE_SECRET }}
           # workflow_run = invio vero; a mano = quello scelto nel form (predefinito: solo prova)
           SEND: ${{ github.event_name == 'workflow_run' || inputs.send }}
           ONLY: ${{ inputs.only }}

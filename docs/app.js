@@ -75,7 +75,9 @@ const GLOSSARY = {
     "È una terza serie, separata da BACKTEST e LIVE."],
   vs_bench: ["Rispetto al benchmark", "Differenza tra l'andamento della regola e quello di QQQ compra-e-tieni, " +
     "dallo stesso giorno di partenza, in punti percentuali. Sopra lo zero la regola sta facendo meglio.\n" +
-    "Con pochi mesi la differenza è dominata dal caso: per questo il giudizio compare solo dopo 3 mesi di sedute."],
+    "Con pochi mesi la differenza è dominata dal caso: per questo il giudizio compare solo dopo 3 mesi di sedute.\n" +
+    "La copertura ribassista (PSQ) non entra nel confronto: guadagna quando il Nasdaq scende e sta quasi sempre in liquidità, " +
+    "quindi va giudicata su quanto rende nei periodi di tempesta, non contro QQQ."],
 };
 
 const state = { index: null, models: null, digest: null, patterns: null, assessment: null, direction: null, paper: null,
@@ -985,7 +987,7 @@ function paperCard(s) {
   const w = s.weights || [];
   const cash = w.reduce((acc, x) => acc - (x.symbol === "CASH" ? 0 : x.weight || 0), 1);
   return `<div class="chart-card">
-    <div class="chart-head"><h3>${s.is_benchmark ? "📏 " : ""}${esc(s.name)}</h3>
+    <div class="chart-head"><h3>${s.is_benchmark ? "📏 " : s.kind === "hedge_rule" ? "🛡️ " : ""}${esc(s.name)}</h3>
       <span class="muted small">${s.start ? `dal ${fmtDate(s.start)} · ${s.n_sessions} sedute` : "non ancora partita"}</span></div>
     <div class="kv-row">
       <div><span class="muted small">Andamento</span><br><strong class="num ${signClass(s.return)}">${pct(s.return, 1, true)}</strong></div>
@@ -1005,7 +1007,7 @@ function renderPaper() {
   const P = state.paper;
   const head = `<h1>Prove di trading ${info("paper")}</h1>
     <p class="muted">Conti <strong>virtuali</strong> su Alpaca (paper): nessun soldo vero. La regola segue la valutazione dell'app,
-      il benchmark tiene QQQ. Il modello di direzione non ha mostrato alcun vantaggio nei test: non c'è motivo di aspettarsi che la regola
+      il benchmark tiene QQQ, la copertura compra PSQ (sale quando il Nasdaq scende) solo nei periodi di tempesta. Il modello di direzione non ha mostrato alcun vantaggio nei test: non c'è motivo di aspettarsi che la regola
       batta il benchmark, e se non lo batte la pagina lo dice.</p>`;
   if (!P || !P.strategies.some((s) => s.n_sessions)) {
     app.innerHTML = `${head}<p class="notice">Nessun dato ancora: la pagina si riempie dopo il primo run del workflow <code>paper</code> con i conti collegati.</p>`;
@@ -1013,7 +1015,7 @@ function renderPaper() {
   }
   const comps = P.comparisons || [];
   const names = Object.fromEntries(P.strategies.map((s) => [s.id, s.name]));
-  const short = Object.fromEntries(P.strategies.map((s) => [s.id, s.is_benchmark ? "Benchmark" : s.name.split(" (")[0]]));
+  const short = Object.fromEntries(P.strategies.map((s) => [s.id, s.is_benchmark ? "Benchmark" : s.kind === "hedge_rule" ? "Copertura" : s.name.split(" (")[0]]));
   app.innerHTML = `${head}
     <section class="series-panel paper">
       <h2 style="margin-top:0"><span class="series-tag paper">PAPER</span>Regola contro benchmark ${info("vs_bench")}</h2>
