@@ -34,9 +34,16 @@ RULE = Strategy("regola_assess", "regola", "assess_rule", "ALPACA_RULE",
                 {"allowed_situations": ["norma", "tranquillo", "ripresa"], "block_risk": ["alto"], "max_weight": 0.15})
 
 
-HEDGE = Strategy("copertura_psq", "copertura", "hedge_rule", "ALPACA_HEDGE",
-                 {"symbol": "PSQ", "signal": "ndx", "weight": 0.2, "enter_situations": ["tempesta"],
-                  "enter_risk": ["alto"], "hold_situations": ["tempesta", "pressione", "ripresa"]})
+IND = Strategy("indicazioni", "indicazioni", "indication", "ALPACA_HEDGE", {})
+ALLOWED = {"PSQ", "QQQ", "SH", "SPY", "AAPL"}
+SIGNALS = {"ndx", "qqq", "spx", "aapl"}
+FIRST = {"from": "2026-11-20", "author": "Simone", "bias": "ribassista", "instrument": "PSQ", "max_exposure": 0.2,
+         "signal": "ndx", "enter_situations": ["tempesta"], "enter_risk": ["alto"],
+         "exit_situations": ["norma", "tranquillo"], "note": "prova"}
+
+
+def ind(**over):
+    return paper.parse_indication({**FIRST, **over}, "x.yml", ALLOWED, SIGNALS)
 
 
 # --- pesi obiettivo ---------------------------------------------------------
@@ -55,28 +62,63 @@ def test_regola_accetta_dati_refreshed_e_up_to_date():
     ("norma", "normale", True, None),       # esce
     ("tranquillo", "basso", True, None),
 ])
-def test_copertura_entra_resta_esce(sit, risk, held, expected):
-    a = assessment(inst("ndx", sit, risk, asset_class="index"), inst("aapl"))
-    t = paper.target_hedge_rule(HEDGE, a, held)
+def test_indicazione_entra_resta_esce(sit, risk, held, expected):
+    a = assessment(inst("ndx", sit, risk, asset_class="index"), inst("aapl"), as_of="2026-11-20")
+    t = paper.target_indication(ind(), a, {"PSQ"} if held else set())
     assert t.weights.get("PSQ") == expected
 
 
-def test_copertura_con_dati_vecchi_non_entra_ma_non_esce():
-    a = assessment(inst("ndx", "norma", "normale", status="stale", asset_class="index"))
-    assert paper.target_hedge_rule(HEDGE, a, held=False).weights == {}
-    assert paper.target_hedge_rule(HEDGE, a, held=True).weights == {"PSQ": 0.2}
+def test_indicazione_con_dati_vecchi_non_entra_ma_non_esce():
+    a = assessment(inst("ndx", "norma", "normale", status="stale", asset_class="index"), as_of="2026-11-20")
+    assert paper.target_indication(ind(), a, set()).weights == {}
+    assert paper.target_indication(ind(), a, {"PSQ"}).weights == {"PSQ": 0.2}
 
 
-def test_copertura_usa_la_posizione_del_conto_come_stato(tmp_path):
+def test_indicazione_in_vigore_e_cambio_strumento():
+    old, new = ind(), ind(**{"from": "2026-11-27", "bias": "neutrale"})
+    assert paper.current_indication([old, new], "2026-11-19") is None          # prima della prima: niente
+    assert paper.current_indication([old, new], "2026-11-26") is old
+    assert paper.current_indication([old, new], "2026-11-27") is new
+    a = assessment(inst("ndx", "tempesta", "alto", asset_class="index"), as_of="2026-11-27")
+    assert paper.target_indication(new, a, {"PSQ"}).weights == {}             # neutrale: si chiude PSQ
+
+
+@pytest.mark.parametrize("over,msg", [
+    ({"instrument": "SQQQ"}, "non ammesso"),          # niente leva
+    ({"max_exposure": 0.8}, "max_exposure"),
+    ({"bias": "boh"}, "bias"),
+    ({"from": "20/11/2026"}, "AAAA-MM-GG"),
+    ({"signal": "btc"}, "universo"),
+    ({"enter_situations": ["panico"]}, "non validi"),
+    ({"exit_situations": ["tempesta"]}, "sia di ingresso sia di uscita"),
+])
+def test_indicazione_non_valida(over, msg):
+    with pytest.raises(PaperError, match=msg):
+        ind(**over)
+
+
+def test_indicazioni_del_repo_valide_e_prima_indicazione():
+    cfg = paper.load_config(ROOT / "config" / "paper.yml")
+    allowed = set(cfg.allowed_instruments) | set(paper.stock_symbols().values())
+    signals = {"ndx", "qqq", "spx", *paper.stock_symbols()}
+    items = paper.load_indications(ROOT / "config" / "indications", allowed, signals)
+    first = items[0]
+    assert (first.valid_from, first.instrument, first.max_exposure, first.signal) == ("2026-11-20", "PSQ", 0.2, "ndx")
+    assert first.enter_situations == ("tempesta",) and first.enter_risk == ("alto",)
+    assert set(first.exit_situations) == {"norma", "tranquillo"}
+    assert "SQQQ" not in allowed and "TQQQ" not in allowed
+
+
+def test_indicazione_usa_la_posizione_del_conto_come_stato(tmp_path):
     class FakeBroker(BaseFake):
         def positions(self): return {"PSQ": (20_000.0, 500.0)}
         def submit(self, plan, coid): return "id", "accettato (accepted)"
-    cfg = paper.PaperConfig(0.02, (HEDGE,))
-    a = assessment(inst("ndx", "pressione", "alto", asset_class="index"))
-    res = paper.run_strategy(HEDGE, a, SYMBOLS, cfg, FakeBroker(), tmp_path, send=False)
+    cfg = paper.PaperConfig(0.02, (IND,))
+    a = assessment(inst("ndx", "pressione", "alto", asset_class="index"), as_of="2026-11-20")
+    res = paper.run_strategy(IND, a, SYMBOLS, cfg, FakeBroker(), tmp_path, send=False, indications=[ind()])
     assert res["weights"] == {"PSQ": 0.2} and res["orders"] == []          # già dentro: nessun ordine
-    a = assessment(inst("ndx", "norma", "normale", asset_class="index"))
-    res = paper.run_strategy(HEDGE, a, SYMBOLS, cfg, FakeBroker(), tmp_path, send=False)
+    a = assessment(inst("ndx", "norma", "normale", asset_class="index"), as_of="2026-11-20")
+    res = paper.run_strategy(IND, a, SYMBOLS, cfg, FakeBroker(), tmp_path, send=False, indications=[ind()])
     assert [(o.side, o.symbol, o.qty) for o in res["orders"]] == [("sell", "PSQ", 500.0)]
 
 
@@ -169,7 +211,7 @@ def test_append_rows_non_duplica_e_non_riscrive(tmp_path):
 
 def test_config_del_repo_valida():
     cfg = paper.load_config(ROOT / "config" / "paper.yml")
-    assert {s.id for s in cfg.strategies} == {"bench_qqq", "regola_assess", "copertura_psq"}
+    assert {s.id for s in cfg.strategies} == {"bench_qqq", "regola_assess", "indicazioni"}
     prefixes = [s.secret_prefix for s in cfg.strategies]
     assert len(set(prefixes)) == len(prefixes)                        # un conto per strategia
 
@@ -348,11 +390,22 @@ def test_json_dashboard_solo_percentuali_e_confronto_col_benchmark(tmp_path):
         assert forbidden not in text
 
 
-def test_copertura_fuori_dal_confronto_col_benchmark(tmp_path):
+def test_indicazioni_fuori_dal_confronto_col_benchmark(tmp_path):
     bench = Strategy("bench_qqq", "Benchmark", "buy_hold", "ALPACA_BENCH", {"symbol": "QQQ"})
-    cfg = paper.PaperConfig(0.02, (bench, HEDGE))
+    cfg = paper.PaperConfig(0.02, (bench, IND))
     paper.append_rows(tmp_path / paper.EQUITY_FILE, paper.EQUITY_COLUMNS,
                       [{"as_of": "2026-11-20", "strategy": s, "equity": 100_000, "cash": 100_000}
-                       for s in ("bench_qqq", "copertura_psq")], ("as_of", "strategy"))
+                       for s in ("bench_qqq", "indicazioni")], ("as_of", "strategy"))
     out = paper.dashboard_payload(cfg, tmp_path)
-    assert out["comparisons"] == [] and out["strategies"][1]["kind"] == "hedge_rule"
+    assert out["comparisons"] == [] and out["strategies"][1]["kind"] == "indication"
+    meta = paper.indications_payload(cfg, [ind()], "2026-11-20", ALLOWED, SIGNALS)
+    assert meta["current"]["instrument"] == "PSQ" and "SQQQ" not in meta["options"]["instruments"]
+
+
+def test_yaml_scritto_dalla_pagina_si_rilegge():
+    """Stesso formato prodotto da indicationYaml() in docs/app.js (stringhe JSON, liste in linea, null)."""
+    text = ('from: 2026-11-27\nauthor: "Simone"\nbias: neutrale\ninstrument: null\nmax_exposure: 0\nsignal: ndx\n'
+            'enter_situations: []\nenter_risk: []\nexit_situations: [norma, tranquillo]\nnote: "Pausa: \\"vedo\\" calma."\n')
+    import yaml
+    i = paper.parse_indication(yaml.safe_load(text), "2026-11-27.yml", ALLOWED, SIGNALS)
+    assert i.instrument is None and i.note == 'Pausa: "vedo" calma.'

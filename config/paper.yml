@@ -6,11 +6,18 @@
 #
 # Campi comuni:
 #   id            identificativo (niente trattini: finisce nei client_order_id)
-#   kind          buy_hold | assess_rule | hedge_rule
+#   kind          buy_hold | assess_rule | indication
 #   secret_prefix prefisso delle variabili d'ambiente con le chiavi del conto
 # Solo long, nessuna leva: il lato short e le decisioni di Claude arrivano nei passi successivi.
 
 version: 1
+
+# Repository GitHub: il modulo della pagina Paper apre qui il file della nuova indicazione già compilato.
+github_repo: ST80Dev/FinanceNow
+
+# Strumenti ammessi nelle indicazioni settimanali, oltre alle azioni dell'universo. Solo ETF senza leva:
+# PSQ e SH sono inversi 1x (salgono quando Nasdaq 100 / S&P 500 scendono); niente SQQQ/TQQQ (leva 3x).
+allowed_instruments: [PSQ, QQQ, SH, SPY]
 
 # Scostamento minimo (in % del valore del conto) per muovere una posizione: meno rotazione inutile.
 min_delta: 0.02
@@ -34,17 +41,9 @@ strategies:
     max_weight: 0.15
     secret_prefix: ALPACA_RULE
 
-  # Copertura ribassista sul Nasdaq (richiesta di Simone del 20/11/2026): ETF inverso 1x, sempre "solo long".
-  # Entra quando il Nasdaq 100 è in tempesta con rischio alto; resta finché è in tempesta, sotto pressione o
-  # in ripresa; esce quando torna nella norma o tranquillo. Il resto del conto in liquidità.
-  # Niente ETF a leva (SQQQ): perdono valore se tenuti per giorni.
-  - id: copertura_psq
-    name: Copertura ribassista (PSQ quando il Nasdaq è in tempesta)
-    kind: hedge_rule
-    symbol: PSQ
-    signal: ndx
-    weight: 0.20
-    enter_situations: [tempesta]
-    enter_risk: [alto]
-    hold_situations: [tempesta, pressione, ripresa]
+  # Indicazioni settimanali di Simone (config/indications/<data>.yml, scritte anche dal modulo della
+  # pagina Paper): il conto applica l'indicazione in vigore. Prima indicazione: copertura ribassista con PSQ.
+  - id: indicazioni
+    name: Indicazioni settimanali (le scelte di Simone)
+    kind: indication
     secret_prefix: ALPACA_HEDGE

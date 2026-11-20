@@ -166,11 +166,17 @@ aspettarsi un rendimento migliore del benchmark**; se la regola non batte QQQ co
 - **Strategie** (solo long, nessuna leva, nessun LLM in questo passo): `bench_qqq` (QQQ tenuto al 99%, il benchmark) e
   `regola_assess` (azioni con situazione norma/tranquillo/ripresa e rischio non alto, pari peso con tetto 15%, il resto
   liquidità). Dati di ingresso: solo `docs/data/assessment.json`; se più vecchio di 4 giorni non si opera.
-- **Copertura ribassista** (`copertura_psq`, kind `hedge_rule`, richiesta del 20/11/2026, terzo conto con Secrets
-  `ALPACA_HEDGE_KEY/SECRET`): PSQ (ETF inverso 1x sul Nasdaq 100, resta "solo long"; niente ETF a leva) al 20% del conto.
-  Entra quando `ndx` è in tempesta **e** con rischio alto; resta finché è in tempesta, pressione o ripresa; esce quando torna
-  nella norma o tranquillo. Lo stato dentro/fuori è la posizione sul conto. Dati di `ndx` non aggiornati: non entra, non esce.
-  Fuori dal confronto con QQQ nella pagina (non serve a batterlo). Lo svantaggio è strutturale: il Nasdaq nel lungo periodo sale.
+- **Indicazioni settimanali** (decisione di Simone del 20/11/2026, terzo conto `indicazioni`, kind `indication`, Secrets
+  `ALPACA_HEDGE_KEY/SECRET`): Simone dà la linea di massima, il codice la applica ogni sera. Un file YAML per indicazione in
+  `config/indications/<data>.yml` (storico versionato, le passate non si modificano): `from` (vale dalla valutazione di quella
+  data), `bias` (ribassista/rialzista/neutrale), `instrument` (solo `allowed_instruments` di `paper.yml` + azioni
+  dell'universo: niente ETF a leva), `max_exposure` (≤ 50%), `signal` (id dell'universo), `enter_situations` + `enter_risk`
+  (entrambe vere per entrare), `exit_situations` (esce lì; nelle altre, se è dentro, resta). Stato dentro/fuori = posizione sul
+  conto; segnale senza dati aggiornati ⇒ non entra né esce; neutrale o cambio di strumento ⇒ si chiude la posizione. File non
+  valido ⇒ quel conto non opera e il run è rosso. Prima indicazione (20/11): ribassista, PSQ al 20% quando `ndx` è in tempesta
+  con rischio alto, esce su norma/tranquillo. La pagina Paper mostra indicazione in vigore e storico (da `paper.json`, quindi
+  aggiornati al run serale) e ha un modulo che apre GitHub "new file" con il YAML già compilato: nessun token nel browser.
+  Fuori dal confronto con QQQ. Da fare dopo: proposte settimanali dell'agente da approvare.
 - Dati "aggiornati" per le regole: `data_status` diverso da `stale`/`no_data` e `as_of` uguale a quello della valutazione
   (prima si accettava solo `updated` e si escludevano a torto `refreshed`/`up_to_date`).
 - **Esecuzione**: ordini a mercato `day` per **importo** (azioni frazionarie) inviati la sera dopo la chiusura; Alpaca li
@@ -222,7 +228,8 @@ pipeline/
   assess.py        # valutazione automatica: situazione, rischio, direzione, prossimi eventi
   paper.py         # paper trading su Alpaca (conti paper): pesi obiettivo, ordini, log append-only
 config/universe.yml
-config/paper.yml     # strategie di paper trading e prefissi dei secret
+config/paper.yml     # strategie di paper trading, prefissi dei secret, strumenti ammessi nelle indicazioni
+config/indications/  # indicazioni settimanali di Simone per il conto "indicazioni" (un YAML datato per indicazione)
 results/           # output elaborati committati (analysis/, backtest/, live/, paper/, status/)
 docs/              # GitHub Pages: index.html, app.js, style.css, data/
 scripts/           # strumenti diagnostici (es. stooq_probe.py)
