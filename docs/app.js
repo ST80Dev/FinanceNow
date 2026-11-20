@@ -488,6 +488,14 @@ function renderOverview() {
       <p class="muted">${esc(m.detail || "")}</p>
     </section>
 
+    <h2>Tutti gli strumenti</h2>
+    <p class="muted small">Passa sopra (o tocca) titoli, intestazioni e valori per la spiegazione. Clicca un'intestazione per ordinare, un nome per il dettaglio.</p>
+    <div class="table-scroll"><table>
+      <thead><tr>${COLUMNS.map((c) => `<th class="sortable ${c.left ? "left" : ""} ${key === c.key ? "sorted" + (dir > 0 ? " asc" : "") : ""}" data-key="${c.key}">${c.label}${c.tip ? " " + info(c.tip) : ""}</th>`).join("")}</tr></thead>
+      <tbody>${rows.map((r) => `<tr class="clickable" data-id="${esc(r.id)}">${COLUMNS.map((c) => `<td class="${c.left ? "left" : ""}">${c.render(r, byId[r.id])}</td>`).join("")}</tr>`).join("")}</tbody>
+    </table></div>
+
+
     <h2>Da guardare <span class="muted small">(${focus.length})</span></h2>
     ${focus.length ? `<div class="acards">${focus.map((a) => assessCard(a, rowsById[a.id])).join("")}</div>`
       : `<p class="notice">Niente di particolare oggi: tutti gli strumenti sono tranquilli o nella norma.</p>`}
@@ -496,13 +504,6 @@ function renderOverview() {
       <div class="quiet">${quiet.map((a) => `<a class="quiet-item" href="#/t/${esc(a.id)}" data-tip="${esc(`**${a.name}**\n${a.description || ""}\n\n${cap(a.situation.why)}.`)}">
         ${SITUATION_ICON[a.situation.key]} <strong>${esc(a.name)}</strong> <span class="muted small">${esc(a.id.toUpperCase())} · ${esc(a.situation.label.toLowerCase())} · ${esc((RISK_LABEL[a.risk.level] || "").toLowerCase())}</span>
         ${quietEarn(a)}</a>`).join("")}</div>` : ""}
-
-    <h2>Tutti gli strumenti</h2>
-    <p class="muted small">Passa sopra (o tocca) titoli, intestazioni e valori per la spiegazione. Clicca un'intestazione per ordinare, un nome per il dettaglio.</p>
-    <div class="table-scroll"><table>
-      <thead><tr>${COLUMNS.map((c) => `<th class="sortable ${c.left ? "left" : ""} ${key === c.key ? "sorted" + (dir > 0 ? " asc" : "") : ""}" data-key="${c.key}">${c.label}${c.tip ? " " + info(c.tip) : ""}</th>`).join("")}</tr></thead>
-      <tbody>${rows.map((r) => `<tr class="clickable" data-id="${esc(r.id)}">${COLUMNS.map((c) => `<td class="${c.left ? "left" : ""}">${c.render(r, byId[r.id])}</td>`).join("")}</tr>`).join("")}</tbody>
-    </table></div>
 
     <section class="series-panel live">
       <h2 style="margin-top:0"><span class="series-tag live">LIVE</span>Quanto ci azzecca il giudizio ${info("serie")}</h2>
