@@ -40,12 +40,15 @@ from pathlib import Path
 
 import yaml
 
-from pipeline.ingest import DEFAULT_UNIVERSE, ConfigError, load_universe, read_json
+from pipeline.ingest import DEFAULT_UNIVERSE, ConfigError, load_universe, read_json, write_json
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "config" / "paper.yml"
 DEFAULT_ASSESSMENT = ROOT / "docs" / "data" / "assessment.json"
 DEFAULT_OUT_DIR = ROOT / "results" / "paper"
+DEFAULT_DASHBOARD = ROOT / "docs" / "data" / "paper.json"
+MIN_SESSIONS_VERDICT = 63        # sotto i 3 mesi di sedute in comune il confronto col benchmark è solo rumore
+RECENT_ORDERS = 40
 
 log = logging.getLogger("financenow.paper")
 
@@ -491,6 +494,91 @@ def record_fills(broker, out_dir: Path) -> int:
     return append_rows(out_dir / FILLS_FILE, FILLS_COLUMNS, rows, ("order_id",))
 
 
+# ---------------------------------------------------------------------------
+# JSON per la dashboard (#/paper): solo percentuali, nessun prezzo
+# ---------------------------------------------------------------------------
+
+def _f(v) -> float | None:
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def dashboard_payload(cfg: PaperConfig, out_dir: Path, last_run: dict | None = None) -> dict:
+    """Andamento di ogni conto paper rispetto al suo primo valore, pesi attuali, ordini recenti.
+
+    Niente importi assoluti né prezzi di esecuzione: andamenti in %, ordini in % del conto.
+    """
+    equity = _read_rows(out_dir / EQUITY_FILE)
+    decisions = _read_rows(out_dir / DECISIONS_FILE)
+    orders = _read_rows(out_dir / ORDERS_FILE)
+    fills = {r["client_order_id"]: r for r in _read_rows(out_dir / FILLS_FILE)}
+    eq_by = {}
+    for r in equity:
+        v = _f(r.get("equity"))
+        if v and v > 0:
+            eq_by.setdefault(r["strategy"], {})[r["as_of"]] = (v, _f(r.get("cash")) or 0.0)
+
+    strategies = []
+    for st in cfg.strategies:
+        series = dict(sorted(eq_by.get(st.id, {}).items()))
+        dates = list(series)
+        first = series[dates[0]][0] if dates else None
+        rets = [round(series[d][0] / first - 1, 6) for d in dates] if first else []
+        mine = [r for r in decisions if r["strategy"] == st.id]
+        last_dec = max((r["as_of"] for r in mine), default=None)
+        weights = [{"symbol": r["symbol"], "weight": _f(r["target_weight"]), "reason": r["reason"]}
+                   for r in mine if r["as_of"] == last_dec]
+        last = series[dates[-1]] if dates else None
+        strategies.append({
+            "id": st.id, "name": st.name, "kind": st.kind, "is_benchmark": st.kind == "buy_hold",
+            "start": dates[0] if dates else None, "as_of": dates[-1] if dates else None, "n_sessions": len(dates),
+            "return": rets[-1] if rets else None,
+            "day_return": round(rets[-1] - rets[-2], 6) if len(rets) > 1 else None,
+            "cash_share": round(last[1] / last[0], 4) if last else None,
+            "decision_as_of": last_dec, "weights": weights,
+            "series": {"dates": dates, "returns": rets},
+            "last_run": (last_run or {}).get(st.id),
+        })
+
+    bench = next((s for s in strategies if s["is_benchmark"] and s["n_sessions"]), None)
+    comparisons = []
+    for s in strategies:
+        if s["is_benchmark"] or not bench or not s["n_sessions"]:
+            continue
+        a, b = eq_by[s["id"]], eq_by[bench["id"]]
+        common = sorted(set(a) & set(b))
+        if not common:
+            continue
+        a0, b0 = a[common[0]][0], b[common[0]][0]
+        excess = [round((a[d][0] / a0) - (b[d][0] / b0), 6) for d in common]
+        n = len(common)
+        if n < MIN_SESSIONS_VERDICT:
+            verdict = "presto"
+        else:
+            verdict = "avanti" if excess[-1] > 0 else "indietro"
+        comparisons.append({"strategy": s["id"], "benchmark": bench["id"], "n_sessions": n,
+                            "dates": common, "excess": excess, "verdict": verdict})
+
+    equity_at = {(r["strategy"], r["as_of"]): _f(r.get("equity")) for r in equity}
+    recent = []
+    for r in sorted(orders, key=lambda r: (r["as_of"], r["strategy"], r["symbol"]), reverse=True)[:RECENT_ORDERS]:
+        eq = equity_at.get((r["strategy"], r["as_of"]))
+        notional = _f(r.get("notional"))
+        fill = fills.get(r["client_order_id"])
+        recent.append({
+            "as_of": r["as_of"], "strategy": r["strategy"], "symbol": r["symbol"], "side": r["side"],
+            "share": round(notional / eq, 4) if notional and eq else None,
+            "close_all": not r.get("notional"),
+            "sent": r["result"].split(":")[0].split(" (")[0],
+            "status": fill["status"] if fill else None,
+        })
+    return {"generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+            "min_sessions_verdict": MIN_SESSIONS_VERDICT, "strategies": strategies,
+            "comparisons": comparisons, "orders": recent}
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Paper trading su Alpaca (solo conti paper).")
     ap.add_argument("--send", action="store_true", help="invia gli ordini (senza: solo prova)")
@@ -499,6 +587,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--assessment", type=Path, default=DEFAULT_ASSESSMENT)
     ap.add_argument("--universe", type=Path, default=DEFAULT_UNIVERSE)
     ap.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
+    ap.add_argument("--dashboard", type=Path, default=DEFAULT_DASHBOARD)
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -517,12 +606,15 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"Valutazioni al {assessment['as_of']} — {'INVIO ORDINI' if args.send else 'PROVA (nessun ordine inviato)'}")
     failed = False
+    last_run: dict[str, dict] = {}
     for strategy in strategies:
         try:
             broker = broker_for(strategy)
             if broker is None and args.send:
                 print(f"\nATTENZIONE [{strategy.id}]: invio richiesto ma mancano le chiavi del conto paper")
             res = run_strategy(strategy, assessment, symbols_by_id, cfg, broker, args.out_dir, args.send)
+            last_run[strategy.id] = {"as_of": assessment["as_of"], "blocked": res.get("blocked"),
+                                     "n_orders": len(res["orders"]), "has_account": broker is not None}
             if res.get("rejected"):
                 failed = True
                 log.error("%s: ordini rifiutati da Alpaca: %s", strategy.id, ", ".join(res["rejected"]))
@@ -532,7 +624,10 @@ def main(argv: list[str] | None = None) -> int:
                     print(f"    esecuzioni nuove registrate: {n}")
         except Exception as e:       # una strategia in errore non ferma le altre
             failed = True
+            last_run[strategy.id] = {"as_of": assessment["as_of"], "error": True}
             log.error("%s: %s", strategy.id, e)
+    if args.send:
+        write_json(dashboard_payload(cfg, args.out_dir, last_run), args.dashboard)
     return 1 if failed else 0
 
 

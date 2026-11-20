@@ -269,3 +269,36 @@ def test_broker_legge_orologio_e_calendario_con_i_modelli_veri_di_alpaca():
     assert m.is_open is False and m.last_session == dt.date(2026, 11, 20)
     assert b.open_orders("regola_assess") == ["AAPL"] and b.open_orders("bench_qqq") == []
     assert "fn-regola_assess-2026-11-20-AAPL" in b.submitted_ids(dt.datetime(2026, 11, 1))
+
+
+def test_json_dashboard_solo_percentuali_e_confronto_col_benchmark(tmp_path):
+    bench = Strategy("bench_qqq", "Benchmark", "buy_hold", "ALPACA_BENCH", {"symbol": "QQQ"})
+    cfg = paper.PaperConfig(0.02, (bench, RULE))
+    eq = [("2026-11-19", "bench_qqq", 100_000, 100_000), ("2026-11-20", "bench_qqq", 101_000, 1_000),
+          ("2026-11-19", "regola_assess", 100_000, 100_000), ("2026-11-20", "regola_assess", 100_500, 85_000)]
+    paper.append_rows(tmp_path / paper.EQUITY_FILE, paper.EQUITY_COLUMNS,
+                      [{"as_of": d, "strategy": s, "equity": e, "cash": c, "invested": e - c, "n_positions": 1,
+                        "created_utc": "x"} for d, s, e, c in eq], ("as_of", "strategy"))
+    paper.append_rows(tmp_path / paper.DECISIONS_FILE, paper.DECISIONS_COLUMNS,
+                      [{"as_of": "2026-11-20", "strategy": "regola_assess", "symbol": "AAPL", "target_weight": "0.15",
+                        "reason": "Nella norma, rischio normale", "created_utc": "x"}], ("as_of", "strategy", "symbol"))
+    coid = "fn-regola_assess-2026-11-20-AAPL"
+    paper.append_rows(tmp_path / paper.ORDERS_FILE, paper.ORDERS_COLUMNS,
+                      [{"as_of": "2026-11-20", "strategy": "regola_assess", "symbol": "AAPL", "side": "buy",
+                        "notional": "15075.00", "qty": "", "client_order_id": coid, "alpaca_order_id": "id",
+                        "result": "accettato (accepted)", "created_utc": "x"}], ("client_order_id",))
+    paper.append_rows(tmp_path / paper.FILLS_FILE, paper.FILLS_COLUMNS,
+                      [{"order_id": "id", "client_order_id": coid, "as_of": "2026-11-20", "strategy": "regola_assess",
+                        "symbol": "AAPL", "side": "buy", "status": "filled", "filled_qty": "55.1",
+                        "filled_avg_price": "273.51", "filled_at": "x"}], ("order_id",))
+    out = paper.dashboard_payload(cfg, tmp_path, {"regola_assess": {"as_of": "2026-11-20", "n_orders": 1}})
+    b, r = out["strategies"]
+    assert b["return"] == pytest.approx(0.01) and r["return"] == pytest.approx(0.005)
+    assert r["cash_share"] == pytest.approx(0.8458, abs=1e-4) and r["weights"][0]["symbol"] == "AAPL"
+    c = out["comparisons"][0]
+    assert c["excess"][-1] == pytest.approx(-0.005) and c["verdict"] == "presto"
+    o = out["orders"][0]
+    assert o["share"] == pytest.approx(0.15) and o["sent"] == "accettato" and o["status"] == "filled"
+    text = json.dumps(out)
+    for forbidden in ("273.51", "filled_avg_price", "15075", "100500", "100000"):   # niente prezzi né importi
+        assert forbidden not in text

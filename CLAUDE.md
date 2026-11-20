@@ -107,7 +107,7 @@ Lavorare sempre su **log-rendimenti**, mai sui livelli di prezzo.
 - Nella dashboard **nessun prezzo né volume assoluto**: solo grandezze derivate (volatilità, drawdown, beta,
   momentum, regimi, z-score; per le anomalie di volume il rapporto con la mediana). Un test lo verifica.
 - Frontend `docs/` in vanilla JS senza librerie: grafici SVG scritti a mano, routing via hash
-  (`#/`, `#/t/<id>`, `#/modelli`, `#/metodo`), tema chiaro/scuro automatico, layout mobile.
+  (`#/`, `#/t/<id>`, `#/pattern`, `#/paper`, `#/modelli`, `#/guida`, `#/metodo`), tema chiaro/scuro automatico, layout mobile.
 - `backtest` e `live` in pannelli separati con etichetta e colore propri (viola / verde acqua).
 - GitHub Pages: Settings → Pages → "Deploy from a branch" → `main` / `docs`. URL: https://st80dev.github.io/FinanceNow/
 - **Sintesi automatica** (`pipeline/digest.py`, richiesta del 26/10/2026): ogni sera regole esplicite selezionano
@@ -179,7 +179,11 @@ aspettarsi un rendimento migliore del benchmark**; se la regola non batte QQQ co
   Ordini frazionari fuori orario: un solo ordine per simbolo per sera (Alpaca rifiuta alcune sequenze di vendite).
 - **Serie `paper`** (append-only, `results/paper/`, separata da `backtest` e `live`): `decisions.csv`, `orders.csv`,
   `fills.csv` (prezzi di esecuzione letti nei run successivi), `equity.csv` (valore del conto per strategia e data).
-- **Da fare nei passi successivi** (ognuno con conferma): pagina `#/paper` in dashboard; strategia con Claude come decisore
+- **Pagina `#/paper`** (scheda "Paper"): `pipeline/paper.py` scrive `docs/data/paper.json` a ogni run con invio e il workflow lo
+  committa. Solo percentuali: andamento di ogni conto dal suo primo valore, regola meno benchmark in punti (giudizio solo dopo
+  63 sedute in comune, prima "troppo presto"), pesi obiettivo, ordini recenti in % del conto con esito. Nessun importo, nessun
+  prezzo di esecuzione (restano solo in `fills.csv`). Terza serie con etichetta e colore propri (PAPER, arancio).
+- **Da fare nei passi successivi** (ognuno con conferma): strategia con Claude come decisore
   (riceve solo grandezze derivate, restituisce JSON, i limiti di rischio li applica il codice); lato short solo dopo aver
   misurato il long (titoli del Nasdaq: frequenza storica di rialzo 58% a 5 sedute e 64% a 21, andare contro è difficile).
 - **Verifiche**: firme e modelli controllati su alpaca-py 0.45 (un test usa i modelli veri con un client finto); regole

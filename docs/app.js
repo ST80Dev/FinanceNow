@@ -1,6 +1,6 @@
 /* FinanceNow — dashboard statica (vanilla JS, nessuna dipendenza).
  * Legge solo i JSON in data/ prodotti da pipeline/export.py.
- * Viste (routing via hash): #/  panoramica · #/t/<id>  strumento · #/pattern · #/modelli · #/guida · #/metodo
+ * Viste (routing via hash): #/  panoramica · #/t/<id>  strumento · #/pattern · #/paper · #/modelli · #/guida · #/metodo
  * Linguaggio semplice: ogni grandezza ha una spiegazione nel tooltip (attributo data-tip),
  * che compare passando sopra col mouse o toccando sul telefono.
  */
@@ -69,9 +69,16 @@ const GLOSSARY = {
     "essere spiegata dal caso (intervallo di confidenza al 90% che esclude lo zero, più una soglia minima di rilevanza)."],
   serie: ["Backtest e live", "BACKTEST = prova sullo storico, ricostruita a ritroso. LIVE = previsioni scritte ogni sera prima di " +
     "conoscere il risultato e verificate dopo: è l'unica prova pulita, ma serve tempo per accumularla."],
+  paper: ["Prove di trading (PAPER)", "Conti virtuali su Alpaca: soldi finti, ordini veri sul mercato simulato.\n" +
+    "Ogni sera, a mercato chiuso, la regola legge la valutazione dell'app e prepara gli ordini; Alpaca li esegue " +
+    "all'apertura della seduta dopo. Il benchmark compra QQQ e lo tiene sempre: è la strategia da battere.\n" +
+    "È una terza serie, separata da BACKTEST e LIVE."],
+  vs_bench: ["Rispetto al benchmark", "Differenza tra l'andamento della regola e quello di QQQ compra-e-tieni, " +
+    "dallo stesso giorno di partenza, in punti percentuali. Sopra lo zero la regola sta facendo meglio.\n" +
+    "Con pochi mesi la differenza è dominata dal caso: per questo il giudizio compare solo dopo 3 mesi di sedute."],
 };
 
-const state = { index: null, models: null, digest: null, patterns: null, assessment: null, direction: null,
+const state = { index: null, models: null, digest: null, patterns: null, assessment: null, direction: null, paper: null,
   tickers: {}, sort: { key: null, dir: -1 }, horizon: "h1" };
 const app = document.getElementById("app");
 const tooltip = document.getElementById("tooltip");
@@ -960,6 +967,95 @@ function renderMethod() {
   </div>`;
 }
 
+/* ------------------------------------------------------------------ paper trading */
+
+const SIDE_LABEL = { buy: "compra", sell: "vende" };
+const FILL_LABEL = { filled: "eseguito", partially_filled: "eseguito in parte", canceled: "annullato",
+  expired: "scaduto", rejected: "rifiutato", done_for_day: "chiuso per oggi" };
+
+function paperRunText(r) {
+  if (!r) return "";
+  if (r.error) return `<span class="neg">ultimo run in errore (vedi il log del workflow paper)</span>`;
+  if (!r.has_account) return `<span class="muted">conto non collegato (mancano le chiavi)</span>`;
+  if (r.blocked) return `ordini non inviati: ${esc(r.blocked)}`;
+  return r.n_orders ? `${r.n_orders} ordini inviati per la seduta dopo il ${fmtDate(r.as_of)}` : "nessun ordine: già vicino ai pesi obiettivo";
+}
+
+function paperCard(s) {
+  const w = s.weights || [];
+  const cash = w.reduce((acc, x) => acc - (x.symbol === "CASH" ? 0 : x.weight || 0), 1);
+  return `<div class="chart-card">
+    <div class="chart-head"><h3>${s.is_benchmark ? "📏 " : ""}${esc(s.name)}</h3>
+      <span class="muted small">${s.start ? `dal ${fmtDate(s.start)} · ${s.n_sessions} sedute` : "non ancora partita"}</span></div>
+    <div class="kv-row">
+      <div><span class="muted small">Andamento</span><br><strong class="num ${signClass(s.return)}">${pct(s.return, 1, true)}</strong></div>
+      <div><span class="muted small">Ultima seduta</span><br><span class="num ${signClass(s.day_return)}">${pct(s.day_return, 2, true)}</span></div>
+      <div><span class="muted small">In liquidità</span><br><span class="num">${pct(s.cash_share, 0)}</span></div>
+    </div>
+    ${w.length ? `<p class="small" style="margin:8px 0 4px"><strong>Obiettivo${s.decision_as_of ? ` del ${fmtDate(s.decision_as_of)}` : ""}:</strong>
+      ${w.filter((x) => x.symbol !== "CASH").map((x) => `<span class="pill" data-tip="${esc(x.reason)}">${esc(x.symbol)} ${pct(x.weight, 0)}</span>`).join(" ")}
+      ${cash > 0.005 ? `<span class="pill muted">liquidità ${pct(cash, 0)}</span>` : ""}</p>` : ""}
+    <p class="small muted" style="margin:4px 0 8px">${paperRunText(s.last_run)}</p>
+    ${s.series.dates.length > 1 ? `<div class="chart" id="paper-${esc(s.id)}"></div>` : ""}
+  </div>`;
+}
+
+function renderPaper() {
+  setActiveTab("paper");
+  const P = state.paper;
+  const head = `<h1>Prove di trading ${info("paper")}</h1>
+    <p class="muted">Conti <strong>virtuali</strong> su Alpaca (paper): nessun soldo vero. La regola segue la valutazione dell'app,
+      il benchmark tiene QQQ. Il modello di direzione non ha mostrato alcun vantaggio nei test: non c'è motivo di aspettarsi che la regola
+      batta il benchmark, e se non lo batte la pagina lo dice.</p>`;
+  if (!P || !P.strategies.some((s) => s.n_sessions)) {
+    app.innerHTML = `${head}<p class="notice">Nessun dato ancora: la pagina si riempie dopo il primo run del workflow <code>paper</code> con i conti collegati.</p>`;
+    return;
+  }
+  const comps = P.comparisons || [];
+  const names = Object.fromEntries(P.strategies.map((s) => [s.id, s.name]));
+  const short = Object.fromEntries(P.strategies.map((s) => [s.id, s.is_benchmark ? "Benchmark" : s.name.split(" (")[0]]));
+  app.innerHTML = `${head}
+    <section class="series-panel paper">
+      <h2 style="margin-top:0"><span class="series-tag paper">PAPER</span>Regola contro benchmark ${info("vs_bench")}</h2>
+      ${comps.length ? comps.map((c, i) => {
+        const last = c.excess[c.excess.length - 1];
+        const verdict = c.verdict === "presto"
+          ? `Troppo presto per giudicare: ${c.n_sessions} sedute in comune, ne servono almeno ${P.min_sessions_verdict}.`
+          : c.verdict === "avanti" ? `Dopo ${c.n_sessions} sedute la regola è avanti, ma la differenza può essere ancora frutto del caso.`
+          : `Dopo ${c.n_sessions} sedute la regola è indietro: finora tenere QQQ ha reso di più.`;
+        return `<p><strong>${esc(names[c.strategy] || c.strategy)}</strong>: <span class="num ${signClass(last)}">${num(last * 100, 1, true)} punti</span>
+          rispetto al benchmark. <span class="muted">${verdict}</span></p>
+          ${c.dates.length > 1 ? `<div class="chart" id="paper-cmp-${i}"></div>` : ""}`;
+      }).join("") : `<p class="notice">Il confronto compare quando entrambi i conti hanno almeno una seduta registrata.</p>`}
+    </section>
+    ${P.strategies.map(paperCard).join("")}
+    <h2>Ordini recenti</h2>
+    ${P.orders.length ? `<div class="table-scroll"><table><thead><tr><th class="left">Sera</th><th class="left">Conto</th><th class="left">Titolo</th>
+      <th class="left">Operazione</th><th>Quota del conto</th><th class="left">Invio</th><th class="left">Esito</th></tr></thead>
+      <tbody>${P.orders.map((o) => `<tr><td class="left">${fmtDate(o.as_of)}</td><td class="left small">${esc(short[o.strategy] || o.strategy)}</td>
+        <td class="left"><strong>${esc(o.symbol)}</strong></td><td class="left">${SIDE_LABEL[o.side] || esc(o.side)}${o.close_all ? " tutto" : ""}</td>
+        <td class="num">${o.close_all ? "–" : pct(o.share, 1)}</td><td class="left small">${esc(o.sent)}</td>
+        <td class="left small">${o.status ? esc(FILL_LABEL[o.status] || o.status) : `<span class="muted">in attesa</span>`}</td></tr>`).join("")}</tbody></table></div>`
+      : `<p class="notice">Nessun ordine registrato.</p>`}
+    <p class="small muted">Gli ordini partono la sera dopo la chiusura e Alpaca li esegue all'apertura della seduta successiva,
+      ai prezzi del mercato simulato. Andamenti in percentuale dal primo giorno di ogni conto; nessun importo né prezzo mostrato.</p>`;
+
+  const draw = () => {
+    comps.forEach((c, i) => {
+      const box = document.getElementById(`paper-cmp-${i}`);
+      if (box) lineChart(box, { dates: c.dates, values: c.excess, format: (v) => num(v * 100, 1, true), zero: true, area: true,
+        label: "Regola meno benchmark (punti %)" });
+    });
+    P.strategies.forEach((s) => {
+      const box = document.getElementById(`paper-${s.id}`);
+      if (box) lineChart(box, { dates: s.series.dates, values: s.series.returns, format: (v) => pct(v, 1, true), zero: true,
+        label: `Andamento ${s.name}` });
+    });
+  };
+  draw();
+  state.redraw = draw;
+}
+
 /* ------------------------------------------------------------------ router */
 
 async function route() {
@@ -970,6 +1066,7 @@ async function route() {
     if (hash.startsWith("#/t/")) await renderTicker(decodeURIComponent(hash.slice(4)));
     else if (hash === "#/modelli") renderModels();
     else if (hash === "#/pattern") renderPatterns();
+    else if (hash === "#/paper") renderPaper();
     else if (hash === "#/guida") renderGuide();
     else if (hash === "#/metodo") renderMethod();
     else renderOverview();
@@ -987,6 +1084,7 @@ async function init() {
       getJSON("data/patterns.json").catch(() => null),
       getJSON("data/direction.json").catch(() => null),
     ]);
+    state.paper = await getJSON("data/paper.json").catch(() => null);
   } catch (err) {
     app.innerHTML = `<p class="notice">Dati non disponibili: ${esc(err.message)}.<br>
       La dashboard si popola dopo il primo run di <code>daily.yml</code>.</p>`;
