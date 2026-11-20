@@ -46,4 +46,4 @@ strategies:
   - id: indicazioni
     name: Indicazioni settimanali (le scelte di Simone)
     kind: indication
-    secret_prefix: ALPACA_HEDGE
+    secret_prefix: ALPACA_LOSH

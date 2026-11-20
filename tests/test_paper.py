@@ -34,7 +34,7 @@ RULE = Strategy("regola_assess", "regola", "assess_rule", "ALPACA_RULE",
                 {"allowed_situations": ["norma", "tranquillo", "ripresa"], "block_risk": ["alto"], "max_weight": 0.15})
 
 
-IND = Strategy("indicazioni", "indicazioni", "indication", "ALPACA_HEDGE", {})
+IND = Strategy("indicazioni", "indicazioni", "indication", "ALPACA_LOSH", {})
 ALLOWED = {"PSQ", "QQQ", "SH", "SPY", "AAPL"}
 SIGNALS = {"ndx", "qqq", "spx", "aapl"}
 FIRST = {"from": "2026-11-20", "author": "Simone", "bias": "ribassista", "instrument": "PSQ", "max_exposure": 0.2,

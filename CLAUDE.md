@@ -167,7 +167,7 @@ aspettarsi un rendimento migliore del benchmark**; se la regola non batte QQQ co
   `regola_assess` (azioni con situazione norma/tranquillo/ripresa e rischio non alto, pari peso con tetto 15%, il resto
   liquidità). Dati di ingresso: solo `docs/data/assessment.json`; se più vecchio di 4 giorni non si opera.
 - **Indicazioni settimanali** (decisione di Simone del 20/11/2026, terzo conto `indicazioni`, kind `indication`, Secrets
-  `ALPACA_HEDGE_KEY/SECRET`): Simone dà la linea di massima, il codice la applica ogni sera. Un file YAML per indicazione in
+  `ALPACA_LOSH_KEY/SECRET`): Simone dà la linea di massima, il codice la applica ogni sera. Un file YAML per indicazione in
   `config/indications/<data>.yml` (storico versionato, le passate non si modificano): `from` (vale dalla valutazione di quella
   data), `bias` (ribassista/rialzista/neutrale), `instrument` (solo `allowed_instruments` di `paper.yml` + azioni
   dell'universo: niente ETF a leva), `max_exposure` (≤ 50%), `signal` (id dell'universo), `enter_situations` + `enter_risk`
