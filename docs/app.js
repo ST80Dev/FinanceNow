@@ -85,7 +85,7 @@ const GLOSSARY = {
 };
 
 const state = { index: null, models: null, digest: null, patterns: null, assessment: null, direction: null, paper: null,
-  tickers: {}, sort: { key: null, dir: -1 }, horizon: "h1" };
+  tickers: {}, sort: { key: null, dir: -1 }, filter: "", open: new Set(), horizon: "h1" };
 const app = document.getElementById("app");
 const tooltip = document.getElementById("tooltip");
 
@@ -396,12 +396,12 @@ function factGrid(a, row, full = false) {
   </div>`;
 }
 
-function assessCard(a, row, full = false) {
+function assessCard(a, row, full = false, showName = !full) {
   const events = (a.events || []).filter((e) => full || e.soon || e.kind === "trimestrale_passata");
   const r = a.risk || {};
   return `<article class="acard sit-border-${esc(a.situation.key)}">
     <div class="acard-head">
-      ${full ? "" : `<div class="acard-name">${instName(a, true)}</div>`}
+      ${showName ? `<div class="acard-name">${instName(a, true)}</div>` : ""}
       <div class="acard-badges">${situationBadge(a.situation)} ${riskBadge(r)}</div>
     </div>
     <p class="acard-why">${esc(cap(a.situation.why))}.</p>
@@ -415,42 +415,41 @@ function assessCard(a, row, full = false) {
 
 /* ------------------------------------------------------------------ panoramica */
 
+/* Tabella compatta: una riga per strumento, senza spiegazioni nelle celle (così un tocco sulla riga apre il
+ * riquadro anche sul telefono); le spiegazioni restano nelle intestazioni (i) e nel riquadro aperto.
+ * hide: "sm" = nascosta sul telefono, "md" = nascosta anche su schermi medi. */
+const SIT_ORDER = ["tempesta", "pressione", "ripresa", "norma", "tranquillo"];
+const RISK_SHORT = { alto: "alto", normale: "normale", basso: "basso" };
 const COLUMNS = [
-  { key: "name", label: "Strumento", left: true, render: (r) => instName(r, true) },
-  { key: "sit_rank", label: "Situazione", tip: "situazione", left: true, render: (r, a) => situationBadge(a?.situation) },
-  { key: "risk_rank", label: "Rischio", tip: "rischio", left: true, render: (r, a) => riskBadge(a?.risk) },
-  { key: "rv_21", label: "Oscillazione/mese", tip: "oscillazione", render: (r) => `<span class="num">±${pct(isNum(r.rv_21) ? r.rv_21 / Math.sqrt(12) : null, 0)}</span>` },
-  { key: "vol_pct", label: "Rispetto al solito", tip: "solito", render: (r, a) => solitoBar(a?.risk?.vol_percentile) },
-  { key: "drawdown", label: "Dal massimo", tip: "massimo", render: (r) => `<span class="num ${signClass(r.drawdown)}">${pct(r.drawdown, 0)}</span>` },
-  { key: "mom_3m", label: "3 mesi", tip: "andamento", render: (r) => `<span class="num ${signClass(r.mom_3m)}">${pct(simple(r.mom_3m), 1, true)}</span>` },
-  { key: "mom_12m", label: "1 anno", tip: "andamento", render: (r) => `<span class="num ${signClass(r.mom_12m)}">${pct(simple(r.mom_12m), 1, true)}</span>` },
-  { key: "beta_252", label: "Segue il Nasdaq", tip: "beta", render: (r) => betaText(r.beta_252) },
-  { key: "earn_next", label: "Trimestrale", tip: "trimestrale", left: true, render: (r, a) => earnCell(a) },
+  { key: "name", label: "Titolo", left: true,
+    render: (r, a) => `<span class="chev" aria-hidden="true"></span><span class="name">${esc(r.name)}<small>${esc(r.id.toUpperCase())}${r.asset_class === "stock" ? "" : " · " + esc(CLASS_LABELS[r.asset_class] || "")}</small></span>` },
+  { key: "sit_rank", label: "Situazione", short: "Stato", tip: "situazione", left: true,
+    render: (r, a) => a ? `<span class="sit sit-${esc(a.situation.key)}">${SITUATION_ICON[a.situation.key] || ""}<span class="sit-word"> ${esc(a.situation.label)}</span></span>` : "–" },
+  { key: "risk_rank", label: "Rischio", tip: "rischio", left: true,
+    render: (r, a) => a ? `<span class="risk risk-${esc(a.risk.level)}">${esc(RISK_SHORT[a.risk.level] || a.risk.level)}</span>` : "–" },
+  { key: "rv_21", label: "Oscillazione al mese", tip: "oscillazione", hide: "sm", render: (r) => `<span class="num">±${pct(isNum(r.rv_21) ? r.rv_21 / Math.sqrt(12) : null, 0)}</span>` },
+  { key: "vol_pct", label: "Rispetto al solito", tip: "solito", hide: "md", render: (r, a) => solitoBar(a?.risk?.vol_percentile) },
+  { key: "drawdown", label: "Dal massimo", tip: "massimo", hide: "sm", render: (r) => `<span class="num ${signClass(r.drawdown)}">${pct(r.drawdown, 0)}</span>` },
+  { key: "mom_3m", label: "3 mesi", short: "3 m", tip: "andamento", render: (r) => `<span class="num ${signClass(r.mom_3m)}">${pct(simple(r.mom_3m), 0, true)}</span>` },
+  { key: "mom_12m", label: "1 anno", tip: "andamento", hide: "sm", render: (r) => `<span class="num ${signClass(r.mom_12m)}">${pct(simple(r.mom_12m), 0, true)}</span>` },
+  { key: "earn_next", label: "Trimestrale", tip: "trimestrale", left: true, hide: "sm", render: (r, a) => earnCell(a) },
 ];
 
 function solitoBar(p) {
   if (!isNum(p)) return "–";
   const cls = p >= 0.9 ? "hot" : p >= 0.7 ? "warm" : p <= 0.1 ? "cold" : "";
-  return `<span class="meter ${cls}" data-tip="${tipText("solito", `Oggi: più che nel ${Math.round(p * 100)}% della sua storia.`)}"><i style="width:${Math.round(p * 100)}%"></i></span><span class="num small"> ${Math.round(p * 100)}%</span>`;
-}
-function betaText(b) {
-  if (!isNum(b)) return `<span class="muted">–</span>`;
-  const word = b >= 1.25 ? "amplifica" : b <= 0.8 ? "attenua" : "simile";
-  return `<span class="num" data-tip="${tipText("beta", `Se il Nasdaq fa ±1%, di solito questo titolo fa ±${num(b, 1)}%.`)}">${num(b, 1)}×</span> <span class="small muted">${word}</span>`;
+  return `<span class="meter ${cls}"><i style="width:${Math.round(p * 100)}%"></i></span><span class="num small"> ${Math.round(p * 100)}%</span>`;
 }
 function earnCell(a) {
   const e = (a?.events || []).find((x) => x.kind === "trimestrale");
   if (!e) return `<span class="muted">–</span>`;
   const soon = e.sessions_until <= 10;
-  return `<span class="${soon ? "earn-soon" : ""}" data-tip="${esc(e.text)}">${shortDate(e.date)} <span class="small muted">(${e.sessions_until <= 1 ? "domani" : "tra " + e.sessions_until + " sedute"})</span></span>`;
+  return `<span class="${soon ? "earn-soon" : ""}">${shortDate(e.date)} <span class="small muted earn-when">${e.sessions_until <= 1 ? "domani" : "tra " + e.sessions_until + " sedute"}</span></span>`;
 }
-
-function quietEarn(a) {
-  const e = (a.events || []).find((x) => x.kind === "trimestrale" && x.soon);
-  return e ? `<span class="earn-soon small"> · 📅 trimestrale ${e.sessions_until <= 1 ? "domani" : "tra " + e.sessions_until + " sedute"}</span>` : "";
-}
+const earnSoon = (a) => (a?.events || []).some((x) => x.kind === "trimestrale" && x.sessions_until <= 10);
 
 function sortValue(r, a, key) {
+  if (key === "name") return r.name.toLowerCase();
   if (key === "sit_rank") return a ? { tempesta: 4, pressione: 3, ripresa: 2, norma: 1, tranquillo: 0 }[a.situation.key] : -1;
   if (key === "risk_rank") return a ? { alto: 2, normale: 1, basso: 0 }[a.risk.level] : -1;
   if (key === "vol_pct") return a?.risk?.vol_percentile;
@@ -458,17 +457,14 @@ function sortValue(r, a, key) {
   return r[key];
 }
 
-function renderOverview() {
-  setActiveTab("overview");
-  const A = state.assessment;
-  if (!A) { app.innerHTML = `<h1>Panoramica</h1><p class="notice">Valutazione non ancora disponibile: compare dopo il prossimo run di daily.yml.</p>`; return; }
+function overviewRows(A) {
   const byId = Object.fromEntries(A.instruments.map((a) => [a.id, a]));
   const rowsById = Object.fromEntries(state.index.instruments.map((r) => [r.id, r]));
-  const focus = A.instruments.filter((a) => ["tempesta", "pressione", "ripresa"].includes(a.situation.key) || a.risk.level === "alto");
-  const quiet = A.instruments.filter((a) => !focus.includes(a));
-  const m = A.market || {};
-
-  const rows = [...state.index.instruments];
+  // ordine di partenza: quello della valutazione (prima ciò che merita attenzione), poi gli strumenti senza valutazione
+  let rows = [...A.instruments.map((a) => rowsById[a.id] || a), ...state.index.instruments.filter((r) => !byId[r.id])];
+  const f = state.filter;
+  if (f === "trimestrale") rows = rows.filter((r) => earnSoon(byId[r.id]));
+  else if (f) rows = rows.filter((r) => byId[r.id]?.situation.key === f);
   const { key, dir } = state.sort;
   if (key) {
     rows.sort((x, y) => {
@@ -479,7 +475,44 @@ function renderOverview() {
       return (va > vb ? 1 : -1) * dir;
     });
   }
+  return { rows, byId, rowsById };
+}
+
+function filterChips(A) {
+  const counts = {};
+  A.instruments.forEach((a) => { counts[a.situation.key] = (counts[a.situation.key] || 0) + 1; });
+  const nEarn = A.instruments.filter(earnSoon).length;
+  const chip = (val, label, n) => `<button type="button" class="fchip ${state.filter === val ? "on" : ""}" data-filter="${esc(val)}">${label} <span class="num">${n}</span></button>`;
+  const labels = Object.fromEntries(A.instruments.map((a) => [a.situation.key, a.situation.label]));
+  return `<div class="fchips" role="group" aria-label="Filtra per situazione">
+    ${chip("", "Tutti", A.instruments.length)}
+    ${SIT_ORDER.filter((k) => counts[k]).map((k) => chip(k, `${SITUATION_ICON[k]} ${esc(labels[k])}`, counts[k])).join("")}
+    ${nEarn ? chip("trimestrale", "📅 Trimestrale entro 10 sedute", nEarn) : ""}
+  </div>`;
+}
+
+function renderOverview() {
+  setActiveTab("overview");
+  const A = state.assessment;
+  if (!A) { app.innerHTML = `<h1>Panoramica</h1><p class="notice">Valutazione non ancora disponibile: compare dopo il prossimo run di daily.yml.</p>`; return; }
+  const { rows, byId } = overviewRows(A);
+  const nStocks = A.instruments.filter((a) => a.asset_class === "stock").length;
+  const m = A.market || {};
+  const { key, dir } = state.sort;
+  const ncol = COLUMNS.length;
   const live = A.live || {};
+  const hideCls = (c) => (c.hide ? ` hide-${c.hide}` : "");
+  const body = rows.map((r) => {
+    const a = byId[r.id];
+    const open = state.open.has(r.id);
+    const main = `<tr class="ov-row ${open ? "open" : ""} ${a ? "sit-row-" + esc(a.situation.key) : ""}" data-id="${esc(r.id)}" tabindex="0" aria-expanded="${open}">
+      ${COLUMNS.map((c) => `<td class="${c.left ? "left" : ""}${hideCls(c)}">${c.render(r, a)}</td>`).join("")}</tr>`;
+    if (!open) return main;
+    return main + `<tr class="ov-detail"><td colspan="${ncol}">
+      ${a ? assessCard(a, r, false, false) : `<p class="muted">Valutazione non disponibile per questo strumento.</p>`}
+      <p class="ov-more"><a href="#/t/${esc(r.id)}">Apri la scheda completa di ${esc(r.name)} →</a></p></td></tr>`;
+  }).join("");
+
   app.innerHTML = `
     <section class="market">
       <h1>Situazione al ${fmtDate(A.as_of)}</h1>
@@ -488,20 +521,18 @@ function renderOverview() {
       <p class="muted">${esc(m.detail || "")}</p>
     </section>
 
-    <h2>Da guardare <span class="muted small">(${focus.length})</span></h2>
-    ${focus.length ? `<div class="acards">${focus.map((a) => assessCard(a, rowsById[a.id])).join("")}</div>`
-      : `<p class="notice">Niente di particolare oggi: tutti gli strumenti sono tranquilli o nella norma.</p>`}
-
-    ${quiet.length ? `<h2>Senza novità <span class="muted small">(${quiet.length})</span></h2>
-      <div class="quiet">${quiet.map((a) => `<a class="quiet-item" href="#/t/${esc(a.id)}" data-tip="${esc(`**${a.name}**\n${a.description || ""}\n\n${cap(a.situation.why)}.`)}">
-        ${SITUATION_ICON[a.situation.key]} <strong>${esc(a.name)}</strong> <span class="muted small">${esc(a.id.toUpperCase())} · ${esc(a.situation.label.toLowerCase())} · ${esc((RISK_LABEL[a.risk.level] || "").toLowerCase())}</span>
-        ${quietEarn(a)}</a>`).join("")}</div>` : ""}
-
-    <h2>Tutti gli strumenti</h2>
-    <p class="muted small">Passa sopra (o tocca) titoli, intestazioni e valori per la spiegazione. Clicca un'intestazione per ordinare, un nome per il dettaglio.</p>
-    <div class="table-scroll"><table>
-      <thead><tr>${COLUMNS.map((c) => `<th class="sortable ${c.left ? "left" : ""} ${key === c.key ? "sorted" + (dir > 0 ? " asc" : "") : ""}" data-key="${c.key}">${c.label}${c.tip ? " " + info(c.tip) : ""}</th>`).join("")}</tr></thead>
-      <tbody>${rows.map((r) => `<tr class="clickable" data-id="${esc(r.id)}">${COLUMNS.map((c) => `<td class="${c.left ? "left" : ""}">${c.render(r, byId[r.id])}</td>`).join("")}</tr>`).join("")}</tbody>
+    <div class="ov-head">
+      <h2>Tutti i titoli <span class="muted small">(${state.filter ? rows.length + " di " + A.instruments.length : nStocks + " azioni e " + (A.instruments.length - nStocks) + " di riferimento"})</span></h2>
+      <div class="ov-tools">
+        <button type="button" class="link-btn" data-act="open-all">Apri tutti</button> ·
+        <button type="button" class="link-btn" data-act="close-all">Chiudi tutti</button>
+      </div>
+    </div>
+    ${filterChips(A)}
+    <p class="muted small">Tocca una riga per aprire il riquadro con il dettaglio; tocca un'intestazione per ordinare. Prima in alto ciò che merita più attenzione.</p>
+    <div class="table-scroll"><table class="ov-table">
+      <thead><tr>${COLUMNS.map((c) => `<th class="sortable ${c.left ? "left" : ""}${hideCls(c)} ${key === c.key ? "sorted" + (dir > 0 ? " asc" : "") : ""}" data-key="${c.key}">${c.short ? `<span class="lbl-long">${c.label}</span><span class="lbl-short">${c.short}</span>` : c.label}${c.tip ? " " + info(c.tip) : ""}</th>`).join("")}</tr></thead>
+      <tbody>${body || `<tr><td colspan="${ncol}" class="muted">Nessuno strumento con questo filtro.</td></tr>`}</tbody>
     </table></div>
 
     <section class="series-panel live">
@@ -519,13 +550,22 @@ function renderOverview() {
 
   app.querySelectorAll("th.sortable").forEach((th) => th.addEventListener("click", () => {
     const k = th.dataset.key;
-    state.sort = { key: k, dir: state.sort.key === k ? -state.sort.dir : -1 };
+    state.sort = { key: k, dir: state.sort.key === k ? -state.sort.dir : (k === "name" ? 1 : -1) };
     renderOverview();
   }));
-  app.querySelectorAll("tr.clickable").forEach((tr) => tr.addEventListener("click", (e) => {
-    if (e.target.closest("a")) return;
-    location.hash = `#/t/${tr.dataset.id}`;
-  }));
+  app.querySelectorAll(".fchip").forEach((b) => b.addEventListener("click", () => { state.filter = b.dataset.filter; renderOverview(); }));
+  app.querySelector('[data-act="open-all"]').addEventListener("click", () => { rows.forEach((r) => state.open.add(r.id)); renderOverview(); });
+  app.querySelector('[data-act="close-all"]').addEventListener("click", () => { state.open.clear(); renderOverview(); });
+  const toggle = (id) => {
+    state.open.has(id) ? state.open.delete(id) : state.open.add(id);
+    const y = window.scrollY;
+    renderOverview();
+    window.scrollTo(0, y);
+  };
+  app.querySelectorAll("tr.ov-row").forEach((tr) => {
+    tr.addEventListener("click", (e) => { if (!e.target.closest("a, .info")) toggle(tr.dataset.id); });
+    tr.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(tr.dataset.id); } });
+  });
 }
 
 /* ------------------------------------------------------------------ dettaglio strumento */
