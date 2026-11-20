@@ -1,0 +1,193 @@
+"""Test offline del paper trading: pesi obiettivo, ordini, log append-only, config.
+
+Nessuna chiamata di rete e nessun bisogno di alpaca-py (importato solo dal broker).
+"""
+
+from __future__ import annotations
+
+import datetime as dt
+import json
+from pathlib import Path
+
+import pytest
+
+from pipeline import paper
+from pipeline.paper import PaperError, Strategy
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def inst(id_, situation="norma", risk="normale", status="updated", asset_class="stock"):
+    return {"id": id_, "asset_class": asset_class, "data_status": status,
+            "situation": {"key": situation, "label": situation.capitalize()},
+            "risk": {"level": risk}}
+
+
+SYMBOLS = {"aapl": "AAPL", "msft": "MSFT", "nvda": "NVDA", "amd": "AMD"}
+
+
+def assessment(*instruments, as_of="2026-11-19"):
+    return {"as_of": as_of, "instruments": list(instruments)}
+
+
+RULE = Strategy("regola_assess", "regola", "assess_rule", "ALPACA_RULE",
+                {"allowed_situations": ["norma", "tranquillo", "ripresa"], "block_risk": ["alto"], "max_weight": 0.15})
+
+
+# --- pesi obiettivo ---------------------------------------------------------
+
+def test_regola_esclude_tempesta_rischio_alto_e_dati_vecchi():
+    a = assessment(inst("aapl"), inst("msft", "tempesta"), inst("nvda", "norma", "alto"),
+                   inst("amd", status="stale"))
+    t = paper.target_assess_rule(RULE, a, SYMBOLS)
+    assert list(t.weights) == ["AAPL"]
+    assert t.weights["AAPL"] == 0.15          # un solo titolo: vale il tetto, il resto è liquidità
+
+
+def test_regola_pari_peso_senza_superare_il_tetto():
+    ids = ["aapl", "msft", "nvda", "amd"]
+    t = paper.target_assess_rule(RULE, assessment(*[inst(i) for i in ids]), SYMBOLS)
+    assert set(t.weights) == {"AAPL", "MSFT", "NVDA", "AMD"}
+    assert all(w == 0.15 for w in t.weights.values())       # 1/4 = 25% > tetto 15%
+    many = {f"x{i}": f"X{i}" for i in range(10)}
+    t10 = paper.target_assess_rule(RULE, assessment(*[inst(i) for i in many]), many)
+    assert all(abs(w - 0.10) < 1e-12 for w in t10.weights.values())
+    assert sum(t10.weights.values()) <= 1.0 + 1e-12
+
+
+def test_regola_ignora_indici_ed_etf_e_tutto_cash_se_nessuno_passa():
+    a = assessment(inst("ndx", asset_class="index"), inst("qqq", asset_class="etf"), inst("aapl", "tempesta"))
+    t = paper.target_assess_rule(RULE, a, SYMBOLS)
+    assert t.weights == {} and "liquidità" in t.note
+
+
+def test_buy_hold_un_solo_simbolo():
+    s = Strategy("bench_qqq", "b", "buy_hold", "ALPACA_BENCH", {"symbol": "qqq", "weight": 0.99})
+    t = paper.compute_target(s, assessment(), SYMBOLS)
+    assert t.weights == {"QQQ": 0.99}
+
+
+# --- ordini -----------------------------------------------------------------
+
+def test_primo_acquisto_per_importo():
+    orders = paper.plan_orders(100_000, {}, {"QQQ": 0.99}, 0.02)
+    assert [(o.symbol, o.side, o.notional, o.qty) for o in orders] == [("QQQ", "buy", 99_000.0, None)]
+
+
+def test_scostamento_piccolo_non_genera_ordini():
+    # peso attuale 14,5% contro obiettivo 15%: sotto la soglia del 2% del conto
+    assert paper.plan_orders(100_000, {"AAPL": (14_500.0, 50.0)}, {"AAPL": 0.15}, 0.02) == []
+
+
+def test_uscita_completa_a_quantita_e_vendite_prima_degli_acquisti():
+    positions = {"MSFT": (15_000.0, 30.5), "AAPL": (15_000.0, 60.0)}
+    orders = paper.plan_orders(100_000, positions, {"AAPL": 0.15, "NVDA": 0.15}, 0.02)
+    assert [(o.symbol, o.side) for o in orders] == [("MSFT", "sell"), ("NVDA", "buy")]
+    assert orders[0].qty == 30.5 and orders[0].notional is None      # chiusura per intero, nessun residuo
+    assert orders[1].notional == 15_000.0
+
+
+def test_riduzione_parziale_vende_importo():
+    orders = paper.plan_orders(100_000, {"AAPL": (30_000.0, 100.0)}, {"AAPL": 0.15}, 0.02)
+    assert [(o.side, o.notional) for o in orders] == [("sell", 15_000.0)]
+
+
+def test_conto_non_valido():
+    with pytest.raises(PaperError):
+        paper.plan_orders(0, {}, {"QQQ": 1.0}, 0.02)
+
+
+# --- id ordini --------------------------------------------------------------
+
+def test_client_order_id_roundtrip():
+    coid = paper.client_order_id("regola_assess", "2026-11-19", "BRK.B")
+    assert paper.parse_client_order_id(coid) == ("regola_assess", "2026-11-19", "BRK.B")
+    assert paper.parse_client_order_id("altro-ordine") is None
+    assert paper.parse_client_order_id("") is None
+
+
+# --- log append-only --------------------------------------------------------
+
+def test_append_rows_non_duplica_e_non_riscrive(tmp_path):
+    path = tmp_path / "equity.csv"
+    row = {"as_of": "2026-11-19", "strategy": "bench_qqq", "equity": "100000.00", "cash": "1000.00",
+           "invested": "99000.00", "n_positions": 1, "created_utc": "t1"}
+    assert paper.append_rows(path, paper.EQUITY_COLUMNS, [row], ("as_of", "strategy")) == 1
+    changed = {**row, "equity": "5.00", "created_utc": "t2"}
+    assert paper.append_rows(path, paper.EQUITY_COLUMNS, [changed], ("as_of", "strategy")) == 0
+    lines = path.read_text(encoding="utf-8").strip().splitlines()
+    assert len(lines) == 2 and "100000.00" in lines[1]               # la riga originale non cambia
+    other = {**row, "as_of": "2026-11-20"}
+    assert paper.append_rows(path, paper.EQUITY_COLUMNS, [other], ("as_of", "strategy")) == 1
+
+
+# --- config e valutazioni ---------------------------------------------------
+
+def test_config_del_repo_valida():
+    cfg = paper.load_config(ROOT / "config" / "paper.yml")
+    assert {s.id for s in cfg.strategies} == {"bench_qqq", "regola_assess"}
+    prefixes = [s.secret_prefix for s in cfg.strategies]
+    assert len(set(prefixes)) == len(prefixes)                        # un conto per strategia
+
+
+def test_config_rifiuta_id_con_trattino_e_kind_ignoto(tmp_path):
+    bad = tmp_path / "p.yml"
+    bad.write_text("strategies:\n  - {id: a-b, kind: buy_hold, symbol: QQQ, secret_prefix: X}\n", encoding="utf-8")
+    with pytest.raises(PaperError):
+        paper.load_config(bad)
+    bad.write_text("strategies:\n  - {id: ab, kind: boh, secret_prefix: X}\n", encoding="utf-8")
+    with pytest.raises(PaperError):
+        paper.load_config(bad)
+
+
+def test_valutazioni_vecchie_rifiutate(tmp_path):
+    f = tmp_path / "assessment.json"
+    f.write_text(json.dumps(assessment(inst("aapl"), as_of="2026-11-01")), encoding="utf-8")
+    with pytest.raises(PaperError):
+        paper.load_assessment(f, today=dt.date(2026, 11, 20))
+    ok = paper.load_assessment(f, today=dt.date(2026, 11, 3))
+    assert ok["as_of"] == "2026-11-01"
+
+
+def test_simboli_dell_universo_solo_azioni():
+    sym = paper.stock_symbols(ROOT / "config" / "universe.yml")
+    assert sym["nvda"] == "NVDA" and "qqq" not in sym and "ndx" not in sym
+
+
+def test_senza_chiavi_nessun_broker():
+    assert paper.broker_for(RULE, env={}) is None
+
+
+def test_senza_send_non_scrive_nulla(tmp_path):
+    class FakeBroker:
+        def account(self): return 100_000.0, 100_000.0
+        def positions(self): return {}
+        def submit(self, *a): raise AssertionError("in prova non si devono inviare ordini")
+    cfg = paper.PaperConfig(0.02, (RULE,))
+    a = assessment(inst("aapl"))
+    res = paper.run_strategy(RULE, a, SYMBOLS, cfg, FakeBroker(), tmp_path, send=False)
+    assert res["sent"] is False and len(res["orders"]) == 1
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_con_send_registra_decisioni_ordini_equity_e_riprova_senza_duplicati(tmp_path):
+    sent = []
+
+    class FakeBroker:
+        def account(self): return 100_000.0, 100_000.0
+        def positions(self): return {}
+        def submit(self, plan, coid):
+            sent.append(coid)
+            return "id-1", "accettato (accepted)"
+    cfg = paper.PaperConfig(0.02, (RULE,))
+    a = assessment(inst("aapl"))
+    for _ in range(2):                                        # secondo giro = rilancio dello stesso giorno
+        paper.run_strategy(RULE, a, SYMBOLS, cfg, FakeBroker(), tmp_path, send=True)
+    for name in (paper.DECISIONS_FILE, paper.ORDERS_FILE, paper.EQUITY_FILE):
+        assert len((tmp_path / name).read_text(encoding="utf-8").strip().splitlines()) == 2   # intestazione + 1
+    assert sent == ["fn-regola_assess-2026-11-19-AAPL"] * 2   # l'id è stabile: Alpaca rifiuta il duplicato
+
+
+def test_nessuna_chiave_segreta_nel_codice():
+    text = (ROOT / "pipeline" / "paper.py").read_text(encoding="utf-8")
+    assert "paper=True" in text and "paper=False" not in text   # mai conto reale

@@ -8,6 +8,7 @@ PyYAML>=6.0
 scipy>=1.11
 arch>=7.0
 hmmlearn>=0.3
+alpaca-py>=0.40   # paper trading (solo pipeline.paper)
 
 # Test
 pytest>=8

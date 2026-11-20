@@ -1,0 +1,35 @@
+# Paper trading su Alpaca (conti PAPER, soldi virtuali). Vedi pipeline/paper.py.
+#
+# Ogni strategia ha un proprio conto Alpaca paper: chiavi nelle variabili d'ambiente
+# <secret_prefix>_KEY e <secret_prefix>_SECRET (in produzione: GitHub Secrets, mai nel repo).
+# Senza le chiavi la strategia viene saltata (si vedono solo i pesi obiettivo).
+#
+# Campi comuni:
+#   id            identificativo (niente trattini: finisce nei client_order_id)
+#   kind          buy_hold | assess_rule
+#   secret_prefix prefisso delle variabili d'ambiente con le chiavi del conto
+# Solo long, nessuna leva: il lato short e le decisioni di Claude arrivano nei passi successivi.
+
+version: 1
+
+# Scostamento minimo (in % del valore del conto) per muovere una posizione: meno rotazione inutile.
+min_delta: 0.02
+
+strategies:
+  # Benchmark: QQQ tenuto sempre. La strategia da battere.
+  - id: bench_qqq
+    name: Benchmark QQQ (compra e tieni)
+    kind: buy_hold
+    symbol: QQQ
+    weight: 0.99
+    secret_prefix: ALPACA_BENCH
+
+  # Regola semplice sulla valutazione automatica (docs/data/assessment.json):
+  # azioni con situazione ammessa e rischio non bloccato, a pari peso con tetto; il resto in liquidità.
+  - id: regola_assess
+    name: Regola sulla valutazione (azioni calme, rischio non alto)
+    kind: assess_rule
+    allowed_situations: [norma, tranquillo, ripresa]
+    block_risk: [alto]
+    max_weight: 0.15
+    secret_prefix: ALPACA_RULE
