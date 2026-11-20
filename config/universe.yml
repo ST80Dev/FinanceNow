@@ -130,3 +130,192 @@ instruments:
     asset_class: stock
     yahoo: AMD
     stooq: amd.us
+
+  # --- Altre azioni principali del Nasdaq (aggiunte il 2026-11-20, richiesta di Simone) ---
+  # Stessa avvertenza sul bias di selezione: scelte tra le più grandi di oggi.
+  # La regola automatica del paper trading resta sui 10 titoli di partenza (`only` in config/paper.yml).
+
+  - id: cost
+    name: Costco
+    description: "Grandi magazzini all'ingrosso con tessera associativa: titolo difensivo, consumi di base."
+    asset_class: stock
+    yahoo: COST
+    stooq: cost.us
+
+  - id: nflx
+    name: Netflix
+    description: "Streaming di film e serie in abbonamento."
+    asset_class: stock
+    yahoo: NFLX
+    stooq: nflx.us
+
+  - id: pltr
+    name: Palantir
+    description: "Software di analisi dati per governi e aziende, molto legato all'IA: titolo molto volatile."
+    asset_class: stock
+    yahoo: PLTR
+    stooq: pltr.us
+    listed_since: 2020-09-30
+
+  - id: csco
+    name: Cisco
+    description: "Apparati di rete (router, switch) e sicurezza informatica."
+    asset_class: stock
+    yahoo: CSCO
+    stooq: csco.us
+
+  - id: tmus
+    name: T-Mobile US
+    description: "Telefonia mobile negli Stati Uniti."
+    asset_class: stock
+    yahoo: TMUS
+    stooq: tmus.us
+
+  - id: asml
+    name: ASML
+    description: "Macchine per produrre chip (litografia), azienda olandese quotata anche negli USA."
+    asset_class: stock
+    yahoo: ASML
+    stooq: asml.us
+
+  - id: pep
+    name: PepsiCo
+    description: "Bevande e snack: titolo difensivo, consumi di base."
+    asset_class: stock
+    yahoo: PEP
+    stooq: pep.us
+
+  - id: lin
+    name: Linde
+    description: "Gas industriali e medicali."
+    asset_class: stock
+    yahoo: LIN
+    stooq: lin.us
+
+  - id: adbe
+    name: Adobe
+    description: "Software per creatività e documenti (Photoshop, Acrobat) in abbonamento."
+    asset_class: stock
+    yahoo: ADBE
+    stooq: adbe.us
+
+  - id: qcom
+    name: Qualcomm
+    description: "Chip per smartphone e brevetti sulle telecomunicazioni mobili."
+    asset_class: stock
+    yahoo: QCOM
+    stooq: qcom.us
+
+  - id: intu
+    name: Intuit
+    description: "Software per contabilità e tasse (TurboTax, QuickBooks)."
+    asset_class: stock
+    yahoo: INTU
+    stooq: intu.us
+
+  - id: txn
+    name: Texas Instruments
+    description: "Chip analogici e per l'industria: settore ciclico."
+    asset_class: stock
+    yahoo: TXN
+    stooq: txn.us
+
+  - id: amat
+    name: Applied Materials
+    description: "Macchinari per la produzione di chip: settore ciclico."
+    asset_class: stock
+    yahoo: AMAT
+    stooq: amat.us
+
+  - id: isrg
+    name: Intuitive Surgical
+    description: "Robot per la chirurgia (sistema da Vinci)."
+    asset_class: stock
+    yahoo: ISRG
+    stooq: isrg.us
+
+  - id: bkng
+    name: Booking Holdings
+    description: "Prenotazioni di viaggi online (Booking.com, Priceline)."
+    asset_class: stock
+    yahoo: BKNG
+    stooq: bkng.us
+
+  - id: amgn
+    name: Amgen
+    description: "Biotecnologie e farmaci."
+    asset_class: stock
+    yahoo: AMGN
+    stooq: amgn.us
+
+  - id: lrcx
+    name: Lam Research
+    description: "Macchinari per la produzione di chip: settore ciclico."
+    asset_class: stock
+    yahoo: LRCX
+    stooq: lrcx.us
+
+  - id: klac
+    name: KLA
+    description: "Strumenti di controllo per la produzione di chip."
+    asset_class: stock
+    yahoo: KLAC
+    stooq: klac.us
+
+  - id: panw
+    name: Palo Alto Networks
+    description: "Sicurezza informatica per aziende."
+    asset_class: stock
+    yahoo: PANW
+    stooq: panw.us
+    listed_since: 2012-07-20
+
+  - id: adi
+    name: Analog Devices
+    description: "Chip analogici per industria, auto e comunicazioni."
+    asset_class: stock
+    yahoo: ADI
+    stooq: adi.us
+
+  - id: crwd
+    name: CrowdStrike
+    description: "Sicurezza informatica in cloud: titolo molto volatile."
+    asset_class: stock
+    yahoo: CRWD
+    stooq: crwd.us
+    listed_since: 2019-06-12
+
+  - id: meli
+    name: MercadoLibre
+    description: "Commercio elettronico e pagamenti in America Latina."
+    asset_class: stock
+    yahoo: MELI
+    stooq: meli.us
+
+  - id: hon
+    name: Honeywell
+    description: "Conglomerato industriale: aerospazio, automazione, materiali."
+    asset_class: stock
+    yahoo: HON
+    stooq: hon.us
+
+  - id: gild
+    name: Gilead Sciences
+    description: "Farmaci antivirali (HIV, epatite) e oncologici."
+    asset_class: stock
+    yahoo: GILD
+    stooq: gild.us
+
+  - id: cmcsa
+    name: Comcast
+    description: "Internet via cavo, televisione e studi cinematografici (NBCUniversal)."
+    asset_class: stock
+    yahoo: CMCSA
+    stooq: cmcsa.us
+
+  - id: sbux
+    name: Starbucks
+    description: "Catena di caffetterie."
+    asset_class: stock
+    yahoo: SBUX
+    stooq: sbux.us

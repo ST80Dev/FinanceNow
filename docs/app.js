@@ -951,7 +951,7 @@ function renderMethod() {
       <li>Date delle trimestrali da yfinance (pagina calendario di Yahoo); giorno di reazione secondo l'orario dell'annuncio.</li>
       <li>Nessun dato di bilancio, macroeconomico o di notizie.</li>
       <li>I prezzi grezzi non sono pubblicati: la dashboard mostra solo grandezze derivate.</li>
-      <li>Universo fisso: Nasdaq 100, QQQ, S&amp;P 500 e le 10 azioni più capitalizzate del Nasdaq al 26/10/2026.
+      <li>Universo fisso: Nasdaq 100, QQQ, S&amp;P 500 e le 10 azioni più capitalizzate del Nasdaq al 26/10/2026, più altre 26 tra le principali del Nasdaq aggiunte il 20/11/2026.
         <strong>Bias di selezione</strong>: sono i vincitori di oggi, il loro passato è eccezionale per costruzione.</li>
     </ul>
     <h2>Analisi</h2>
