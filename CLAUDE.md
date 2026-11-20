@@ -169,14 +169,23 @@ aspettarsi un rendimento migliore del benchmark**; se la regola non batte QQQ co
 - **Indicazioni settimanali** (decisione di Simone del 20/11/2026, terzo conto `indicazioni`, kind `indication`, Secrets
   `ALPACA_LOSH_KEY/SECRET`): Simone dà la linea di massima, il codice la applica ogni sera. Un file YAML per indicazione in
   `config/indications/<data>.yml` (storico versionato, le passate non si modificano): `from` (vale dalla valutazione di quella
-  data), `bias` (ribassista/rialzista/neutrale), `instrument` (solo `allowed_instruments` di `paper.yml` + azioni
-  dell'universo: niente ETF a leva), `max_exposure` (≤ 50%), `signal` (id dell'universo), `enter_situations` + `enter_risk`
-  (entrambe vere per entrare), `exit_situations` (esce lì; nelle altre, se è dentro, resta). Stato dentro/fuori = posizione sul
-  conto; segnale senza dati aggiornati ⇒ non entra né esce; neutrale o cambio di strumento ⇒ si chiude la posizione. File non
-  valido ⇒ quel conto non opera e il run è rosso. Prima indicazione (20/11): ribassista, PSQ al 20% quando `ndx` è in tempesta
-  con rischio alto, esce su norma/tranquillo. La pagina Paper mostra indicazione in vigore e storico (da `paper.json`, quindi
-  aggiornati al run serale) e ha un modulo che apre GitHub "new file" con il YAML già compilato: nessun token nel browser.
-  Fuori dal confronto con QQQ. Da fare dopo: proposte settimanali dell'agente da approvare.
+  data), `author`, `note`, `views` (fino a 6 righe, somma delle quote ≤ 100%, mai due righe sullo stesso strumento; nessuna
+  riga = tutto liquidità). Ogni riga: `target` (indice `ndx`/`spx`, azione dell'universo o di `extra_stocks`), `direction`
+  (rialzo/ribasso), `max_exposure` (≤ 50%), `when` (`segnale` di default, oppure `sempre` = si tiene la quota finché non cambia
+  l'indicazione; obbligatorio per le azioni senza valutazione), `signal` (di default il target), `enter_situations` +
+  `enter_risk` (entrambe vere per entrare; rischio vuoto = qualsiasi), `exit_situations` (esce lì; nelle altre, se è dentro,
+  resta). Strumenti: indici tramite ETF senza leva da `index_instruments` di `paper.yml` (ndx: QQQ/PSQ, spx: SPY/SH);
+  azioni al rialzo = acquisto; **azioni al ribasso = vendita allo scoperto vera** (decisione del 20/11/2026): solo quote intere
+  (prezzo dall'ultimo scambio IEX), titolo `shortable` e `easy_to_borrow`, massimo 10% del conto per riga, chiusura automatica
+  se la posizione perde oltre il 15% (`results/paper/stops.csv`; dopo lo stop non rientra finché vale la stessa indicazione).
+  Passaggio rialzo↔ribasso sullo stesso titolo in due sere (prima si chiude, poi si apre). `extra_stocks` in `paper.yml`:
+  altre azioni principali del Nasdaq operabili solo con `when: sempre` (fuori dall'analisi serale). Stato dentro/fuori =
+  posizione sul conto; segnale senza dati aggiornati ⇒ non entra né esce. File non valido ⇒ quel conto non opera e il run è
+  rosso. Prima indicazione (20/11): Nasdaq al ribasso (PSQ) al 20% quando `ndx` è in tempesta con rischio alto, esce su
+  norma/tranquillo. La pagina Paper mostra indicazione in vigore (in parole, con i nomi dei titoli) e storico (da
+  `paper.json`, aggiornati al run serale) e ha un modulo a righe con menu a tendina che apre GitHub "new file" con il YAML
+  già compilato: nessun token nel browser. Fuori dal confronto con QQQ. Da fare dopo: proposte settimanali dell'agente.
+  Verifiche short: firme alpaca-py (`get_asset`, `get_stock_latest_trade`) controllate sull'SDK, non ancora su un run vero.
 - Dati "aggiornati" per le regole: `data_status` diverso da `stale`/`no_data` e `as_of` uguale a quello della valutazione
   (prima si accettava solo `updated` e si escludevano a torto `refreshed`/`up_to_date`).
 - **Esecuzione**: ordini a mercato `day` per **importo** (azioni frazionarie) inviati la sera dopo la chiusura; Alpaca li
@@ -228,7 +237,7 @@ pipeline/
   assess.py        # valutazione automatica: situazione, rischio, direzione, prossimi eventi
   paper.py         # paper trading su Alpaca (conti paper): pesi obiettivo, ordini, log append-only
 config/universe.yml
-config/paper.yml     # strategie di paper trading, prefissi dei secret, strumenti ammessi nelle indicazioni
+config/paper.yml     # strategie di paper trading, prefissi dei secret, ETF degli indici e azioni extra per le indicazioni
 config/indications/  # indicazioni settimanali di Simone per il conto "indicazioni" (un YAML datato per indicazione)
 results/           # output elaborati committati (analysis/, backtest/, live/, paper/, status/)
 docs/              # GitHub Pages: index.html, app.js, style.css, data/

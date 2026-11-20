@@ -321,11 +321,18 @@ td.strong { font-weight: 700; }
 
 /* Modulo delle indicazioni (pagina Paper) */
 .ind-form-wrap summary { cursor: pointer; margin: 8px 0; }
-.ind-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px 16px; margin-top: 8px; }
+.ind-form { margin-top: 8px; }
 .ind-form label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
-.ind-form .wide { grid-column: 1 / -1; }
-.ind-form input, .ind-form select, .ind-form textarea { font: inherit; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); }
+.ind-top, .view-head, .view-conds { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 16px; align-items: end; }
+.view-conds[hidden] { display: none; }
+.ind-top { margin-bottom: 10px; }
+.view-row { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin: 10px 0; background: var(--bg); }
+.view-what { margin: 6px 0; }
+.ind-form input, .ind-form select, .ind-form textarea { font: inherit; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); }
 .ind-form fieldset { border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; margin: 0; }
 .ind-form legend { font-size: 0.85rem; color: var(--muted); padding: 0 4px; }
 .ind-form label.chk { flex-direction: row; align-items: center; gap: 6px; }
-.ind-form button { font: inherit; font-weight: 600; padding: 8px 16px; border: 0; border-radius: 6px; background: var(--paper); color: #fff; cursor: pointer; }
+.ind-form button[type=submit] { font: inherit; font-weight: 600; padding: 8px 16px; border: 0; border-radius: 6px; background: var(--paper); color: #fff; cursor: pointer; }
+.link-btn { font: inherit; background: none; border: 0; color: var(--accent); cursor: pointer; padding: 4px 0; justify-self: start; }
+ul.views { margin: 4px 0 8px; padding-left: 1.2rem; }
+ul.views li { margin: 4px 0; }

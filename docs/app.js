@@ -73,10 +73,10 @@ const GLOSSARY = {
     "Ogni sera, a mercato chiuso, la regola legge la valutazione dell'app e prepara gli ordini; Alpaca li esegue " +
     "all'apertura della seduta dopo. Il benchmark compra QQQ e lo tiene sempre: è la strategia da battere.\n" +
     "È una terza serie, separata da BACKTEST e LIVE."],
-  indicazione: ["Indicazione della settimana", "La tua linea di massima per il terzo conto paper: quale strumento comprare, " +
-    "fino a che quota del conto, e quando entrare e uscire secondo la valutazione dell'app su un indice (es. il Nasdaq 100).\n" +
-    "Resta in vigore finché non ne scrivi una nuova; ogni indicazione è un file datato nel repository, così resta lo storico.\n" +
-    "Strumenti solo senza leva: PSQ e SH salgono quando Nasdaq 100 e S&P 500 scendono."],
+  indicazione: ["Indicazione della settimana", "La tua linea di massima per il terzo conto paper: su cosa puntare " +
+    "(un indice o un'azione), al rialzo o al ribasso, fino a che quota del conto, e quando entrare e uscire secondo la " +
+    "valutazione dell'app su quel titolo.\nResta in vigore finché non ne scrivi una nuova; ogni indicazione è un file datato " +
+    "nel repository, così resta lo storico.\nIl ribasso sugli indici usa fondi che salgono quando l'indice scende, senza leva."],
   vs_bench: ["Rispetto al benchmark", "Differenza tra l'andamento della regola e quello di QQQ compra-e-tieni, " +
     "dallo stesso giorno di partenza, in punti percentuali. Sopra lo zero la regola sta facendo meglio.\n" +
     "Con pochi mesi la differenza è dominata dal caso: per questo il giudizio compare solo dopo 3 mesi di sedute.\n" +
@@ -977,70 +977,123 @@ function renderMethod() {
 
 const SIDE_LABEL = { buy: "compra", sell: "vende" };
 const SIT_LABEL = { tempesta: "in tempesta", pressione: "sotto pressione", ripresa: "in ripresa", norma: "nella norma", tranquillo: "tranquillo" };
-const BIAS_LABEL = { ribassista: "Ribassista", rialzista: "Rialzista", neutrale: "Neutrale (tutto in liquidità)" };
-const IND_DEFAULT_OPTIONS = { bias: ["ribassista", "rialzista", "neutrale"], instruments: ["PSQ", "QQQ", "SH", "SPY"],
-  signals: ["ndx", "qqq", "spx"], situations: ["tempesta", "pressione", "ripresa", "norma", "tranquillo"],
-  risks: ["alto", "normale", "basso"], max_exposure: 0.5 };
+const DIR_LABEL = { rialzo: "al rialzo", ribasso: "al ribasso" };
+const IND_DEFAULT_OPTIONS = { targets: [
+    { id: "ndx", name: "Nasdaq 100", kind: "index", up: "QQQ", down: "PSQ" },
+    { id: "spx", name: "S&P 500", kind: "index", up: "SPY", down: "SH" }],
+  situations: ["tempesta", "pressione", "ripresa", "norma", "tranquillo"], risks: ["alto", "normale", "basso"],
+  max_view_exposure: 0.5, max_short_exposure: 0.1, short_stop_loss: 0.15, max_views: 6 };
+const NEW_VIEW = { target: "ndx", direction: "ribasso", max_exposure: 0.2, when: "segnale", enter_situations: ["tempesta"],
+  enter_risk: ["alto"], exit_situations: ["norma", "tranquillo"] };
 
-function indicationText(i) {
+/* Cosa si compra davvero per una riga, in parole semplici. */
+function instrumentText(t, dir) {
+  if (!t) return "";
+  const sym = dir === "rialzo" ? t.up : t.down;
+  if (!sym) return `<span class="neg">${esc(cap(t.down_note || "non disponibile"))}</span>`;
+  if (t.kind === "stock" && dir === "ribasso") return `vendita allo scoperto di azioni ${esc(t.name)} (${esc(sym)}): quote intere, ` +
+    `si chiude da sola se perde oltre il 15%`;
+  if (t.kind === "stock") return `si comprano azioni ${esc(t.name)} (${esc(sym)})`;
+  return dir === "rialzo" ? `si compra ${esc(sym)}, un fondo che segue il ${esc(t.name)}`
+    : `si compra ${esc(sym)}, un fondo che sale quando il ${esc(t.name)} scende (senza leva)`;
+}
+
+function viewText(v, targets) {
+  const t = targets.find((x) => x.id === v.target);
+  const name = t ? t.name : v.target.toUpperCase();
+  const sig = targets.find((x) => x.id === v.signal);
+  const signal = v.signal && v.signal !== v.target ? ` (segnale: ${esc(sig ? sig.name : v.signal)})` : "";
+  const enter = v.enter_situations.map((x) => SIT_LABEL[x] || x).join(" o ");
+  const risk = v.enter_risk.length && v.enter_risk.length < 3 ? ` con rischio ${v.enter_risk.join(" o ")}` : "";
+  const exit = v.exit_situations.map((x) => SIT_LABEL[x] || x).join(" o ");
+  const rule = v.when === "sempre" ? "tenuto finché non cambi l'indicazione"
+    : `entra quando è ${esc(enter)}${esc(risk)}${signal}, esce quando torna ${esc(exit || "–")}`;
+  return `<strong>${esc(name)} ${DIR_LABEL[v.direction] || v.direction}</strong>, fino al ${pct(v.max_exposure, 0)} del conto: ${rule}. ` +
+    `<span class="muted small">${t ? instrumentText(t, v.direction) : esc(v.instrument || "")}.</span>`;
+}
+
+function indicationText(i, targets) {
   if (!i) return "nessuna";
-  if (!i.instrument) return `${BIAS_LABEL[i.bias] || i.bias}`;
-  const enter = i.enter_situations.map((x) => SIT_LABEL[x] || x).join(" o ");
-  const risk = i.enter_risk.length < 3 ? ` con rischio ${i.enter_risk.join(" o ")}` : "";
-  const exit = i.exit_situations.map((x) => SIT_LABEL[x] || x).join(" o ");
-  return `${cap(i.bias)}: <strong>${esc(i.instrument)}</strong> fino al ${pct(i.max_exposure, 0)} del conto quando ${esc(i.signal.toUpperCase())} è ${esc(enter)}${esc(risk)}; ` +
-    `esce quando torna ${esc(exit || "–")}.`;
+  if (!i.views || !i.views.length) return "nessuna posizione, tutto in liquidità.";
+  return `<ul class="views">${i.views.map((v) => `<li>${viewText(v, targets)}</li>`).join("")}</ul>`;
 }
 
 function indicationYaml(f) {
   const list = (a) => `[${a.join(", ")}]`;
+  const rows = f.views.map((v) => [
+    `  - target: ${v.target}`,
+    `    direction: ${v.direction}`,
+    `    max_exposure: ${(v.exposure / 100).toFixed(2)}`,
+    ...(v.when === "sempre" ? ["    when: sempre"] : [
+      `    enter_situations: ${list(v.enter)}`,
+      `    enter_risk: ${list(v.risk)}`,
+      `    exit_situations: ${list(v.exit)}`]),
+  ].join("\n"));
   return [
     "# Indicazione settimanale per il conto \"indicazioni\" (Alpaca paper), scritta dalla pagina Paper.",
     "# Un file per indicazione: non modificare quelle passate. Vale dalla valutazione di 'from' in poi.",
     `from: ${f.from}`,
     `author: ${JSON.stringify(f.author || "")}`,
-    `bias: ${f.bias}`,
-    `instrument: ${f.bias === "neutrale" ? "null" : f.instrument}`,
-    `max_exposure: ${f.bias === "neutrale" ? 0 : (f.exposure / 100).toFixed(2)}`,
-    `signal: ${f.signal}`,
-    `enter_situations: ${list(f.enter)}`,
-    `enter_risk: ${list(f.risk)}`,
-    `exit_situations: ${list(f.exit)}`,
     `note: ${JSON.stringify(f.note || "")}`,
+    rows.length ? "views:" : "views: []",
+    ...rows,
     "",
   ].join("\n");
+}
+
+function viewRow(v, o, n) {
+  const checks = (name, all, on, labels) => all.map((x) => `<label class="chk"><input type="checkbox" data-k="${name}" value="${x}" ${on.includes(x) ? "checked" : ""}> ${esc(labels ? labels[x] || x : x)}</label>`).join("");
+  const group = (pick, label) => {
+    const items = o.targets.filter(pick);
+    return items.length ? `<optgroup label="${label}">${items.map((t) => `<option value="${t.id}" ${t.id === v.target ? "selected" : ""}>${esc(t.name)}</option>`).join("")}</optgroup>` : "";
+  };
+  const groups = group((t) => t.kind !== "stock", "Indici") + group((t) => t.kind === "stock" && t.has_signal !== false, "Azioni con valutazione") +
+    group((t) => t.kind === "stock" && t.has_signal === false, "Altre azioni del Nasdaq (senza valutazione)");
+  return `<div class="view-row" data-n="${n}">
+    <div class="view-head">
+      <label>Su cosa <select data-k="target">${groups}</select></label>
+      <label>Direzione <select data-k="direction"><option value="rialzo" ${v.direction === "rialzo" ? "selected" : ""}>Al rialzo (guadagna se sale)</option>
+        <option value="ribasso" ${v.direction === "ribasso" ? "selected" : ""}>Al ribasso (guadagna se scende)</option></select></label>
+      <label>Quota massima del conto (%) <input type="number" data-k="exposure" min="1" max="${Math.round(o.max_view_exposure * 100)}" step="1" value="${Math.round(v.max_exposure * 100)}"></label>
+      <label>Quando <select data-k="when"><option value="segnale" ${v.when !== "sempre" ? "selected" : ""}>Secondo la valutazione dell'app</option>
+        <option value="sempre" ${v.when === "sempre" ? "selected" : ""}>Sempre, finché non cambio</option></select></label>
+      <button type="button" class="link-btn" data-act="remove" aria-label="togli riga">Togli</button>
+    </div>
+    <p class="small muted view-what"></p>
+    <div class="view-conds">
+      <fieldset><legend>Entra quando il titolo è</legend>${checks("enter", o.situations, v.enter_situations, SIT_LABEL)}</fieldset>
+      <fieldset><legend>…e il rischio è <span class="muted">(nessuno = qualsiasi)</span></legend>${checks("risk", o.risks, v.enter_risk.length === 3 ? [] : v.enter_risk)}</fieldset>
+      <fieldset><legend>Esce quando torna</legend>${checks("exit", o.situations, v.exit_situations, SIT_LABEL)}</fieldset>
+    </div>
+  </div>`;
 }
 
 function indicationPanel(I) {
   const o = (I && I.options) || IND_DEFAULT_OPTIONS;
   const cur = I && I.current;
-  const d = cur || { bias: "ribassista", instrument: "PSQ", max_exposure: 0.2, signal: "ndx", enter_situations: ["tempesta"],
-    enter_risk: ["alto"], exit_situations: ["norma", "tranquillo"], author: "", note: "" };
   const today = new Date().toISOString().slice(0, 10);
-  const checks = (name, all, on, labels) => all.map((v) => `<label class="chk"><input type="checkbox" name="${name}" value="${v}" ${on.includes(v) ? "checked" : ""}> ${esc(labels ? labels[v] || v : v)}</label>`).join("");
   const hist = (I && I.history) || [];
+  const startViews = cur && cur.views ? cur.views : [NEW_VIEW];
   return `<section class="series-panel paper">
     <h2 style="margin-top:0"><span class="series-tag paper">PAPER</span>Indicazione della settimana ${info("indicazione")}</h2>
     ${I && I.error ? `<p class="notice neg">Indicazioni non valide, il conto non opera: ${esc(I.error)}</p>` : ""}
-    <p>${cur ? `In vigore dal ${fmtDate(cur.from)}${cur.author ? ` (${esc(cur.author)})` : ""}: ${indicationText(cur)}` : "Nessuna indicazione in vigore: il conto resta in liquidità."}
-      ${cur && cur.note ? `<br><span class="muted small">${esc(cur.note)}</span>` : ""}</p>
-    ${hist.length > 1 ? `<details class="small"><summary>Storico (${hist.length})</summary><ul>${hist.map((h) => `<li>${fmtDate(h.from)}: ${indicationText(h)}</li>`).join("")}</ul></details>` : ""}
+    ${cur ? `<p>In vigore dal ${fmtDate(cur.from)}${cur.author ? ` (${esc(cur.author)})` : ""}:</p>${indicationText(cur, o.targets)}
+      ${cur.note ? `<p class="muted small">${esc(cur.note)}</p>` : ""}` : `<p>Nessuna indicazione in vigore: il conto resta in liquidità.</p>`}
+    ${hist.length > 1 ? `<details class="small"><summary>Indicazioni precedenti (${hist.length - 1})</summary>${hist.slice(1).map((h) => `<p><strong>Dal ${fmtDate(h.from)}</strong></p>${indicationText(h, o.targets)}`).join("")}</details>` : ""}
     <details class="ind-form-wrap"><summary><strong>Scrivi una nuova indicazione</strong></summary>
     <form id="ind-form" class="ind-form">
-      <label>Vale dal <input type="date" name="from" value="${today}" required></label>
-      <label>Tendenza <select name="bias">${o.bias.map((b) => `<option value="${b}" ${b === d.bias ? "selected" : ""}>${esc(BIAS_LABEL[b] || b)}</option>`).join("")}</select></label>
-      <label>Strumento <select name="instrument">${o.instruments.map((x) => `<option ${x === d.instrument ? "selected" : ""}>${esc(x)}</option>`).join("")}</select></label>
-      <label>Esposizione massima (% del conto) <input type="number" name="exposure" min="1" max="${Math.round(o.max_exposure * 100)}" step="1" value="${Math.round((d.max_exposure || 0.2) * 100)}"></label>
-      <label>Segnale <select name="signal">${o.signals.map((x) => `<option value="${x}" ${x === d.signal ? "selected" : ""}>${esc(x.toUpperCase())}</option>`).join("")}</select></label>
-      <fieldset><legend>Entra quando il segnale è</legend>${checks("enter", o.situations, d.enter_situations, SIT_LABEL)}</fieldset>
-      <fieldset><legend>…e il rischio è</legend>${checks("risk", o.risks, d.enter_risk)}</fieldset>
-      <fieldset><legend>Esce quando torna</legend>${checks("exit", o.situations, d.exit_situations, SIT_LABEL)}</fieldset>
-      <label>Autore <input type="text" name="author" value="${esc(d.author || "")}"></label>
-      <label class="wide">Note <textarea name="note" rows="2">${esc(d.note || "")}</textarea></label>
-      <p class="small muted wide">Premendo Salva si apre GitHub con il file già compilato in <code>config/indications/</code>:
-        controlla e premi "Commit changes". Il conto la applica dal giro serale successivo. Nessuna chiave passa da questa pagina.</p>
-      <p id="ind-err" class="neg small wide" hidden></p>
-      <div class="wide"><button type="submit">Salva su GitHub</button></div>
+      <div class="ind-top">
+        <label>Vale dal <input type="date" name="from" value="${today}" required></label>
+        <label>Autore <input type="text" name="author" value="${esc((cur && cur.author) || "")}"></label>
+      </div>
+      <div id="ind-views">${startViews.map((v, n) => viewRow(v, o, n)).join("")}</div>
+      <p><button type="button" class="link-btn" data-act="add">+ Aggiungi una riga</button>
+        <span class="muted small">Nessuna riga = tutto in liquidità. Somma delle quote al massimo 100%.</span></p>
+      <label class="wide">Note <textarea name="note" rows="2">${esc((cur && cur.note) || "")}</textarea></label>
+      <p class="small muted">Premendo Salva si apre GitHub con il file già compilato: controlla e premi "Commit changes".
+        Il conto la applica dal giro serale successivo. Nessuna chiave passa da questa pagina.</p>
+      <p id="ind-err" class="neg small" hidden></p>
+      <button type="submit">Salva su GitHub</button>
     </form></details>
   </section>`;
 }
@@ -1048,25 +1101,61 @@ function indicationPanel(I) {
 function bindIndicationForm(I) {
   const form = document.getElementById("ind-form");
   if (!form) return;
+  const o = (I && I.options) || IND_DEFAULT_OPTIONS;
   const repo = (I && I.github_repo) || "ST80Dev/FinanceNow";
-  const sync = () => { form.instrument.disabled = form.exposure.disabled = form.bias.value === "neutrale"; };
-  form.bias.addEventListener("change", sync);
-  sync();
+  const box = document.getElementById("ind-views");
+  const refresh = () => box.querySelectorAll(".view-row").forEach((row) => {
+    const t = o.targets.find((x) => x.id === row.querySelector("[data-k=target]").value);
+    const dir = row.querySelector("[data-k=direction]").value;
+    const when = row.querySelector("[data-k=when]");
+    const noSignal = t && t.has_signal === false;
+    if (noSignal) when.value = "sempre";
+    when.querySelector("option[value=segnale]").disabled = noSignal;
+    row.querySelector(".view-conds").hidden = when.value === "sempre";
+    const isShort = t && t.short && dir === "ribasso";
+    const exp = row.querySelector("[data-k=exposure]");
+    exp.max = Math.round((isShort ? o.max_short_exposure : o.max_view_exposure) * 100);
+    if (Number(exp.value) > Number(exp.max)) exp.value = exp.max;
+    row.querySelector(".view-what").innerHTML = cap(instrumentText(t, dir)) + "." +
+      (noSignal ? " Per questo titolo l'app non ha la valutazione: si tiene la quota finché non cambi indicazione." : "");
+  });
+  box.addEventListener("change", refresh);
+  form.addEventListener("click", (e) => {
+    const act = e.target.dataset && e.target.dataset.act;
+    if (act === "add" && box.children.length < o.max_views) {
+      box.insertAdjacentHTML("beforeend", viewRow({ ...NEW_VIEW, target: o.targets[0].id, direction: "rialzo", max_exposure: 0.1, enter_risk: [] }, o, box.children.length));
+      refresh();
+    }
+    if (act === "remove") e.target.closest(".view-row").remove();
+  });
+  refresh();
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const all = (n) => [...form.querySelectorAll(`input[name=${n}]:checked`)].map((x) => x.value);
-    const f = { from: form.from.value, bias: form.bias.value, instrument: form.instrument.value, exposure: Number(form.exposure.value),
-      signal: form.signal.value, enter: all("enter"), risk: all("risk"), exit: all("exit"), author: form.author.value.trim(), note: form.note.value.trim() };
-    const err = document.getElementById("ind-err");
+    const views = [...box.querySelectorAll(".view-row")].map((row) => {
+      const all = (k) => [...row.querySelectorAll(`input[data-k=${k}]:checked`)].map((x) => x.value);
+      return { target: row.querySelector("[data-k=target]").value, direction: row.querySelector("[data-k=direction]").value,
+        when: row.querySelector("[data-k=when]").value,
+        exposure: Number(row.querySelector("[data-k=exposure]").value), enter: all("enter"), risk: all("risk"), exit: all("exit") };
+    });
+    const f = { from: form.from.value, author: form.author.value.trim(), note: form.note.value.trim(), views };
     const problems = [];
     if (!f.from) problems.push("manca la data");
-    if (f.bias !== "neutrale") {
-      if (!(f.exposure >= 1 && f.exposure <= 50)) problems.push("esposizione tra 1% e 50%");
-      if (!f.enter.length) problems.push("scegli almeno una situazione di ingresso");
-      if (!f.risk.length) problems.push("scegli almeno un livello di rischio");
-    }
-    if (f.enter.some((x) => f.exit.includes(x))) problems.push("una situazione non può essere sia di ingresso sia di uscita");
-    if ((I && I.history || []).some((h) => h.from === f.from)) problems.push(`esiste già un'indicazione del ${fmtDate(f.from)}: cambia la data`);
+    views.forEach((v, n) => {
+      const t = o.targets.find((x) => x.id === v.target);
+      const tag = `riga ${n + 1}`;
+      if (!t || !(v.direction === "rialzo" ? t.up : t.down)) problems.push(`${tag}: ${t ? t.name + " " + DIR_LABEL[v.direction] + " non è disponibile" : "scegli su cosa"}`);
+      const cap100 = Math.round(((t && t.short && v.direction === "ribasso") ? o.max_short_exposure : o.max_view_exposure) * 100);
+      if (!(v.exposure >= 1 && v.exposure <= cap100)) problems.push(`${tag}: quota tra 1% e ${cap100}%`);
+      if (v.when !== "sempre") {
+        if (!v.enter.length) problems.push(`${tag}: scegli almeno una situazione di ingresso`);
+        if (v.enter.some((x) => v.exit.includes(x))) problems.push(`${tag}: una situazione non può essere sia di ingresso sia di uscita`);
+      }
+    });
+    const instr = views.map((v) => { const t = o.targets.find((x) => x.id === v.target); return t && (v.direction === "rialzo" ? t.up : t.down); });
+    if (new Set(instr).size !== instr.length) problems.push("due righe comprano lo stesso strumento");
+    if (views.reduce((a, v) => a + v.exposure, 0) > 100) problems.push("la somma delle quote supera il 100%");
+    if (((I && I.history) || []).some((h) => h.from === f.from)) problems.push(`esiste già un'indicazione del ${fmtDate(f.from)}: cambia la data`);
+    const err = document.getElementById("ind-err");
     err.hidden = !problems.length;
     err.textContent = problems.length ? "Da correggere: " + problems.join("; ") + "." : "";
     if (problems.length) return;
@@ -1074,10 +1163,6 @@ function bindIndicationForm(I) {
     window.open(url, "_blank", "noopener");
   });
 }
-
-
-const FILL_LABEL = { filled: "eseguito", partially_filled: "eseguito in parte", canceled: "annullato",
-  expired: "scaduto", rejected: "rifiutato", done_for_day: "chiuso per oggi" };
 
 function paperRunText(r) {
   if (!r) return "";
@@ -1141,7 +1226,7 @@ function renderPaper() {
     ${P.orders.length ? `<div class="table-scroll"><table><thead><tr><th class="left">Sera</th><th class="left">Conto</th><th class="left">Titolo</th>
       <th class="left">Operazione</th><th>Quota del conto</th><th class="left">Invio</th><th class="left">Esito</th></tr></thead>
       <tbody>${P.orders.map((o) => `<tr><td class="left">${fmtDate(o.as_of)}</td><td class="left small">${esc(short[o.strategy] || o.strategy)}</td>
-        <td class="left"><strong>${esc(o.symbol)}</strong></td><td class="left">${SIDE_LABEL[o.side] || esc(o.side)}${o.close_all ? " tutto" : ""}</td>
+        <td class="left"><strong>${esc(o.symbol)}</strong></td><td class="left">${SIDE_LABEL[o.side] || esc(o.side)}${o.close_all ? " (a quote)" : ""}</td>
         <td class="num">${o.close_all ? "–" : pct(o.share, 1)}</td><td class="left small">${esc(o.sent)}</td>
         <td class="left small">${o.status ? esc(FILL_LABEL[o.status] || o.status) : `<span class="muted">in attesa</span>`}</td></tr>`).join("")}</tbody></table></div>`
       : `<p class="notice">Nessun ordine registrato.</p>`}
