@@ -168,15 +168,23 @@ aspettarsi un rendimento migliore del benchmark**; se la regola non batte QQQ co
   liquidità). Dati di ingresso: solo `docs/data/assessment.json`; se più vecchio di 4 giorni non si opera.
 - **Esecuzione**: ordini a mercato `day` per **importo** (azioni frazionarie) inviati la sera dopo la chiusura; Alpaca li
   accoda per l'apertura successiva (stessa convenzione dei pattern). Posizioni fuori dall'obiettivo chiuse per quantità,
-  scostamenti sotto il 2% del conto ignorati. `client_order_id = fn-<strategia>-<as_of>-<simbolo>`: un rilancio dello stesso
-  giorno non duplica gli ordini (Alpaca rifiuta l'id già usato).
+  scostamenti sotto il 2% del conto ignorati. `client_order_id = fn-<strategia>-<as_of>-<simbolo>`: prima di inviare si leggono
+  gli id già usati negli ultimi 10 giorni e non si reinviano (la documentazione Alpaca non specifica l'errore sui duplicati).
+- **Blocchi prima dell'invio** (orologio e calendario di Alpaca, festività incluse): non si invia se il mercato è aperto
+  (un ordine a mercato partirebbe subito), se `as_of` non è l'ultima seduta chiusa (daily in ritardo), o se la strategia ha
+  ancora ordini pendenti (es. sera di un festivo: quelli del giorno prima aspettano l'apertura). Bloccato ⇒ si registra solo
+  il valore del conto. Ordini rifiutati ⇒ run rosso. Chiavi mancanti con invio richiesto ⇒ avviso, strategia saltata.
+- **Potere d'acquisto**: le vendite pendenti non lo liberano finché non sono eseguite (doc. Alpaca); nei ribilanciamenti gli
+  acquisti accodati possono superare per una notte la liquidità e restano coperti dal margine standard del conto paper.
+  Ordini frazionari fuori orario: un solo ordine per simbolo per sera (Alpaca rifiuta alcune sequenze di vendite).
 - **Serie `paper`** (append-only, `results/paper/`, separata da `backtest` e `live`): `decisions.csv`, `orders.csv`,
   `fills.csv` (prezzi di esecuzione letti nei run successivi), `equity.csv` (valore del conto per strategia e data).
 - **Da fare nei passi successivi** (ognuno con conferma): pagina `#/paper` in dashboard; strategia con Claude come decisore
   (riceve solo grandezze derivate, restituisce JSON, i limiti di rischio li applica il codice); lato short solo dopo aver
   misurato il long (titoli del Nasdaq: frequenza storica di rialzo 58% a 5 sedute e 64% a 21, andare contro è difficile).
-- **Verifiche non fatte**: il comportamento reale dell'API (accettazione ordini frazionari serali, esiti) si vede solo al
-  primo run con le chiavi; i test sono offline.
+- **Verifiche**: firme e modelli controllati su alpaca-py 0.45 (un test usa i modelli veri con un client finto); regole
+  degli ordini fuori orario dalla documentazione Alpaca (ott. 2026). Non ancora visto: un run vero con le chiavi.
+  Primo run: avvio manuale senza invio (verifica chiavi, orologio, ordini), poi invio.
 
 ## Struttura prevista
 ```

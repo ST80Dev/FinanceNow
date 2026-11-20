@@ -225,6 +225,31 @@ def plan_orders(equity: float, positions: dict[str, tuple[float, float]], weight
     return sells + buys
 
 
+@dataclass(frozen=True)
+class MarketState:
+    is_open: bool                # mercato aperto adesso (seduta regolare)
+    last_session: dt.date        # ultima seduta regolare già chiusa
+    next_open: dt.datetime       # prossima apertura (ora di New York)
+
+
+def send_blocker(market: MarketState, as_of: str, open_orders: list[str]) -> str | None:
+    """Motivo per NON inviare ordini stasera, oppure None se si può.
+
+    - mercato aperto: un ordine a mercato verrebbe eseguito subito, non all'apertura successiva;
+    - valutazioni non della seduta appena chiusa (daily in ritardo o fallito): si deciderebbe su dati vecchi;
+    - ordini di questa strategia ancora in attesa (es. festivo: quelli di ieri non sono ancora eseguiti):
+      ripianificare sopra ordini pendenti raddoppierebbe le posizioni.
+    """
+    if market.is_open:
+        return "mercato aperto: gli ordini si inviano solo a mercato chiuso"
+    if dt.date.fromisoformat(as_of) != market.last_session:
+        return (f"valutazioni al {as_of}, ma l'ultima seduta chiusa è il {market.last_session}: "
+                "non opero su dati non aggiornati")
+    if open_orders:
+        return f"{len(open_orders)} ordini ancora in attesa di esecuzione ({', '.join(sorted(open_orders))})"
+    return None
+
+
 def client_order_id(strategy_id: str, as_of: str, symbol: str) -> str:
     return f"{ID_PREFIX}-{strategy_id}-{as_of}-{symbol}"
 
@@ -288,6 +313,39 @@ class AlpacaPaperBroker:
     def positions(self) -> dict[str, tuple[float, float]]:
         return {p.symbol: (float(p.market_value), float(p.qty)) for p in self._client.get_all_positions()}
 
+    def market(self) -> MarketState:
+        """Orologio e calendario di Alpaca: festività e chiusure anticipate già incluse."""
+        from alpaca.trading.requests import GetCalendarRequest
+
+        clock = self._client.get_clock()
+        now = clock.timestamp
+        days = self._client.get_calendar(GetCalendarRequest(start=now.date() - dt.timedelta(days=10),
+                                                            end=now.date()))
+        closed = [d.date for d in days if _aware(d.close, now) <= now]
+        if not closed:
+            raise PaperError("calendario di Alpaca senza sedute chiuse negli ultimi 10 giorni")
+        return MarketState(bool(clock.is_open), max(closed), clock.next_open)
+
+    def open_orders(self, strategy_id: str) -> list[str]:
+        """Simboli con ordini di questa strategia non ancora chiusi (inviati, accodati, parziali)."""
+        from alpaca.trading.enums import QueryOrderStatus
+        from alpaca.trading.requests import GetOrdersRequest
+
+        out = []
+        for o in self._client.get_orders(GetOrdersRequest(status=QueryOrderStatus.OPEN, limit=500)):
+            parsed = parse_client_order_id(o.client_order_id)
+            if parsed and parsed[0] == strategy_id:
+                out.append(parsed[2])
+        return out
+
+    def submitted_ids(self, since: dt.datetime) -> set[str]:
+        """client_order_id già usati (ordini di qualsiasi stato): un rilancio non li reinvia."""
+        from alpaca.trading.enums import QueryOrderStatus
+        from alpaca.trading.requests import GetOrdersRequest
+
+        orders = self._client.get_orders(GetOrdersRequest(status=QueryOrderStatus.ALL, after=since, limit=500))
+        return {o.client_order_id for o in orders if o.client_order_id}
+
     def submit(self, plan: OrderPlan, coid: str) -> tuple[str, str]:
         """Invia un ordine a mercato 'day'. Ritorna (id Alpaca, esito). Un id già usato = già inviato."""
         from alpaca.common.exceptions import APIError
@@ -304,9 +362,10 @@ class AlpacaPaperBroker:
         try:
             order = self._client.submit_order(req)
         except APIError as e:
-            if "client_order_id" in str(e).lower():
+            msg = _api_message(e)
+            if "client_order_id" in msg.lower():
                 return "", "già inviato (client_order_id presente)"
-            return "", f"rifiutato: {e}"
+            return "", f"rifiutato: {msg}"
         return str(order.id), f"accettato ({getattr(order.status, 'value', order.status)})"
 
     def recent_closed_orders(self, since: dt.datetime) -> list[dict]:
@@ -330,6 +389,19 @@ class AlpacaPaperBroker:
                 "filled_at": o.filled_at.isoformat() if o.filled_at else "",
             })
         return out
+
+
+def _aware(t: dt.datetime, ref: dt.datetime) -> dt.datetime:
+    """Il calendario può tornare orari senza fuso: sono ore di New York, come l'orologio."""
+    return t if t.tzinfo is not None else t.replace(tzinfo=ref.tzinfo)
+
+
+def _api_message(e: Exception) -> str:
+    """Messaggio leggibile di un APIError (JSON con code/message), senza mai riportare le chiavi."""
+    try:
+        return f"{e.message} (codice {e.code})"          # type: ignore[attr-defined]
+    except Exception:
+        return str(e)[:300]
 
 
 def broker_for(strategy: Strategy, env=os.environ) -> AlpacaPaperBroker | None:
@@ -367,7 +439,23 @@ def run_strategy(strategy: Strategy, assessment: dict, symbols_by_id: dict[str, 
         print(f"    ordine: {o.side:4s} {o.symbol:6s} {what}")
     if not orders:
         print("    nessun ordine: il conto è già vicino ai pesi obiettivo")
+    market = broker.market()
+    blocker = send_blocker(market, as_of, broker.open_orders(strategy.id))
+    print(f"    mercato: {'aperto' if market.is_open else 'chiuso'}, ultima seduta chiusa {market.last_session}, "
+          f"prossima apertura {market.next_open:%Y-%m-%d %H:%M} (New York)")
+    if blocker:
+        print(f"    NON invio ordini: {blocker}")
+        result["blocked"] = blocker
     if not send:
+        return result
+
+    # Il valore del conto si registra sempre (anche quando non si opera): serve alla curva della strategia.
+    invested = sum(v for v, _ in positions.values())
+    append_rows(out_dir / EQUITY_FILE, EQUITY_COLUMNS,
+                [{"as_of": as_of, "strategy": strategy.id, "equity": f"{equity:.2f}", "cash": f"{cash:.2f}",
+                  "invested": f"{invested:.2f}", "n_positions": len(positions), "created_utc": now}],
+                ("as_of", "strategy"))
+    if blocker:
         return result
 
     decisions = [{"as_of": as_of, "strategy": strategy.id, "symbol": s, "target_weight": f"{w:.6f}",
@@ -377,9 +465,13 @@ def run_strategy(strategy: Strategy, assessment: dict, symbols_by_id: dict[str, 
                       "reason": target.note, "created_utc": now}]
     append_rows(out_dir / DECISIONS_FILE, DECISIONS_COLUMNS, decisions, ("as_of", "strategy", "symbol"))
 
+    already = broker.submitted_ids(dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=FILLS_LOOKBACK_DAYS))
     order_rows = []
     for o in orders:
         coid = client_order_id(strategy.id, as_of, o.symbol)
+        if coid in already:
+            print(f"    -> {o.side} {o.symbol}: già inviato in un run precedente, salto")
+            continue
         order_id, outcome = broker.submit(o, coid)
         print(f"    -> {o.side} {o.symbol}: {outcome}")
         order_rows.append({"as_of": as_of, "strategy": strategy.id, "symbol": o.symbol, "side": o.side,
@@ -387,13 +479,9 @@ def run_strategy(strategy: Strategy, assessment: dict, symbols_by_id: dict[str, 
                            "qty": "" if o.qty is None else o.qty, "client_order_id": coid,
                            "alpaca_order_id": order_id, "result": outcome, "created_utc": now})
     append_rows(out_dir / ORDERS_FILE, ORDERS_COLUMNS, order_rows, ("client_order_id",))
-
-    invested = sum(v for v, _ in positions.values())
-    append_rows(out_dir / EQUITY_FILE, EQUITY_COLUMNS,
-                [{"as_of": as_of, "strategy": strategy.id, "equity": f"{equity:.2f}", "cash": f"{cash:.2f}",
-                  "invested": f"{invested:.2f}", "n_positions": len(positions), "created_utc": now}],
-                ("as_of", "strategy"))
     result["sent"] = True
+    if any(r["result"].startswith("rifiutato") for r in order_rows):
+        result["rejected"] = [r["symbol"] for r in order_rows if r["result"].startswith("rifiutato")]
     return result
 
 
@@ -432,7 +520,12 @@ def main(argv: list[str] | None = None) -> int:
     for strategy in strategies:
         try:
             broker = broker_for(strategy)
-            run_strategy(strategy, assessment, symbols_by_id, cfg, broker, args.out_dir, args.send)
+            if broker is None and args.send:
+                print(f"\nATTENZIONE [{strategy.id}]: invio richiesto ma mancano le chiavi del conto paper")
+            res = run_strategy(strategy, assessment, symbols_by_id, cfg, broker, args.out_dir, args.send)
+            if res.get("rejected"):
+                failed = True
+                log.error("%s: ordini rifiutati da Alpaca: %s", strategy.id, ", ".join(res["rejected"]))
             if broker is not None and args.send:
                 n = record_fills(broker, args.out_dir)
                 if n:

@@ -158,10 +158,59 @@ def test_senza_chiavi_nessun_broker():
     assert paper.broker_for(RULE, env={}) is None
 
 
+CLOSED_AFTER_19 = paper.MarketState(False, dt.date(2026, 11, 19), dt.datetime(2026, 11, 20, 9, 30))
+
+
+class BaseFake:
+    """Conto paper finto: mercato chiuso dopo la seduta del 19/11, nessun ordine pendente."""
+    market_state = CLOSED_AFTER_19
+    pending: list = []
+    used: set = set()
+
+    def account(self): return 100_000.0, 100_000.0
+    def positions(self): return {}
+    def market(self): return self.market_state
+    def open_orders(self, strategy_id): return list(self.pending)
+    def submitted_ids(self, since): return set(self.used)
+
+
+def test_blocco_mercato_aperto_dati_vecchi_ordini_pendenti():
+    assert paper.send_blocker(CLOSED_AFTER_19, "2026-11-19", []) is None
+    aperto = paper.MarketState(True, dt.date(2026, 11, 19), dt.datetime(2026, 11, 21, 9, 30))
+    assert "aperto" in paper.send_blocker(aperto, "2026-11-19", [])
+    assert "non aggiornati" in paper.send_blocker(CLOSED_AFTER_19, "2026-11-18", [])
+    assert "in attesa" in paper.send_blocker(CLOSED_AFTER_19, "2026-11-19", ["AAPL"])
+
+
+def test_bloccato_registra_solo_il_valore_del_conto(tmp_path):
+    class FakeBroker(BaseFake):
+        pending = ["AAPL"]                                   # es. festivo: ordini di ieri non ancora eseguiti
+        def submit(self, *a): raise AssertionError("con ordini pendenti non si invia nulla")
+    cfg = paper.PaperConfig(0.02, (RULE,))
+    res = paper.run_strategy(RULE, assessment(inst("aapl")), SYMBOLS, cfg, FakeBroker(), tmp_path, send=True)
+    assert "in attesa" in res["blocked"] and res["sent"] is False
+    assert [p.name for p in tmp_path.iterdir()] == [paper.EQUITY_FILE]
+
+
+def test_ordine_gia_usato_non_si_reinvia(tmp_path):
+    class FakeBroker(BaseFake):
+        used = {"fn-regola_assess-2026-11-19-AAPL"}
+        def submit(self, *a): raise AssertionError("id già usato: non va reinviato")
+    cfg = paper.PaperConfig(0.02, (RULE,))
+    res = paper.run_strategy(RULE, assessment(inst("aapl")), SYMBOLS, cfg, FakeBroker(), tmp_path, send=True)
+    assert res["sent"] is True and not (tmp_path / paper.ORDERS_FILE).exists()
+
+
+def test_ordine_rifiutato_segnalato(tmp_path):
+    class FakeBroker(BaseFake):
+        def submit(self, plan, coid): return "", "rifiutato: insufficient buying power (codice 40310000)"
+    cfg = paper.PaperConfig(0.02, (RULE,))
+    res = paper.run_strategy(RULE, assessment(inst("aapl")), SYMBOLS, cfg, FakeBroker(), tmp_path, send=True)
+    assert res["rejected"] == ["AAPL"]
+
+
 def test_senza_send_non_scrive_nulla(tmp_path):
-    class FakeBroker:
-        def account(self): return 100_000.0, 100_000.0
-        def positions(self): return {}
+    class FakeBroker(BaseFake):
         def submit(self, *a): raise AssertionError("in prova non si devono inviare ordini")
     cfg = paper.PaperConfig(0.02, (RULE,))
     a = assessment(inst("aapl"))
@@ -173,9 +222,7 @@ def test_senza_send_non_scrive_nulla(tmp_path):
 def test_con_send_registra_decisioni_ordini_equity_e_riprova_senza_duplicati(tmp_path):
     sent = []
 
-    class FakeBroker:
-        def account(self): return 100_000.0, 100_000.0
-        def positions(self): return {}
+    class FakeBroker(BaseFake):
         def submit(self, plan, coid):
             sent.append(coid)
             return "id-1", "accettato (accepted)"
@@ -191,3 +238,34 @@ def test_con_send_registra_decisioni_ordini_equity_e_riprova_senza_duplicati(tmp
 def test_nessuna_chiave_segreta_nel_codice():
     text = (ROOT / "pipeline" / "paper.py").read_text(encoding="utf-8")
     assert "paper=True" in text and "paper=False" not in text   # mai conto reale
+
+
+def test_broker_legge_orologio_e_calendario_con_i_modelli_veri_di_alpaca():
+    """Usa i modelli di alpaca-py (parsing reale delle risposte) con un client finto, senza rete."""
+    pytest.importorskip("alpaca")
+    from alpaca.trading.models import Calendar, Clock, Order
+
+    class FakeClient:
+        def get_clock(self):     # sabato 21/11/2026, 00:30 a New York
+            return Clock(timestamp="2026-11-21T00:30:00-05:00", is_open=False,
+                         next_open="2026-11-23T09:30:00-05:00", next_close="2026-11-23T16:00:00-05:00")
+
+        def get_calendar(self, req):
+            return [Calendar(date=d, open="09:30", close="16:00") for d in ("2026-11-19", "2026-11-20")]
+
+        def get_orders(self, req):
+            base = {"id": "61e69015-8549-4bfd-b9c3-01e75843f47d", "created_at": "2026-11-20T23:00:00Z",
+                    "updated_at": "2026-11-20T23:00:00Z", "submitted_at": "2026-11-20T23:00:00Z",
+                    "asset_id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415", "symbol": "AAPL", "asset_class": "us_equity",
+                    "notional": "15000", "filled_qty": "0", "order_class": "simple", "order_type": "market",
+                    "type": "market", "side": "buy", "time_in_force": "day", "status": "accepted",
+                    "extended_hours": False}
+            return [Order(**base, client_order_id="fn-regola_assess-2026-11-20-AAPL"),
+                    Order(**{**base, "symbol": "MSFT"}, client_order_id="manuale-123")]
+
+    b = paper.AlpacaPaperBroker.__new__(paper.AlpacaPaperBroker)
+    b._client = FakeClient()
+    m = b.market()
+    assert m.is_open is False and m.last_session == dt.date(2026, 11, 20)
+    assert b.open_orders("regola_assess") == ["AAPL"] and b.open_orders("bench_qqq") == []
+    assert "fn-regola_assess-2026-11-20-AAPL" in b.submitted_ids(dt.datetime(2026, 11, 1))
