@@ -35,15 +35,24 @@ RULE = Strategy("regola_assess", "regola", "assess_rule", "ALPACA_RULE",
 
 
 IND = Strategy("indicazioni", "indicazioni", "indication", "ALPACA_LOSH", {})
-ALLOWED = {"PSQ", "QQQ", "SH", "SPY", "AAPL"}
+CATALOG = {
+    "ndx": paper.Tradable("ndx", "Nasdaq 100", "index", "QQQ", "PSQ"),
+    "spx": paper.Tradable("spx", "S&P 500", "index", "SPY", "SH"),
+    "aapl": paper.Tradable("aapl", "Apple", "stock", "AAPL", "AAPL", short=True),
+    "cost": paper.Tradable("cost", "Costco", "stock", "COST", "COST", short=True, has_signal=False),
+}
 SIGNALS = {"ndx", "qqq", "spx", "aapl"}
-FIRST = {"from": "2026-11-20", "author": "Simone", "bias": "ribassista", "instrument": "PSQ", "max_exposure": 0.2,
-         "signal": "ndx", "enter_situations": ["tempesta"], "enter_risk": ["alto"],
-         "exit_situations": ["norma", "tranquillo"], "note": "prova"}
+VIEW = {"target": "ndx", "direction": "ribasso", "max_exposure": 0.2, "enter_situations": ["tempesta"],
+        "enter_risk": ["alto"], "exit_situations": ["norma", "tranquillo"]}
+FIRST = {"from": "2026-11-20", "author": "Simone", "note": "prova", "views": [VIEW]}
 
 
-def ind(**over):
-    return paper.parse_indication({**FIRST, **over}, "x.yml", ALLOWED, SIGNALS)
+def ind(views=None, **over):
+    return paper.parse_indication({**FIRST, **over, "views": [VIEW] if views is None else views}, "x.yml", CATALOG, SIGNALS)
+
+
+def view(**over):
+    return {**VIEW, **over}
 
 
 # --- pesi obiettivo ---------------------------------------------------------
@@ -68,45 +77,64 @@ def test_indicazione_entra_resta_esce(sit, risk, held, expected):
     assert t.weights.get("PSQ") == expected
 
 
+def test_indicazione_con_piu_righe_e_segnale_del_titolo():
+    i = ind([VIEW, view(target="aapl", direction="rialzo", max_exposure=0.1, enter_situations=["norma", "tranquillo"],
+                        enter_risk=[], exit_situations=["tempesta"])])
+    assert [v.instrument for v in i.views] == ["PSQ", "AAPL"] and i.views[1].signal == "aapl"
+    a = assessment(inst("ndx", "tempesta", "alto", asset_class="index"), inst("aapl", "norma", "normale"), as_of="2026-11-20")
+    assert paper.target_indication(i, a, set()).weights == {"PSQ": 0.2, "AAPL": 0.1}
+
+
 def test_indicazione_con_dati_vecchi_non_entra_ma_non_esce():
     a = assessment(inst("ndx", "norma", "normale", status="stale", asset_class="index"), as_of="2026-11-20")
     assert paper.target_indication(ind(), a, set()).weights == {}
     assert paper.target_indication(ind(), a, {"PSQ"}).weights == {"PSQ": 0.2}
 
 
-def test_indicazione_in_vigore_e_cambio_strumento():
-    old, new = ind(), ind(**{"from": "2026-11-27", "bias": "neutrale"})
+def test_indicazione_in_vigore_e_righe_tolte():
+    old, new = ind(), ind([], **{"from": "2026-11-27"})
     assert paper.current_indication([old, new], "2026-11-19") is None          # prima della prima: niente
     assert paper.current_indication([old, new], "2026-11-26") is old
     assert paper.current_indication([old, new], "2026-11-27") is new
     a = assessment(inst("ndx", "tempesta", "alto", asset_class="index"), as_of="2026-11-27")
-    assert paper.target_indication(new, a, {"PSQ"}).weights == {}             # neutrale: si chiude PSQ
+    assert paper.target_indication(new, a, {"PSQ"}).weights == {}             # nessuna riga: si chiude PSQ
 
 
-@pytest.mark.parametrize("over,msg", [
-    ({"instrument": "SQQQ"}, "non ammesso"),          # niente leva
-    ({"max_exposure": 0.8}, "max_exposure"),
-    ({"bias": "boh"}, "bias"),
-    ({"from": "20/11/2026"}, "AAAA-MM-GG"),
-    ({"signal": "btc"}, "universo"),
-    ({"enter_situations": ["panico"]}, "non validi"),
-    ({"exit_situations": ["tempesta"]}, "sia di ingresso sia di uscita"),
+@pytest.mark.parametrize("views,msg", [
+    ([view(target="btc")], "non si può indicare"),
+    ([view(target="aapl")], "limite per gli short"),                 # short al massimo 10%
+    ([view(target="cost", direction="rialzo", max_exposure=0.1)], "when: sempre"),   # senza valutazione
+    ([view(when="talvolta")], "segnale o sempre"),
+    ([view(direction="su")], "direzione"),
+    ([view(max_exposure=0.8)], "max_exposure"),
+    ([view(enter_situations=["panico"])], "non validi"),
+    ([view(exit_situations=["tempesta"])], "sia di ingresso sia di uscita"),
+    ([view(), view(max_exposure=0.1)], "stesso strumento"),
+    ([view(max_exposure=0.5), view(target="spx", max_exposure=0.5),
+      view(target="aapl", direction="rialzo", max_exposure=0.1)], "100%"),
 ])
-def test_indicazione_non_valida(over, msg):
+def test_indicazione_non_valida(views, msg):
     with pytest.raises(PaperError, match=msg):
-        ind(**over)
+        ind(views)
+
+
+def test_data_non_valida():
+    with pytest.raises(PaperError, match="AAAA-MM-GG"):
+        ind(**{"from": "20/11/2026"})
 
 
 def test_indicazioni_del_repo_valide_e_prima_indicazione():
     cfg = paper.load_config(ROOT / "config" / "paper.yml")
-    allowed = set(cfg.allowed_instruments) | set(paper.stock_symbols().values())
+    catalog = paper.tradables(paper.DEFAULT_UNIVERSE, cfg)
     signals = {"ndx", "qqq", "spx", *paper.stock_symbols()}
-    items = paper.load_indications(ROOT / "config" / "indications", allowed, signals)
-    first = items[0]
-    assert (first.valid_from, first.instrument, first.max_exposure, first.signal) == ("2026-11-20", "PSQ", 0.2, "ndx")
-    assert first.enter_situations == ("tempesta",) and first.enter_risk == ("alto",)
-    assert set(first.exit_situations) == {"norma", "tranquillo"}
-    assert "SQQQ" not in allowed and "TQQQ" not in allowed
+    first = paper.load_indications(ROOT / "config" / "indications", catalog, signals)[0]
+    assert first.valid_from == "2026-11-20" and len(first.views) == 1
+    v = first.views[0]
+    assert (v.target, v.direction, v.instrument, v.max_exposure, v.signal) == ("ndx", "ribasso", "PSQ", 0.2, "ndx")
+    assert v.enter_situations == ("tempesta",) and v.enter_risk == ("alto",)
+    assert set(v.exit_situations) == {"norma", "tranquillo"}
+    assert {t.up for t in catalog.values()} | {t.down for t in catalog.values()} >= {"QQQ", "PSQ", "SPY", "SH", "AAPL"}
+    assert not {"SQQQ", "TQQQ"} & ({t.up for t in catalog.values()} | {t.down for t in catalog.values()})
 
 
 def test_indicazione_usa_la_posizione_del_conto_come_stato(tmp_path):
@@ -398,14 +426,68 @@ def test_indicazioni_fuori_dal_confronto_col_benchmark(tmp_path):
                        for s in ("bench_qqq", "indicazioni")], ("as_of", "strategy"))
     out = paper.dashboard_payload(cfg, tmp_path)
     assert out["comparisons"] == [] and out["strategies"][1]["kind"] == "indication"
-    meta = paper.indications_payload(cfg, [ind()], "2026-11-20", ALLOWED, SIGNALS)
-    assert meta["current"]["instrument"] == "PSQ" and "SQQQ" not in meta["options"]["instruments"]
+    meta = paper.indications_payload(cfg, [ind()], "2026-11-20", CATALOG)
+    assert meta["current"]["views"][0]["instrument"] == "PSQ"
+    assert [t["name"] for t in meta["options"]["targets"]] == ["Nasdaq 100", "S&P 500", "Apple", "Costco"]
 
 
 def test_yaml_scritto_dalla_pagina_si_rilegge():
-    """Stesso formato prodotto da indicationYaml() in docs/app.js (stringhe JSON, liste in linea, null)."""
-    text = ('from: 2026-11-27\nauthor: "Simone"\nbias: neutrale\ninstrument: null\nmax_exposure: 0\nsignal: ndx\n'
-            'enter_situations: []\nenter_risk: []\nexit_situations: [norma, tranquillo]\nnote: "Pausa: \\"vedo\\" calma."\n')
+    """Stesso formato prodotto da indicationYaml() in docs/app.js (stringhe JSON, liste in linea)."""
+    text = ('from: 2026-11-27\nauthor: "Simone"\nnote: "Pausa: \\"vedo\\" calma."\nviews:\n'
+            '  - target: ndx\n    direction: ribasso\n    max_exposure: 0.20\n    enter_situations: [tempesta]\n'
+            '    enter_risk: [alto]\n    exit_situations: [norma, tranquillo]\n'
+            '  - target: aapl\n    direction: rialzo\n    max_exposure: 0.10\n    enter_situations: [norma]\n'
+            '    enter_risk: []\n    exit_situations: []\n')
     import yaml
-    i = paper.parse_indication(yaml.safe_load(text), "2026-11-27.yml", ALLOWED, SIGNALS)
-    assert i.instrument is None and i.note == 'Pausa: "vedo" calma.'
+    i = paper.parse_indication(yaml.safe_load(text), "2026-11-27.yml", CATALOG, SIGNALS)
+    assert [v.instrument for v in i.views] == ["PSQ", "AAPL"] and i.note == 'Pausa: "vedo" calma.'
+    assert paper.parse_indication(yaml.safe_load('from: 2026-11-28\nviews: []\n'), "y.yml", CATALOG, SIGNALS).views == ()
+
+
+# --- short e righe "sempre" -----------------------------------------------------
+
+def test_short_su_azione_peso_negativo_e_quote_intere():
+    i = ind([view(target="aapl", max_exposure=0.1)])
+    v = i.views[0]
+    assert v.short and v.instrument == "AAPL"
+    a = assessment(inst("aapl", "tempesta", "alto"), as_of="2026-11-20")
+    assert paper.target_indication(i, a, set()).weights == {"AAPL": -0.1}
+    orders = paper.plan_orders(100_000, {}, {"AAPL": -0.1}, 0.02, {"AAPL": 273.5})
+    assert [(o.side, o.symbol, o.qty, o.notional) for o in orders] == [("sell", "AAPL", 36.0, None)]   # 10.000/273,5
+
+
+def test_short_senza_prezzo_non_parte_e_si_ricompra_quando_esce():
+    assert paper.plan_orders(100_000, {}, {"AAPL": -0.1}, 0.02, {}) == []
+    orders = paper.plan_orders(100_000, {"AAPL": (-9_800.0, -36.0)}, {}, 0.02)
+    assert [(o.side, o.symbol, o.qty) for o in orders] == [("buy", "AAPL", 36.0)]
+
+
+def test_da_long_a_short_in_due_sere():
+    orders = paper.plan_orders(100_000, {"AAPL": (10_000.0, 36.5)}, {"AAPL": -0.1}, 0.02, {"AAPL": 273.5})
+    assert [(o.side, o.qty) for o in orders] == [("sell", 36.5)]          # prima chiude il long, niente short
+
+
+def test_riga_sempre_tiene_la_quota_senza_valutazione():
+    i = ind([view(target="cost", direction="rialzo", max_exposure=0.1, when="sempre")])
+    assert paper.target_indication(i, assessment(as_of="2026-11-20"), set()).weights == {"COST": 0.1}
+
+
+def test_stop_dello_short_chiude_e_non_rientra(tmp_path):
+    i = ind([view(target="aapl", max_exposure=0.1)])
+
+    class FakeBroker(BaseFake):
+        market_state = paper.MarketState(False, dt.date(2026, 11, 20), dt.datetime(2026, 11, 23, 9, 30))
+        def positions(self): return {"AAPL": (-11_600.0, -36.0)}
+        def position_losses(self): return {"AAPL": -0.16}
+        def submit(self, plan, coid): return "id", "accettato (accepted)"
+    cfg = paper.PaperConfig(0.02, (IND,))
+    a = assessment(inst("aapl", "tempesta", "alto"), as_of="2026-11-20")
+    res = paper.run_strategy(IND, a, SYMBOLS, cfg, FakeBroker(), tmp_path, send=True, indications=[i])
+    assert res["weights"] == {} and [(o.side, o.qty) for o in res["orders"]] == [("buy", 36.0)]
+    assert "AAPL" in (tmp_path / paper.STOPS_FILE).read_text()
+
+    class Flat(FakeBroker):                                     # sera dopo: short chiuso, segnale ancora attivo
+        def positions(self): return {}
+        def position_losses(self): return {}
+    res = paper.run_strategy(IND, a, SYMBOLS, cfg, Flat(), tmp_path, send=False, indications=[i])
+    assert res["weights"] == {}                                 # non rientra con la stessa indicazione
