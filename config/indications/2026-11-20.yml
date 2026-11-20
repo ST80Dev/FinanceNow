@@ -1,0 +1,12 @@
+# Indicazione settimanale per il conto "indicazioni" (Alpaca paper). Un file per indicazione: non modificare
+# quelle passate, aggiungine una nuova con una data più recente. Vale dalla valutazione di 'from' in poi.
+from: 2026-11-20
+author: Simone
+bias: ribassista            # ribassista | rialzista | neutrale (neutrale = tutto in liquidità)
+instrument: PSQ             # ETF inverso 1x sul Nasdaq 100: sale quando il Nasdaq scende
+max_exposure: 0.20          # quota massima del conto
+signal: ndx                 # chi decide quando entrare e uscire: la valutazione del Nasdaq 100
+enter_situations: [tempesta]
+enter_risk: [alto]
+exit_situations: [norma, tranquillo]
+note: Copertura sul Nasdaq solo nei periodi di tempesta con rischio alto. Fuori, liquidità.

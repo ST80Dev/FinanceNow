@@ -73,9 +73,15 @@ const GLOSSARY = {
     "Ogni sera, a mercato chiuso, la regola legge la valutazione dell'app e prepara gli ordini; Alpaca li esegue " +
     "all'apertura della seduta dopo. Il benchmark compra QQQ e lo tiene sempre: è la strategia da battere.\n" +
     "È una terza serie, separata da BACKTEST e LIVE."],
+  indicazione: ["Indicazione della settimana", "La tua linea di massima per il terzo conto paper: quale strumento comprare, " +
+    "fino a che quota del conto, e quando entrare e uscire secondo la valutazione dell'app su un indice (es. il Nasdaq 100).\n" +
+    "Resta in vigore finché non ne scrivi una nuova; ogni indicazione è un file datato nel repository, così resta lo storico.\n" +
+    "Strumenti solo senza leva: PSQ e SH salgono quando Nasdaq 100 e S&P 500 scendono."],
   vs_bench: ["Rispetto al benchmark", "Differenza tra l'andamento della regola e quello di QQQ compra-e-tieni, " +
     "dallo stesso giorno di partenza, in punti percentuali. Sopra lo zero la regola sta facendo meglio.\n" +
-    "Con pochi mesi la differenza è dominata dal caso: per questo il giudizio compare solo dopo 3 mesi di sedute."],
+    "Con pochi mesi la differenza è dominata dal caso: per questo il giudizio compare solo dopo 3 mesi di sedute.\n" +
+    "Il conto delle indicazioni non entra nel confronto: segue le tue scelte (per esempio una copertura ribassista) " +
+    "e sta spesso in liquidità, quindi va giudicato su quanto rende nei periodi in cui è investito, non contro QQQ."],
 };
 
 const state = { index: null, models: null, digest: null, patterns: null, assessment: null, direction: null, paper: null,
@@ -970,6 +976,106 @@ function renderMethod() {
 /* ------------------------------------------------------------------ paper trading */
 
 const SIDE_LABEL = { buy: "compra", sell: "vende" };
+const SIT_LABEL = { tempesta: "in tempesta", pressione: "sotto pressione", ripresa: "in ripresa", norma: "nella norma", tranquillo: "tranquillo" };
+const BIAS_LABEL = { ribassista: "Ribassista", rialzista: "Rialzista", neutrale: "Neutrale (tutto in liquidità)" };
+const IND_DEFAULT_OPTIONS = { bias: ["ribassista", "rialzista", "neutrale"], instruments: ["PSQ", "QQQ", "SH", "SPY"],
+  signals: ["ndx", "qqq", "spx"], situations: ["tempesta", "pressione", "ripresa", "norma", "tranquillo"],
+  risks: ["alto", "normale", "basso"], max_exposure: 0.5 };
+
+function indicationText(i) {
+  if (!i) return "nessuna";
+  if (!i.instrument) return `${BIAS_LABEL[i.bias] || i.bias}`;
+  const enter = i.enter_situations.map((x) => SIT_LABEL[x] || x).join(" o ");
+  const risk = i.enter_risk.length < 3 ? ` con rischio ${i.enter_risk.join(" o ")}` : "";
+  const exit = i.exit_situations.map((x) => SIT_LABEL[x] || x).join(" o ");
+  return `${cap(i.bias)}: <strong>${esc(i.instrument)}</strong> fino al ${pct(i.max_exposure, 0)} del conto quando ${esc(i.signal.toUpperCase())} è ${esc(enter)}${esc(risk)}; ` +
+    `esce quando torna ${esc(exit || "–")}.`;
+}
+
+function indicationYaml(f) {
+  const list = (a) => `[${a.join(", ")}]`;
+  return [
+    "# Indicazione settimanale per il conto \"indicazioni\" (Alpaca paper), scritta dalla pagina Paper.",
+    "# Un file per indicazione: non modificare quelle passate. Vale dalla valutazione di 'from' in poi.",
+    `from: ${f.from}`,
+    `author: ${JSON.stringify(f.author || "")}`,
+    `bias: ${f.bias}`,
+    `instrument: ${f.bias === "neutrale" ? "null" : f.instrument}`,
+    `max_exposure: ${f.bias === "neutrale" ? 0 : (f.exposure / 100).toFixed(2)}`,
+    `signal: ${f.signal}`,
+    `enter_situations: ${list(f.enter)}`,
+    `enter_risk: ${list(f.risk)}`,
+    `exit_situations: ${list(f.exit)}`,
+    `note: ${JSON.stringify(f.note || "")}`,
+    "",
+  ].join("\n");
+}
+
+function indicationPanel(I) {
+  const o = (I && I.options) || IND_DEFAULT_OPTIONS;
+  const cur = I && I.current;
+  const d = cur || { bias: "ribassista", instrument: "PSQ", max_exposure: 0.2, signal: "ndx", enter_situations: ["tempesta"],
+    enter_risk: ["alto"], exit_situations: ["norma", "tranquillo"], author: "", note: "" };
+  const today = new Date().toISOString().slice(0, 10);
+  const checks = (name, all, on, labels) => all.map((v) => `<label class="chk"><input type="checkbox" name="${name}" value="${v}" ${on.includes(v) ? "checked" : ""}> ${esc(labels ? labels[v] || v : v)}</label>`).join("");
+  const hist = (I && I.history) || [];
+  return `<section class="series-panel paper">
+    <h2 style="margin-top:0"><span class="series-tag paper">PAPER</span>Indicazione della settimana ${info("indicazione")}</h2>
+    ${I && I.error ? `<p class="notice neg">Indicazioni non valide, il conto non opera: ${esc(I.error)}</p>` : ""}
+    <p>${cur ? `In vigore dal ${fmtDate(cur.from)}${cur.author ? ` (${esc(cur.author)})` : ""}: ${indicationText(cur)}` : "Nessuna indicazione in vigore: il conto resta in liquidità."}
+      ${cur && cur.note ? `<br><span class="muted small">${esc(cur.note)}</span>` : ""}</p>
+    ${hist.length > 1 ? `<details class="small"><summary>Storico (${hist.length})</summary><ul>${hist.map((h) => `<li>${fmtDate(h.from)}: ${indicationText(h)}</li>`).join("")}</ul></details>` : ""}
+    <details class="ind-form-wrap"><summary><strong>Scrivi una nuova indicazione</strong></summary>
+    <form id="ind-form" class="ind-form">
+      <label>Vale dal <input type="date" name="from" value="${today}" required></label>
+      <label>Tendenza <select name="bias">${o.bias.map((b) => `<option value="${b}" ${b === d.bias ? "selected" : ""}>${esc(BIAS_LABEL[b] || b)}</option>`).join("")}</select></label>
+      <label>Strumento <select name="instrument">${o.instruments.map((x) => `<option ${x === d.instrument ? "selected" : ""}>${esc(x)}</option>`).join("")}</select></label>
+      <label>Esposizione massima (% del conto) <input type="number" name="exposure" min="1" max="${Math.round(o.max_exposure * 100)}" step="1" value="${Math.round((d.max_exposure || 0.2) * 100)}"></label>
+      <label>Segnale <select name="signal">${o.signals.map((x) => `<option value="${x}" ${x === d.signal ? "selected" : ""}>${esc(x.toUpperCase())}</option>`).join("")}</select></label>
+      <fieldset><legend>Entra quando il segnale è</legend>${checks("enter", o.situations, d.enter_situations, SIT_LABEL)}</fieldset>
+      <fieldset><legend>…e il rischio è</legend>${checks("risk", o.risks, d.enter_risk)}</fieldset>
+      <fieldset><legend>Esce quando torna</legend>${checks("exit", o.situations, d.exit_situations, SIT_LABEL)}</fieldset>
+      <label>Autore <input type="text" name="author" value="${esc(d.author || "")}"></label>
+      <label class="wide">Note <textarea name="note" rows="2">${esc(d.note || "")}</textarea></label>
+      <p class="small muted wide">Premendo Salva si apre GitHub con il file già compilato in <code>config/indications/</code>:
+        controlla e premi "Commit changes". Il conto la applica dal giro serale successivo. Nessuna chiave passa da questa pagina.</p>
+      <p id="ind-err" class="neg small wide" hidden></p>
+      <div class="wide"><button type="submit">Salva su GitHub</button></div>
+    </form></details>
+  </section>`;
+}
+
+function bindIndicationForm(I) {
+  const form = document.getElementById("ind-form");
+  if (!form) return;
+  const repo = (I && I.github_repo) || "ST80Dev/FinanceNow";
+  const sync = () => { form.instrument.disabled = form.exposure.disabled = form.bias.value === "neutrale"; };
+  form.bias.addEventListener("change", sync);
+  sync();
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const all = (n) => [...form.querySelectorAll(`input[name=${n}]:checked`)].map((x) => x.value);
+    const f = { from: form.from.value, bias: form.bias.value, instrument: form.instrument.value, exposure: Number(form.exposure.value),
+      signal: form.signal.value, enter: all("enter"), risk: all("risk"), exit: all("exit"), author: form.author.value.trim(), note: form.note.value.trim() };
+    const err = document.getElementById("ind-err");
+    const problems = [];
+    if (!f.from) problems.push("manca la data");
+    if (f.bias !== "neutrale") {
+      if (!(f.exposure >= 1 && f.exposure <= 50)) problems.push("esposizione tra 1% e 50%");
+      if (!f.enter.length) problems.push("scegli almeno una situazione di ingresso");
+      if (!f.risk.length) problems.push("scegli almeno un livello di rischio");
+    }
+    if (f.enter.some((x) => f.exit.includes(x))) problems.push("una situazione non può essere sia di ingresso sia di uscita");
+    if ((I && I.history || []).some((h) => h.from === f.from)) problems.push(`esiste già un'indicazione del ${fmtDate(f.from)}: cambia la data`);
+    err.hidden = !problems.length;
+    err.textContent = problems.length ? "Da correggere: " + problems.join("; ") + "." : "";
+    if (problems.length) return;
+    const url = `https://github.com/${repo}/new/main?filename=${encodeURIComponent(`config/indications/${f.from}.yml`)}&value=${encodeURIComponent(indicationYaml(f))}`;
+    window.open(url, "_blank", "noopener");
+  });
+}
+
+
 const FILL_LABEL = { filled: "eseguito", partially_filled: "eseguito in parte", canceled: "annullato",
   expired: "scaduto", rejected: "rifiutato", done_for_day: "chiuso per oggi" };
 
@@ -985,7 +1091,7 @@ function paperCard(s) {
   const w = s.weights || [];
   const cash = w.reduce((acc, x) => acc - (x.symbol === "CASH" ? 0 : x.weight || 0), 1);
   return `<div class="chart-card">
-    <div class="chart-head"><h3>${s.is_benchmark ? "📏 " : ""}${esc(s.name)}</h3>
+    <div class="chart-head"><h3>${s.is_benchmark ? "📏 " : s.kind === "indication" ? "🧭 " : ""}${esc(s.name)}</h3>
       <span class="muted small">${s.start ? `dal ${fmtDate(s.start)} · ${s.n_sessions} sedute` : "non ancora partita"}</span></div>
     <div class="kv-row">
       <div><span class="muted small">Andamento</span><br><strong class="num ${signClass(s.return)}">${pct(s.return, 1, true)}</strong></div>
@@ -1005,15 +1111,16 @@ function renderPaper() {
   const P = state.paper;
   const head = `<h1>Prove di trading ${info("paper")}</h1>
     <p class="muted">Conti <strong>virtuali</strong> su Alpaca (paper): nessun soldo vero. La regola segue la valutazione dell'app,
-      il benchmark tiene QQQ. Il modello di direzione non ha mostrato alcun vantaggio nei test: non c'è motivo di aspettarsi che la regola
+      il benchmark tiene QQQ, il terzo conto segue la tua indicazione della settimana. Il modello di direzione non ha mostrato alcun vantaggio nei test: non c'è motivo di aspettarsi che la regola
       batta il benchmark, e se non lo batte la pagina lo dice.</p>`;
   if (!P || !P.strategies.some((s) => s.n_sessions)) {
-    app.innerHTML = `${head}<p class="notice">Nessun dato ancora: la pagina si riempie dopo il primo run del workflow <code>paper</code> con i conti collegati.</p>`;
+    app.innerHTML = `${head}${indicationPanel(P && P.indications)}<p class="notice">Nessun dato ancora: la pagina si riempie dopo il primo run del workflow <code>paper</code> con i conti collegati.</p>`;
+    bindIndicationForm(P && P.indications);
     return;
   }
   const comps = P.comparisons || [];
   const names = Object.fromEntries(P.strategies.map((s) => [s.id, s.name]));
-  const short = Object.fromEntries(P.strategies.map((s) => [s.id, s.is_benchmark ? "Benchmark" : s.name.split(" (")[0]]));
+  const short = Object.fromEntries(P.strategies.map((s) => [s.id, s.is_benchmark ? "Benchmark" : s.kind === "indication" ? "Indicazioni" : s.name.split(" (")[0]]));
   app.innerHTML = `${head}
     <section class="series-panel paper">
       <h2 style="margin-top:0"><span class="series-tag paper">PAPER</span>Regola contro benchmark ${info("vs_bench")}</h2>
@@ -1028,6 +1135,7 @@ function renderPaper() {
           ${c.dates.length > 1 ? `<div class="chart" id="paper-cmp-${i}"></div>` : ""}`;
       }).join("") : `<p class="notice">Il confronto compare quando entrambi i conti hanno almeno una seduta registrata.</p>`}
     </section>
+    ${indicationPanel(P.indications)}
     ${P.strategies.map(paperCard).join("")}
     <h2>Ordini recenti</h2>
     ${P.orders.length ? `<div class="table-scroll"><table><thead><tr><th class="left">Sera</th><th class="left">Conto</th><th class="left">Titolo</th>
@@ -1054,6 +1162,7 @@ function renderPaper() {
   };
   draw();
   state.redraw = draw;
+  bindIndicationForm(P.indications);
 }
 
 /* ------------------------------------------------------------------ router */

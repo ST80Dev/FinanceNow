@@ -10,7 +10,10 @@ prezzo a cui si può agire è l'apertura del giorno dopo).
 Strategie (passo 6a, solo long, nessun LLM):
 - `buy_hold`     un solo simbolo (QQQ) tenuto fisso: il benchmark da battere;
 - `assess_rule`  azioni dell'universo con situazione e rischio ammessi da `config/paper.yml`,
-                 stesso peso (con tetto), il resto in liquidità.
+                 stesso peso (con tetto), il resto in liquidità;
+- `indication`   applica l'indicazione settimanale in vigore (config/indications/<data>.yml), scritta
+                 da Simone anche dal modulo della pagina Paper: strumento, esposizione massima,
+                 quando entrare e quando uscire secondo la valutazione di un indice.
 
 Serie `paper` (append-only, in `results/paper/`, separata da `backtest` e `live`):
 - decisions.csv  pesi obiettivo per data e strategia, con il motivo;
@@ -74,7 +77,7 @@ class PaperError(Exception):
 # Configurazione
 # ---------------------------------------------------------------------------
 
-KINDS = ("buy_hold", "assess_rule")
+KINDS = ("buy_hold", "assess_rule", "indication")
 
 
 @dataclass(frozen=True)
@@ -90,6 +93,8 @@ class Strategy:
 class PaperConfig:
     min_delta: float
     strategies: tuple[Strategy, ...]
+    allowed_instruments: tuple[str, ...] = ()   # strumenti ammessi nelle indicazioni (oltre alle azioni dell'universo)
+    github_repo: str = ""                        # owner/nome, per il modulo della pagina che apre GitHub
 
 
 def load_config(path: Path | str = DEFAULT_CONFIG) -> PaperConfig:
@@ -117,7 +122,9 @@ def load_config(path: Path | str = DEFAULT_CONFIG) -> PaperConfig:
     min_delta = float(raw.get("min_delta", 0.02))
     if not 0 <= min_delta < 0.5:
         raise PaperError("paper.yml: min_delta deve stare tra 0 e 0,5")
-    return PaperConfig(min_delta=min_delta, strategies=tuple(strategies))
+    return PaperConfig(min_delta=min_delta, strategies=tuple(strategies),
+                       allowed_instruments=tuple(str(x).upper() for x in raw.get("allowed_instruments", [])),
+                       github_repo=str(raw.get("github_repo", "")))
 
 
 def load_assessment(path: Path | str = DEFAULT_ASSESSMENT, today: dt.date | None = None) -> dict:
@@ -149,6 +156,14 @@ def target_buy_hold(strategy: Strategy) -> Target:
     return Target({symbol: weight}, {symbol: "benchmark: tenuto sempre"}, "benchmark")
 
 
+STALE_STATUSES = ("stale", "no_data")
+
+
+def is_fresh(inst: dict, as_of: str) -> bool:
+    """Valutazione calcolata su dati della seduta `as_of` (updated, refreshed o up_to_date vanno tutti bene)."""
+    return inst.get("data_status") not in STALE_STATUSES and inst.get("as_of", as_of) == as_of
+
+
 def target_assess_rule(strategy: Strategy, assessment: dict, symbols_by_id: dict[str, str]) -> Target:
     """Azioni con situazione ammessa, rischio non bloccato e dati aggiornati, a pari peso (con tetto)."""
     p = strategy.params
@@ -162,7 +177,7 @@ def target_assess_rule(strategy: Strategy, assessment: dict, symbols_by_id: dict
         if symbol is None:              # indici, ETF o strumenti non negoziabili: fuori dalla regola
             continue
         n_stocks += 1
-        if inst.get("data_status") != "updated":
+        if not is_fresh(inst, assessment["as_of"]):
             continue
         sit = inst["situation"]["key"]
         risk = inst["risk"]["level"]
@@ -175,17 +190,148 @@ def target_assess_rule(strategy: Strategy, assessment: dict, symbols_by_id: dict
                   f"{len(eligible)} titoli su {n_stocks}, peso {weight:.1%} ciascuno")
 
 
+# ---------------------------------------------------------------------------
+# Indicazioni settimanali (config/indications/<data>.yml): una per file, mai modificate dopo
+# ---------------------------------------------------------------------------
+
+DEFAULT_INDICATIONS = ROOT / "config" / "indications"
+BIASES = ("ribassista", "rialzista", "neutrale")
+SITUATIONS = ("tempesta", "pressione", "ripresa", "norma", "tranquillo")
+RISKS = ("alto", "normale", "basso")
+MAX_INDICATION_EXPOSURE = 0.5
+
+
+@dataclass(frozen=True)
+class Indication:
+    valid_from: str                  # in vigore dalla valutazione di questa data in poi
+    author: str
+    bias: str
+    instrument: str | None           # None = nessuna posizione (neutrale)
+    max_exposure: float
+    signal: str
+    enter_situations: tuple[str, ...]
+    enter_risk: tuple[str, ...]
+    exit_situations: tuple[str, ...]
+    note: str
+    file: str
+
+    def as_dict(self) -> dict:
+        return {"from": self.valid_from, "author": self.author, "bias": self.bias, "instrument": self.instrument,
+                "max_exposure": self.max_exposure, "signal": self.signal,
+                "enter_situations": list(self.enter_situations), "enter_risk": list(self.enter_risk),
+                "exit_situations": list(self.exit_situations), "note": self.note, "file": self.file}
+
+
+def _str_list(raw: dict, key: str, allowed: tuple[str, ...], where: str) -> tuple[str, ...]:
+    vals = raw.get(key) or []
+    if isinstance(vals, str):
+        vals = [vals]
+    bad = [v for v in vals if v not in allowed]
+    if bad:
+        raise PaperError(f"{where}: {key} non validi {bad} (ammessi: {', '.join(allowed)})")
+    return tuple(vals)
+
+
+def parse_indication(raw: dict, file: str, allowed_instruments: set[str], signals: set[str]) -> Indication:
+    where = f"indicazione {file}"
+    if not isinstance(raw, dict):
+        raise PaperError(f"{where}: formato non valido")
+    try:
+        valid_from = dt.date.fromisoformat(str(raw.get("from"))).isoformat()
+    except ValueError:
+        raise PaperError(f"{where}: 'from' deve essere una data AAAA-MM-GG") from None
+    bias = raw.get("bias")
+    if bias not in BIASES:
+        raise PaperError(f"{where}: bias {bias!r} non valido (ammessi: {', '.join(BIASES)})")
+    instrument = str(raw.get("instrument") or "").upper() or None
+    if bias == "neutrale":
+        instrument = None
+    elif instrument is None or instrument not in allowed_instruments:
+        raise PaperError(f"{where}: strumento {instrument!r} non ammesso (ammessi: {', '.join(sorted(allowed_instruments))})")
+    try:
+        exposure = float(raw.get("max_exposure", 0))
+    except (TypeError, ValueError):
+        raise PaperError(f"{where}: max_exposure deve essere un numero") from None
+    if instrument and not 0 < exposure <= MAX_INDICATION_EXPOSURE:
+        raise PaperError(f"{where}: max_exposure deve stare tra 0 e {MAX_INDICATION_EXPOSURE}")
+    signal = str(raw.get("signal", "ndx"))
+    if signal not in signals:
+        raise PaperError(f"{where}: segnale {signal!r} non è nell'universo")
+    enter_sit = _str_list(raw, "enter_situations", SITUATIONS, where)
+    enter_risk = _str_list(raw, "enter_risk", RISKS, where) or RISKS
+    exit_sit = _str_list(raw, "exit_situations", SITUATIONS, where)
+    if instrument and not enter_sit:
+        raise PaperError(f"{where}: servono le situazioni di ingresso (enter_situations)")
+    if set(enter_sit) & set(exit_sit):
+        raise PaperError(f"{where}: una situazione non può essere sia di ingresso sia di uscita")
+    return Indication(valid_from, str(raw.get("author", "")), bias, instrument, exposure if instrument else 0.0,
+                      signal, enter_sit, enter_risk, exit_sit, str(raw.get("note", "")).strip(), file)
+
+
+def load_indications(directory: Path, allowed_instruments: set[str], signals: set[str]) -> list[Indication]:
+    """Tutte le indicazioni, dalla più vecchia. Un file non valido blocca il conto (errore esplicito)."""
+    out = []
+    for path in sorted(Path(directory).glob("*.yml")):
+        with open(path, encoding="utf-8") as f:
+            raw = yaml.safe_load(f)
+        out.append(parse_indication(raw, path.name, allowed_instruments, signals))
+    dates = [i.valid_from for i in out]
+    if len(dates) != len(set(dates)):
+        raise PaperError("due indicazioni con la stessa data 'from': tenerne una sola")
+    return sorted(out, key=lambda i: i.valid_from)
+
+
+def current_indication(indications: list[Indication], as_of: str) -> Indication | None:
+    valid = [i for i in indications if i.valid_from <= as_of]
+    return valid[-1] if valid else None
+
+
+def target_indication(ind: Indication | None, assessment: dict, held_symbols: set[str]) -> Target:
+    """Applica l'indicazione in vigore: posizione sullo strumento quando il segnale lo chiede, sennò liquidità.
+
+    Entra quando lo strumento-segnale è in una situazione di ingresso E con un rischio di ingresso; una volta
+    dentro resta finché il segnale non arriva in una situazione di uscita. Lo stato dentro/fuori è la posizione
+    sul conto. Dati del segnale non aggiornati: non entra e, se è dentro, resta. Cambio di strumento tra
+    un'indicazione e l'altra: il vecchio si chiude (non è nei pesi obiettivo).
+    """
+    if ind is None:
+        return Target({}, {}, "nessuna indicazione in vigore: tutto in liquidità")
+    head = f"indicazione del {ind.valid_from} ({ind.bias})"
+    if ind.instrument is None:
+        return Target({}, {}, f"{head}: nessuna posizione, tutto in liquidità")
+    sym, w = ind.instrument, ind.max_exposure
+    held = sym in held_symbols
+    inst = next((i for i in assessment["instruments"] if i["id"] == ind.signal), None)
+    if inst is None or not is_fresh(inst, assessment["as_of"]):
+        if held:
+            return Target({sym: w}, {sym: f"{ind.signal}: dati non aggiornati, mantengo"}, f"{head}: segnale senza dati, resto com'ero")
+        return Target({}, {}, f"{head}: segnale senza dati aggiornati, non entro")
+    sit, risk = inst["situation"]["key"], inst["risk"]["level"]
+    label = f"{ind.signal.upper()} {inst['situation']['label'].lower()}, rischio {risk}"
+    if sit in ind.enter_situations and risk in ind.enter_risk:
+        return Target({sym: w}, {sym: f"{label}: {'ingresso' if not held else 'segnale ancora attivo'}"},
+                      f"{head}: {label}, {sym} al {w:.0%}")
+    if held and sit not in ind.exit_situations:
+        return Target({sym: w}, {sym: f"{label}: mantengo"}, f"{head}: {label}, {sym} mantenuto al {w:.0%}")
+    return Target({}, {}, f"{head}: {label}, nessuna posizione")
+
+
 def stock_symbols(universe_path: Path | str = DEFAULT_UNIVERSE) -> dict[str, str]:
     """id interno -> simbolo negoziabile (solo azioni attive; il simbolo yfinance coincide con quello US)."""
     return {i.id: i.symbols["yahoo"] for i in load_universe(universe_path)
             if i.asset_class == "stock" and i.active and "yahoo" in i.symbols}
 
 
-def compute_target(strategy: Strategy, assessment: dict, symbols_by_id: dict[str, str]) -> Target:
+def compute_target(strategy: Strategy, assessment: dict, symbols_by_id: dict[str, str],
+                   positions: dict[str, tuple[float, float]] | None = None,
+                   indications: list[Indication] | None = None) -> Target:
     if strategy.kind == "buy_hold":
         return target_buy_hold(strategy)
     if strategy.kind == "assess_rule":
         return target_assess_rule(strategy, assessment, symbols_by_id)
+    if strategy.kind == "indication":
+        held = {sym for sym, (_, qty) in (positions or {}).items() if qty > 0}
+        return target_indication(current_indication(indications or [], assessment["as_of"]), assessment, held)
     raise PaperError(f"kind non gestito: {strategy.kind}")
 
 
@@ -419,10 +565,14 @@ def broker_for(strategy: Strategy, env=os.environ) -> AlpacaPaperBroker | None:
 # ---------------------------------------------------------------------------
 
 def run_strategy(strategy: Strategy, assessment: dict, symbols_by_id: dict[str, str], cfg: PaperConfig,
-                 broker, out_dir: Path, send: bool) -> dict:
+                 broker, out_dir: Path, send: bool, indications: list[Indication] | None = None) -> dict:
     as_of = assessment["as_of"]
     now = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
-    target = compute_target(strategy, assessment, symbols_by_id)
+    if broker is not None:
+        equity, cash = broker.account()
+        positions = broker.positions()
+    target = compute_target(strategy, assessment, symbols_by_id, positions if broker is not None else None,
+                            indications)
     print(f"\n[{strategy.id}] {strategy.name}: {target.note}")
     for s, w in sorted(target.weights.items()):
         print(f"    {s:6s} peso {w:6.1%}  ({target.reasons.get(s, '')})")
@@ -432,8 +582,6 @@ def run_strategy(strategy: Strategy, assessment: dict, symbols_by_id: dict[str, 
         print(f"    (nessun conto: mancano {strategy.secret_prefix}_KEY / {strategy.secret_prefix}_SECRET)")
         return result
 
-    equity, cash = broker.account()
-    positions = broker.positions()
     orders = plan_orders(equity, positions, target.weights, cfg.min_delta)
     result["orders"] = orders
     print(f"    conto: valore {equity:,.2f}, liquidità {cash:,.2f}, posizioni {len(positions)}")
@@ -545,7 +693,8 @@ def dashboard_payload(cfg: PaperConfig, out_dir: Path, last_run: dict | None = N
     bench = next((s for s in strategies if s["is_benchmark"] and s["n_sessions"]), None)
     comparisons = []
     for s in strategies:
-        if s["is_benchmark"] or not bench or not s["n_sessions"]:
+        # Le indicazioni (es. copertura ribassista) non hanno lo scopo di battere QQQ: confronto solo per le regole.
+        if s["is_benchmark"] or s["kind"] == "indication" or not bench or not s["n_sessions"]:
             continue
         a, b = eq_by[s["id"]], eq_by[bench["id"]]
         common = sorted(set(a) & set(b))
@@ -579,6 +728,18 @@ def dashboard_payload(cfg: PaperConfig, out_dir: Path, last_run: dict | None = N
             "comparisons": comparisons, "orders": recent}
 
 
+def indications_payload(cfg: PaperConfig, indications: list[Indication], as_of: str, allowed: set[str],
+                        signals: set[str], error: str | None = None) -> dict:
+    """Indicazione in vigore, storico e opzioni del modulo della pagina (che apre GitHub già compilato)."""
+    cur = current_indication(indications, as_of)
+    return {"current": cur.as_dict() if cur else None,
+            "history": [i.as_dict() for i in reversed(indications)],
+            "error": error, "github_repo": cfg.github_repo, "path": "config/indications",
+            "options": {"bias": list(BIASES), "instruments": sorted(allowed), "signals": sorted(signals),
+                        "situations": list(SITUATIONS), "risks": list(RISKS),
+                        "max_exposure": MAX_INDICATION_EXPOSURE}}
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Paper trading su Alpaca (solo conti paper).")
     ap.add_argument("--send", action="store_true", help="invia gli ordini (senza: solo prova)")
@@ -588,6 +749,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--universe", type=Path, default=DEFAULT_UNIVERSE)
     ap.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
     ap.add_argument("--dashboard", type=Path, default=DEFAULT_DASHBOARD)
+    ap.add_argument("--indications", type=Path, default=DEFAULT_INDICATIONS)
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -595,9 +757,17 @@ def main(argv: list[str] | None = None) -> int:
         cfg = load_config(args.config)
         assessment = load_assessment(args.assessment)
         symbols_by_id = stock_symbols(args.universe)
+        signals = {i.id for i in load_universe(args.universe) if i.active}
     except (PaperError, ConfigError) as e:
         print(f"ERRORE: {e}", file=sys.stderr)
         return 1
+    allowed = set(cfg.allowed_instruments) | set(symbols_by_id.values())
+    indications: list[Indication] = []
+    indications_error = None
+    try:
+        indications = load_indications(args.indications, allowed, signals)
+    except (PaperError, yaml.YAMLError) as e:       # blocca solo il conto delle indicazioni
+        indications_error = str(e)
 
     strategies = [s for s in cfg.strategies if not args.only or s.id == args.only]
     if not strategies:
@@ -612,7 +782,9 @@ def main(argv: list[str] | None = None) -> int:
             broker = broker_for(strategy)
             if broker is None and args.send:
                 print(f"\nATTENZIONE [{strategy.id}]: invio richiesto ma mancano le chiavi del conto paper")
-            res = run_strategy(strategy, assessment, symbols_by_id, cfg, broker, args.out_dir, args.send)
+            if strategy.kind == "indication" and indications_error:
+                raise PaperError(f"indicazioni non valide, il conto non opera: {indications_error}")
+            res = run_strategy(strategy, assessment, symbols_by_id, cfg, broker, args.out_dir, args.send, indications)
             last_run[strategy.id] = {"as_of": assessment["as_of"], "blocked": res.get("blocked"),
                                      "n_orders": len(res["orders"]), "has_account": broker is not None}
             if res.get("rejected"):
@@ -627,7 +799,10 @@ def main(argv: list[str] | None = None) -> int:
             last_run[strategy.id] = {"as_of": assessment["as_of"], "error": True}
             log.error("%s: %s", strategy.id, e)
     if args.send:
-        write_json(dashboard_payload(cfg, args.out_dir, last_run), args.dashboard)
+        payload = dashboard_payload(cfg, args.out_dir, last_run)
+        payload["indications"] = indications_payload(cfg, indications, assessment["as_of"], allowed, signals,
+                                                     indications_error)
+        write_json(payload, args.dashboard)
     return 1 if failed else 0
 
 

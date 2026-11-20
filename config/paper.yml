@@ -6,11 +6,18 @@
 #
 # Campi comuni:
 #   id            identificativo (niente trattini: finisce nei client_order_id)
-#   kind          buy_hold | assess_rule
+#   kind          buy_hold | assess_rule | indication
 #   secret_prefix prefisso delle variabili d'ambiente con le chiavi del conto
 # Solo long, nessuna leva: il lato short e le decisioni di Claude arrivano nei passi successivi.
 
 version: 1
+
+# Repository GitHub: il modulo della pagina Paper apre qui il file della nuova indicazione già compilato.
+github_repo: ST80Dev/FinanceNow
+
+# Strumenti ammessi nelle indicazioni settimanali, oltre alle azioni dell'universo. Solo ETF senza leva:
+# PSQ e SH sono inversi 1x (salgono quando Nasdaq 100 / S&P 500 scendono); niente SQQQ/TQQQ (leva 3x).
+allowed_instruments: [PSQ, QQQ, SH, SPY]
 
 # Scostamento minimo (in % del valore del conto) per muovere una posizione: meno rotazione inutile.
 min_delta: 0.02
@@ -33,3 +40,10 @@ strategies:
     block_risk: [alto]
     max_weight: 0.15
     secret_prefix: ALPACA_RULE
+
+  # Indicazioni settimanali di Simone (config/indications/<data>.yml, scritte anche dal modulo della
+  # pagina Paper): il conto applica l'indicazione in vigore. Prima indicazione: copertura ribassista con PSQ.
+  - id: indicazioni
+    name: Indicazioni settimanali (le scelte di Simone)
+    kind: indication
+    secret_prefix: ALPACA_HEDGE
