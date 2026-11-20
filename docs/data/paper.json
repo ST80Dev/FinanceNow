@@ -1,0 +1,110 @@
+{
+  "generated": "2026-11-20T14:28:30+00:00",
+  "min_sessions_verdict": 63,
+  "strategies": [
+    {
+      "id": "bench_qqq",
+      "name": "Benchmark QQQ (compra e tieni)",
+      "kind": "buy_hold",
+      "is_benchmark": true,
+      "start": "2026-11-19",
+      "as_of": "2026-11-19",
+      "n_sessions": 1,
+      "return": 0.0,
+      "day_return": null,
+      "cash_share": 1.0,
+      "decision_as_of": "2026-11-19",
+      "weights": [
+        {
+          "symbol": "QQQ",
+          "weight": 0.99,
+          "reason": "benchmark: tenuto sempre"
+        }
+      ],
+      "series": {
+        "dates": [
+          "2026-11-19"
+        ],
+        "returns": [
+          0.0
+        ]
+      },
+      "last_run": {
+        "as_of": "2026-11-19",
+        "blocked": null,
+        "n_orders": 1,
+        "has_account": true
+      }
+    },
+    {
+      "id": "regola_assess",
+      "name": "Regola sulla valutazione (azioni calme, rischio non alto)",
+      "kind": "assess_rule",
+      "is_benchmark": false,
+      "start": "2026-11-19",
+      "as_of": "2026-11-19",
+      "n_sessions": 1,
+      "return": 0.0,
+      "day_return": null,
+      "cash_share": 1.0,
+      "decision_as_of": "2026-11-19",
+      "weights": [
+        {
+          "symbol": "AAPL",
+          "weight": 0.15,
+          "reason": "Nella norma, rischio normale"
+        }
+      ],
+      "series": {
+        "dates": [
+          "2026-11-19"
+        ],
+        "returns": [
+          0.0
+        ]
+      },
+      "last_run": {
+        "as_of": "2026-11-19",
+        "blocked": null,
+        "n_orders": 1,
+        "has_account": true
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "strategy": "regola_assess",
+      "benchmark": "bench_qqq",
+      "n_sessions": 1,
+      "dates": [
+        "2026-11-19"
+      ],
+      "excess": [
+        0.0
+      ],
+      "verdict": "presto"
+    }
+  ],
+  "orders": [
+    {
+      "as_of": "2026-11-19",
+      "strategy": "regola_assess",
+      "symbol": "AAPL",
+      "side": "buy",
+      "share": 0.15,
+      "close_all": false,
+      "sent": "accettato",
+      "status": null
+    },
+    {
+      "as_of": "2026-11-19",
+      "strategy": "bench_qqq",
+      "symbol": "QQQ",
+      "side": "buy",
+      "share": 0.99,
+      "close_all": false,
+      "sent": "accettato",
+      "status": null
+    }
+  ]
+}

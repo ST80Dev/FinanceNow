@@ -1,0 +1,3 @@
+as_of,strategy,symbol,target_weight,reason,created_utc
+2026-11-19,bench_qqq,QQQ,0.990000,benchmark: tenuto sempre,2026-11-20T14:28:29+00:00
+2026-11-19,regola_assess,AAPL,0.150000,"Nella norma, rischio normale",2026-11-20T14:28:29+00:00

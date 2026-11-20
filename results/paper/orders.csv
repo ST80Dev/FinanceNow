@@ -1,0 +1,3 @@
+as_of,strategy,symbol,side,notional,qty,client_order_id,alpaca_order_id,result,created_utc
+2026-11-19,bench_qqq,QQQ,buy,99000.00,,fn-bench_qqq-2026-11-19-QQQ,807b1a17-bf04-4f0f-9684-119514f1b81c,accettato (pending_new),2026-11-20T14:28:29+00:00
+2026-11-19,regola_assess,AAPL,buy,15000.00,,fn-regola_assess-2026-11-19-AAPL,dda1f9c7-a0f5-4953-b8f6-82bf17b2c97f,accettato (pending_new),2026-11-20T14:28:29+00:00
