@@ -1,14 +1,16 @@
 {
-  "run_started": "2026-11-19T03:44:42+00:00",
-  "run_finished": "2026-11-19T03:45:15+00:00",
+  "run_started": "2026-11-20T03:38:07+00:00",
+  "run_finished": "2026-11-20T03:38:39+00:00",
   "mode": "daily",
-  "requests": 13,
+  "requests": 14,
   "max_requests": 200,
   "disabled_sources": {
     "stooq": "STOOQ_API_KEY assente (senza chiave Stooq restituisce una pagina anti-bot)"
   },
   "summary": {
-    "updated": 13
+    "updated": 11,
+    "refreshed": 1,
+    "up_to_date": 1
   },
   "missing": [],
   "stale": [],
@@ -20,9 +22,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4246,
+      "rows": 4247,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-18"
+      "last_date": "2026-11-19"
     },
     "qqq": {
       "id": "qqq",
@@ -30,9 +32,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4246,
+      "rows": 4247,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-18"
+      "last_date": "2026-11-19"
     },
     "spx": {
       "id": "spx",
@@ -40,9 +42,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4246,
+      "rows": 4247,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-18"
+      "last_date": "2026-11-19"
     },
     "nvda": {
       "id": "nvda",
@@ -50,9 +52,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4246,
+      "rows": 4247,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-18"
+      "last_date": "2026-11-19"
     },
     "aapl": {
       "id": "aapl",
@@ -60,9 +62,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4246,
+      "rows": 4247,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-18"
+      "last_date": "2026-11-19"
     },
     "googl": {
       "id": "googl",
@@ -70,19 +72,21 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4246,
+      "rows": 4247,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-18"
+      "last_date": "2026-11-19"
     },
     "msft": {
       "id": "msft",
-      "warnings": [],
-      "status": "updated",
+      "warnings": [
+        "close sovrapposti diversi (max 1.93e-03): nuovo aggiustamento"
+      ],
+      "status": "refreshed",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4246,
+      "rows": 4247,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-18"
+      "last_date": "2026-11-19"
     },
     "amzn": {
       "id": "amzn",
@@ -90,16 +94,18 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4246,
+      "rows": 4247,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-18"
+      "last_date": "2026-11-19"
     },
     "meta": {
       "id": "meta",
-      "warnings": [],
-      "status": "updated",
+      "warnings": [
+        "scartate 1 barre con prezzi mancanti"
+      ],
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 3647,
       "first_date": "2012-05-18",
       "last_date": "2026-11-18"
@@ -110,9 +116,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4246,
+      "rows": 4247,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-18"
+      "last_date": "2026-11-19"
     },
     "tsla": {
       "id": "tsla",
@@ -120,9 +126,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4124,
+      "rows": 4125,
       "first_date": "2010-06-29",
-      "last_date": "2026-11-18"
+      "last_date": "2026-11-19"
     },
     "mu": {
       "id": "mu",
@@ -130,9 +136,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4246,
+      "rows": 4247,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-18"
+      "last_date": "2026-11-19"
     },
     "amd": {
       "id": "amd",
@@ -140,9 +146,9 @@
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
-      "rows": 4246,
+      "rows": 4247,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-18"
+      "last_date": "2026-11-19"
     }
   }
 }

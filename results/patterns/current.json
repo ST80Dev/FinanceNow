@@ -1,18 +1,11 @@
 {
-  "generated": "2026-11-19T03:47:40+00:00",
+  "generated": "2026-11-20T03:40:48+00:00",
   "events": [
-    {
-      "id": "nvda",
-      "type": "volume_anomalo",
-      "date": "2026-11-12",
-      "is_last_session": false,
-      "history": "storicamente, dopo eventi simili (207 casi su 13 strumenti, 146 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): nessuna differenza netta di volatilità o rischio rispetto a un giorno qualsiasi."
-    },
     {
       "id": "nvda",
       "type": "trimestrale_negativa",
       "date": "2026-11-18",
-      "is_last_session": true,
+      "is_last_session": false,
       "history": "storicamente, dopo eventi simili (285 casi su 10 strumenti, 208 settimane diverse), nelle 21 sedute successive (misurate dall'apertura del giorno dopo): volatilità pari a 1,0 volte quella tipica (giorno qualsiasi: 1,1)."
     }
   ]
