@@ -80,6 +80,10 @@ Lavorare sempre su **log-rendimenti**, mai sui livelli di prezzo.
 - Anomalie: z-score robusto (mediana/MAD sulle 252 sedute precedenti), soglia |z| ≥ 4, su rendimento,
   gap, range, volume e rendimento in eccesso vs benchmark (beta stimato fino al giorno prima).
 - Nei risultati non finiscono mai prezzi grezzi: solo feature derivate, stati, eventi, metriche.
+  Unica eccezione (decisione di Simone del 20/11/2026): `results/paper/fills.csv` contiene i prezzi medi di
+  esecuzione degli ordini sul conto Alpaca *paper* (soldi virtuali). Simone non considera le licenze un problema
+  per questi prezzi; resta vietato committare serie di prezzi/OHLCV e la dashboard continua a non mostrarne.
+  Se in futuro il repo avesse un uso diverso dal personale, rivedere questa eccezione.
 
 ### Scelte del passo 3 (implementate)
 - `daily.yml`: cron `30 22 * * 1-5` (22:30 UTC = sempre dopo le 17:00 di New York) + avvio manuale.
@@ -103,7 +107,7 @@ Lavorare sempre su **log-rendimenti**, mai sui livelli di prezzo.
 - Nella dashboard **nessun prezzo né volume assoluto**: solo grandezze derivate (volatilità, drawdown, beta,
   momentum, regimi, z-score; per le anomalie di volume il rapporto con la mediana). Un test lo verifica.
 - Frontend `docs/` in vanilla JS senza librerie: grafici SVG scritti a mano, routing via hash
-  (`#/`, `#/t/<id>`, `#/modelli`, `#/metodo`), tema chiaro/scuro automatico, layout mobile.
+  (`#/`, `#/t/<id>`, `#/pattern`, `#/paper`, `#/modelli`, `#/guida`, `#/metodo`), tema chiaro/scuro automatico, layout mobile.
 - `backtest` e `live` in pannelli separati con etichetta e colore propri (viola / verde acqua).
 - GitHub Pages: Settings → Pages → "Deploy from a branch" → `main` / `docs`. URL: https://st80dev.github.io/FinanceNow/
 - **Sintesi automatica** (`pipeline/digest.py`, richiesta del 26/10/2026): ogni sera regole esplicite selezionano
@@ -150,10 +154,47 @@ Lavorare sempre su **log-rendimenti**, mai sui livelli di prezzo.
 - Pattern: IC al 90% con errore standard robusto ai cluster per settimana, centrato sulla stessa media pubblicata.
 - Registro configurazioni condiviso tra moduli: `results/backtest/trials.jsonl` (campo `module` per la direzione).
 
+### Scelte del passo 6a: paper trading (richiesta del 20/11/2026, in lavorazione sul branch `paper-step1`)
+Obiettivo: provare virtualmente a operare con le valutazioni di FinanceNow, confrontando regole diverse con un benchmark.
+Rimane uno strumento di studio: il modello di direzione non ha dimostrato alcun vantaggio, quindi **non c'è motivo di
+aspettarsi un rendimento migliore del benchmark**; se la regola non batte QQQ compra-e-tieni, va detto così.
+- **Broker**: Alpaca, solo conti **paper** (`TradingClient(..., paper=True)` fisso nel codice, nessuna opzione per il reale).
+  Un conto paper per strategia (le chiavi sono separate); GitHub Secrets `ALPACA_BENCH_KEY/SECRET` e `ALPACA_RULE_KEY/SECRET`
+  (mai nel codice, nei log o in chat). Alpaca copre solo titoli/ETF USA: coerente con l'universo.
+- **Modulo** `pipeline/paper.py` + `config/paper.yml` + `.github/workflows/paper.yml` (parte dopo un `daily` riuscito sul branch
+  di default, oppure a mano; di default a mano è una prova senza ordini).
+- **Strategie** (solo long, nessuna leva, nessun LLM in questo passo): `bench_qqq` (QQQ tenuto al 99%, il benchmark) e
+  `regola_assess` (azioni con situazione norma/tranquillo/ripresa e rischio non alto, pari peso con tetto 15%, il resto
+  liquidità). Dati di ingresso: solo `docs/data/assessment.json`; se più vecchio di 4 giorni non si opera.
+- **Esecuzione**: ordini a mercato `day` per **importo** (azioni frazionarie) inviati la sera dopo la chiusura; Alpaca li
+  accoda per l'apertura successiva (stessa convenzione dei pattern). Posizioni fuori dall'obiettivo chiuse per quantità,
+  scostamenti sotto il 2% del conto ignorati. `client_order_id = fn-<strategia>-<as_of>-<simbolo>`: prima di inviare si leggono
+  gli id già usati negli ultimi 10 giorni e non si reinviano (la documentazione Alpaca non specifica l'errore sui duplicati).
+- **Blocchi prima dell'invio** (orologio e calendario di Alpaca, festività incluse): non si invia se il mercato è aperto
+  (un ordine a mercato partirebbe subito), se `as_of` non è l'ultima seduta chiusa (daily in ritardo), o se la strategia ha
+  ancora ordini pendenti (es. sera di un festivo: quelli del giorno prima aspettano l'apertura). Bloccato ⇒ si registra solo
+  il valore del conto. Ordini rifiutati ⇒ run rosso. Chiavi mancanti con invio richiesto ⇒ avviso, strategia saltata.
+- **Potere d'acquisto**: le vendite pendenti non lo liberano finché non sono eseguite (doc. Alpaca); nei ribilanciamenti gli
+  acquisti accodati possono superare per una notte la liquidità e restano coperti dal margine standard del conto paper.
+  Ordini frazionari fuori orario: un solo ordine per simbolo per sera (Alpaca rifiuta alcune sequenze di vendite).
+- **Serie `paper`** (append-only, `results/paper/`, separata da `backtest` e `live`): `decisions.csv`, `orders.csv`,
+  `fills.csv` (prezzi di esecuzione letti nei run successivi), `equity.csv` (valore del conto per strategia e data).
+- **Pagina `#/paper`** (scheda "Paper"): `pipeline/paper.py` scrive `docs/data/paper.json` a ogni run con invio e il workflow lo
+  committa. Solo percentuali: andamento di ogni conto dal suo primo valore, regola meno benchmark in punti (giudizio solo dopo
+  63 sedute in comune, prima "troppo presto"), pesi obiettivo, ordini recenti in % del conto con esito. Nessun importo, nessun
+  prezzo di esecuzione (restano solo in `fills.csv`). Terza serie con etichetta e colore propri (PAPER, arancio).
+- **Da fare nei passi successivi** (ognuno con conferma): strategia con Claude come decisore
+  (riceve solo grandezze derivate, restituisce JSON, i limiti di rischio li applica il codice); lato short solo dopo aver
+  misurato il long (titoli del Nasdaq: frequenza storica di rialzo 58% a 5 sedute e 64% a 21, andare contro è difficile).
+- **Verifiche**: firme e modelli controllati su alpaca-py 0.45 (un test usa i modelli veri con un client finto); regole
+  degli ordini fuori orario dalla documentazione Alpaca (ott. 2026). Non ancora visto: un run vero con le chiavi.
+  Primo run: avvio manuale senza invio (verifica chiavi, orologio, ordini), poi invio.
+
 ## Struttura prevista
 ```
 .github/workflows/daily.yml
 .github/workflows/backfill.yml
+.github/workflows/paper.yml
 pipeline/
   ingest.py        # download OHLCV (yfinance, Stooq con chiave), incrementale, riprendibile
   features.py
@@ -172,8 +213,10 @@ pipeline/
   earnings.py      # date delle trimestrali, giorno di reazione, mossa tipica
   direction.py     # direzione sperimentale: walk-forward vs baseline, previsioni di oggi, serie live
   assess.py        # valutazione automatica: situazione, rischio, direzione, prossimi eventi
+  paper.py         # paper trading su Alpaca (conti paper): pesi obiettivo, ordini, log append-only
 config/universe.yml
-results/           # output elaborati committati (analysis/, backtest/, live/, status/)
+config/paper.yml     # strategie di paper trading e prefissi dei secret
+results/           # output elaborati committati (analysis/, backtest/, live/, paper/, status/)
 docs/              # GitHub Pages: index.html, app.js, style.css, data/
 scripts/           # strumenti diagnostici (es. stooq_probe.py)
 tests/             # test offline (pytest, nessuna chiamata di rete)

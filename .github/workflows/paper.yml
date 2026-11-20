@@ -1,0 +1,93 @@
+# Paper trading su Alpaca (conti PAPER, soldi virtuali): applica le valutazioni appena prodotte da daily.yml.
+# Gli ordini sono a mercato "day" per importo e Alpaca li accoda per l'apertura della seduta successiva.
+# Non usa la cache dei dati grezzi: legge solo docs/data/assessment.json. Chiavi in GitHub Secrets.
+name: paper
+
+on:
+  workflow_run:
+    workflows: [daily]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      send:
+        description: "Invia davvero gli ordini ai conti paper (se falso: solo prova, nessun ordine)"
+        type: boolean
+        default: false
+      only:
+        description: "Id di una sola strategia (vuoto = tutte)"
+        type: string
+        default: ""
+
+concurrency:
+  group: financenow-paper
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  paper:
+    # Dopo un daily riuscito sul branch di default, oppure a mano.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Punta del branch al momento dell'esecuzione: deve vedere i risultati committati da daily.
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Paper trading
+        id: paper
+        shell: bash
+        env:
+          ALPACA_BENCH_KEY: ${{ secrets.ALPACA_BENCH_KEY }}
+          ALPACA_BENCH_SECRET: ${{ secrets.ALPACA_BENCH_SECRET }}
+          ALPACA_RULE_KEY: ${{ secrets.ALPACA_RULE_KEY }}
+          ALPACA_RULE_SECRET: ${{ secrets.ALPACA_RULE_SECRET }}
+          # workflow_run = invio vero; a mano = quello scelto nel form (predefinito: solo prova)
+          SEND: ${{ github.event_name == 'workflow_run' || inputs.send }}
+          ONLY: ${{ inputs.only }}
+        run: |
+          args=()
+          if [ "$SEND" = "true" ]; then args+=(--send); fi
+          if [ -n "$ONLY" ]; then args+=(--only "$ONLY"); fi
+          python -m pipeline.paper "${args[@]}" 2>&1 | tee paper_out.txt
+
+      - name: Riepilogo
+        if: always()
+        run: |
+          if [ -f paper_out.txt ]; then
+            { echo '### Paper trading'; echo '```'; cat paper_out.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Commit dei log
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for p in results/paper docs/data/paper.json; do
+            if [ -e "$p" ]; then git add "$p"; fi
+          done
+          if git diff --cached --quiet; then
+            echo "Nessun log nuovo da committare"
+            exit 0
+          fi
+          git commit -m "Paper trading del $(date -u +%F)"
+          for i in 1 2 3; do
+            git pull --rebase --quiet origin "${{ github.event.repository.default_branch }}" \
+              && git push origin "HEAD:${{ github.event.repository.default_branch }}" && exit 0
+            sleep $((i * 10))
+          done
+          echo "Push dei log non riuscito" >&2
+          exit 1

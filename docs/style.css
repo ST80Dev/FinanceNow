@@ -17,6 +17,7 @@
   --grid: #ececea;
   --backtest: #6a4fb3;
   --live: #0f8b8d;
+  --paper: #b4691f;
   --radius: 10px;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -42,6 +43,7 @@
     --grid: #26262b;
     --backtest: #a58cf0;
     --live: #3cc3c5;
+    --paper: #e8a35a;
   }
 }
 
@@ -158,6 +160,10 @@ tr.clickable:hover td { background: var(--bg); }
 .series-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 4px; color: #fff; margin-right: 6px; vertical-align: 2px; }
 .series-tag.backtest { background: var(--backtest); }
 .series-tag.live { background: var(--live); }
+.series-panel.paper { border-left-color: var(--paper); }
+.series-tag.paper { background: var(--paper); }
+.kv-row { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 8px; }
+.pill { display: inline-block; border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; margin: 2px 2px 2px 0; font-size: 0.85rem; }
 .toggle { display: inline-flex; gap: 4px; margin: 6px 0 10px; }
 .toggle button { font: inherit; font-size: 0.85rem; padding: 3px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--muted); cursor: pointer; }
 .toggle button.active { color: var(--text); border-color: var(--muted); }
