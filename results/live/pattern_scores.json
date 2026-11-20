@@ -1,8 +1,8 @@
 {
   "series": "live",
-  "generated": "2026-11-20T03:40:48+00:00",
+  "generated": "2026-11-20T15:28:26+00:00",
   "horizon": 21,
-  "n_logged": 48,
+  "n_logged": 49,
   "n_evaluated": 0,
   "by_type": {}
 }

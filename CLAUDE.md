@@ -170,7 +170,7 @@ aspettarsi un rendimento migliore del benchmark**; se la regola non batte QQQ co
   `ALPACA_LOSH_KEY/SECRET`): Simone dà la linea di massima, il codice la applica ogni sera. Un file YAML per indicazione in
   `config/indications/<data>.yml` (storico versionato, le passate non si modificano): `from` (vale dalla valutazione di quella
   data), `author`, `note`, `views` (fino a 6 righe, somma delle quote ≤ 100%, mai due righe sullo stesso strumento; nessuna
-  riga = tutto liquidità). Ogni riga: `target` (indice `ndx`/`spx`, azione dell'universo o di `extra_stocks`), `direction`
+  riga = tutto liquidità). Ogni riga: `target` (indice `ndx`/`spx`, azione dell'universo o di `extra_stocks`, oggi vuoto), `direction`
   (rialzo/ribasso), `max_exposure` (≤ 50%), `when` (`segnale` di default, oppure `sempre` = si tiene la quota finché non cambia
   l'indicazione; obbligatorio per le azioni senza valutazione), `signal` (di default il target), `enter_situations` +
   `enter_risk` (entrambe vere per entrare; rischio vuoto = qualsiasi), `exit_situations` (esce lì; nelle altre, se è dentro,
@@ -251,6 +251,10 @@ requirements.txt
 Mercato USA, centrato sul Nasdaq. Riferimenti: Nasdaq 100 (benchmark di default), QQQ, S&P 500.
 Azioni: le 10 più capitalizzate del Nasdaq al 26/10/2026 (SpaceX esclusa per storico insufficiente,
 sostituita da AMD): NVDA, AAPL, GOOGL, MSFT, AMZN, META, AVGO, TSLA, MU, AMD. Dati dal 2010-01-01.
+Il 20/11/2026 (richiesta di Simone) aggiunte altre 26 azioni principali del Nasdaq, con valutazione serale completa:
+COST, NFLX, PLTR, CSCO, TMUS, ASML, PEP, LIN, ADBE, QCOM, INTU, TXN, AMAT, ISRG, BKNG, AMGN, LRCX, KLAC, PANW, ADI,
+CRWD, MELI, HON, GILD, CMCSA, SBUX (36 azioni in tutto). Effetti: modello di direzione 0.2.0 (panel su 36 titoli, nuova
+configurazione nel registro); la regola `regola_assess` del paper resta sui 10 titoli di partenza (`only` in `paper.yml`).
 Lista **congelata** (non ricalcolata in automatico). Bias di selezione: sono i vincitori di oggi ⇒
 usarli per analisi descrittive per titolo, non per conclusioni su rendimenti attesi.
 

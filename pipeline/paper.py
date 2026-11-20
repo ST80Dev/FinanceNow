@@ -175,11 +175,14 @@ def target_assess_rule(strategy: Strategy, assessment: dict, symbols_by_id: dict
     allowed = set(p.get("allowed_situations", ["norma", "tranquillo", "ripresa"]))
     blocked_risk = set(p.get("block_risk", ["alto"]))
     max_weight = float(p.get("max_weight", 0.15))
+    only = set(p.get("only") or ())        # vuoto = tutte le azioni dell'universo
     eligible: dict[str, str] = {}
     n_stocks = 0
     for inst in assessment["instruments"]:
         symbol = symbols_by_id.get(inst["id"])
         if symbol is None:              # indici, ETF o strumenti non negoziabili: fuori dalla regola
+            continue
+        if only and inst["id"] not in only:
             continue
         n_stocks += 1
         if not is_fresh(inst, assessment["as_of"]):

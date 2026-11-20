@@ -48,7 +48,7 @@ from pipeline.models import direction as dm
 
 log = logging.getLogger("financenow.direction")
 
-MODEL_VERSION = "0.1.0"
+MODEL_VERSION = "0.2.0"     # 0.2.0 (20/11/2026): panel esteso a 36 azioni, stessa specifica
 HORIZONS = (5, 21)
 MIN_TRAIN = 1260          # ~5 anni di calendario prima della prima previsione
 REFIT_EVERY = 63
@@ -62,7 +62,7 @@ LOG_KEY = ["origin", "id", "h"]
 LOG_COLUMNS = LOG_KEY + ["p_up", "p_base", "q10", "q50", "q90", "model_version", "created_utc"]
 
 
-def config() -> dict:
+def config(instruments: list[str] | None = None) -> dict:
     return {
         "module": "direzione",
         "target": "segno del log-rendimento dall'apertura di t+1 alla chiusura di t+h",
@@ -77,6 +77,7 @@ def config() -> dict:
         "quantiles": list(dm.QUANTILES),
         "holdout_start": backtest.HOLDOUT_START.isoformat(),
         "model_version": MODEL_VERSION,
+        "instruments": sorted(instruments or []),     # il panel fa parte della configurazione
     }
 
 
@@ -333,7 +334,7 @@ def main(argv: list[str] | None = None) -> int:
         log.warning("nessun dato: direzione non calcolata")
         return 1
     created = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
-    cfg = config()
+    cfg = config([i.id for i in instruments if i.active])   # dall'universo: un ticker senza dati una sera non cambia la configurazione
     bt: dict = {}
     today: dict = {}
     batches = []

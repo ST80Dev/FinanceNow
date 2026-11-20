@@ -1,16 +1,16 @@
 {
-  "run_started": "2026-11-20T03:38:07+00:00",
-  "run_finished": "2026-11-20T03:38:39+00:00",
+  "run_started": "2026-11-20T15:18:29+00:00",
+  "run_finished": "2026-11-20T15:20:19+00:00",
   "mode": "daily",
-  "requests": 14,
+  "requests": 27,
   "max_requests": 200,
   "disabled_sources": {
     "stooq": "STOOQ_API_KEY assente (senza chiave Stooq restituisce una pagina anti-bot)"
   },
   "summary": {
-    "updated": 11,
-    "refreshed": 1,
-    "up_to_date": 1
+    "up_to_date": 12,
+    "updated": 1,
+    "backfilled": 26
   },
   "missing": [],
   "stale": [],
@@ -19,9 +19,9 @@
     "ndx": {
       "id": "ndx",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4247,
       "first_date": "2010-01-04",
       "last_date": "2026-11-19"
@@ -29,9 +29,9 @@
     "qqq": {
       "id": "qqq",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4247,
       "first_date": "2010-01-04",
       "last_date": "2026-11-19"
@@ -39,9 +39,9 @@
     "spx": {
       "id": "spx",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4247,
       "first_date": "2010-01-04",
       "last_date": "2026-11-19"
@@ -49,9 +49,9 @@
     "nvda": {
       "id": "nvda",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4247,
       "first_date": "2010-01-04",
       "last_date": "2026-11-19"
@@ -59,9 +59,9 @@
     "aapl": {
       "id": "aapl",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4247,
       "first_date": "2010-01-04",
       "last_date": "2026-11-19"
@@ -69,21 +69,19 @@
     "googl": {
       "id": "googl",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4247,
       "first_date": "2010-01-04",
       "last_date": "2026-11-19"
     },
     "msft": {
       "id": "msft",
-      "warnings": [
-        "close sovrapposti diversi (max 1.93e-03): nuovo aggiustamento"
-      ],
-      "status": "refreshed",
+      "warnings": [],
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4247,
       "first_date": "2010-01-04",
       "last_date": "2026-11-19"
@@ -91,31 +89,29 @@
     "amzn": {
       "id": "amzn",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4247,
       "first_date": "2010-01-04",
       "last_date": "2026-11-19"
     },
     "meta": {
       "id": "meta",
-      "warnings": [
-        "scartate 1 barre con prezzi mancanti"
-      ],
-      "status": "up_to_date",
-      "source": "yahoo",
-      "new_rows": 0,
-      "rows": 3647,
-      "first_date": "2012-05-18",
-      "last_date": "2026-11-18"
-    },
-    "avgo": {
-      "id": "avgo",
       "warnings": [],
       "status": "updated",
       "source": "yahoo",
       "new_rows": 1,
+      "rows": 3648,
+      "first_date": "2012-05-18",
+      "last_date": "2026-11-19"
+    },
+    "avgo": {
+      "id": "avgo",
+      "warnings": [],
+      "status": "up_to_date",
+      "source": "yahoo",
+      "new_rows": 0,
       "rows": 4247,
       "first_date": "2010-01-04",
       "last_date": "2026-11-19"
@@ -123,9 +119,9 @@
     "tsla": {
       "id": "tsla",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4125,
       "first_date": "2010-06-29",
       "last_date": "2026-11-19"
@@ -133,9 +129,9 @@
     "mu": {
       "id": "mu",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4247,
       "first_date": "2010-01-04",
       "last_date": "2026-11-19"
@@ -143,9 +139,279 @@
     "amd": {
       "id": "amd",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "cost": {
+      "id": "cost",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "nflx": {
+      "id": "nflx",
+      "warnings": [
+        "4 salti > 25% in log-rendimento (da verificare): 2011-10-25, 2012-07-25, 2013-01-24, 2022-04-20"
+      ],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "pltr": {
+      "id": "pltr",
+      "warnings": [
+        "2 salti > 25% in log-rendimento (da verificare): 2024-02-06, 2026-08-04"
+      ],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 1543,
+      "rows": 1543,
+      "first_date": "2020-09-30",
+      "last_date": "2026-11-19"
+    },
+    "csco": {
+      "id": "csco",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "tmus": {
+      "id": "tmus",
+      "warnings": [
+        "2 salti > 25% in log-rendimento (da verificare): 2011-08-02, 2012-07-26"
+      ],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "asml": {
+      "id": "asml",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "pep": {
+      "id": "pep",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "lin": {
+      "id": "lin",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "adbe": {
+      "id": "adbe",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "qcom": {
+      "id": "qcom",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "intu": {
+      "id": "intu",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "txn": {
+      "id": "txn",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "amat": {
+      "id": "amat",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "isrg": {
+      "id": "isrg",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "bkng": {
+      "id": "bkng",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "amgn": {
+      "id": "amgn",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "lrcx": {
+      "id": "lrcx",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "klac": {
+      "id": "klac",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "panw": {
+      "id": "panw",
+      "warnings": [
+        "2 salti > 25% in log-rendimento (da verificare): 2017-03-01, 2024-02-21"
+      ],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 3605,
+      "rows": 3605,
+      "first_date": "2012-07-20",
+      "last_date": "2026-11-19"
+    },
+    "adi": {
+      "id": "adi",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "crwd": {
+      "id": "crwd",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 1872,
+      "rows": 1872,
+      "first_date": "2019-06-12",
+      "last_date": "2026-11-19"
+    },
+    "meli": {
+      "id": "meli",
+      "warnings": [
+        "1 salti > 25% in log-rendimento (da verificare): 2011-11-03"
+      ],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "hon": {
+      "id": "hon",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "gild": {
+      "id": "gild",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "cmcsa": {
+      "id": "cmcsa",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
+      "rows": 4247,
+      "first_date": "2010-01-04",
+      "last_date": "2026-11-19"
+    },
+    "sbux": {
+      "id": "sbux",
+      "warnings": [],
+      "status": "backfilled",
+      "source": "yahoo",
+      "new_rows": 4247,
       "rows": 4247,
       "first_date": "2010-01-04",
       "last_date": "2026-11-19"

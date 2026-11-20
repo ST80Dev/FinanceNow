@@ -22,36 +22,9 @@ index_instruments:
   ndx: {rialzo: QQQ, ribasso: PSQ}
   spx: {rialzo: SPY, ribasso: SH}
 
-# Altre azioni del Nasdaq 100 indicabili dal pannello oltre alle 10 dell'universo (selezione dei titoli più
-# pesanti al 20/11/2026, da rivedere a mano). Non hanno la valutazione notturna: nelle indicazioni si usano
-# solo con "tieni X% finché non cambio" (when: sempre). Al ribasso = vendita allo scoperto a quote intere.
-extra_stocks:
-  - {symbol: COST, name: Costco}
-  - {symbol: NFLX, name: Netflix}
-  - {symbol: PLTR, name: Palantir}
-  - {symbol: CSCO, name: Cisco}
-  - {symbol: TMUS, name: T-Mobile US}
-  - {symbol: ASML, name: ASML}
-  - {symbol: PEP, name: PepsiCo}
-  - {symbol: LIN, name: Linde}
-  - {symbol: ADBE, name: Adobe}
-  - {symbol: QCOM, name: Qualcomm}
-  - {symbol: INTU, name: Intuit}
-  - {symbol: TXN, name: Texas Instruments}
-  - {symbol: AMAT, name: Applied Materials}
-  - {symbol: ISRG, name: Intuitive Surgical}
-  - {symbol: BKNG, name: Booking Holdings}
-  - {symbol: AMGN, name: Amgen}
-  - {symbol: LRCX, name: Lam Research}
-  - {symbol: KLAC, name: KLA}
-  - {symbol: PANW, name: Palo Alto Networks}
-  - {symbol: ADI, name: Analog Devices}
-  - {symbol: CRWD, name: CrowdStrike}
-  - {symbol: MELI, name: MercadoLibre}
-  - {symbol: HON, name: Honeywell}
-  - {symbol: GILD, name: Gilead Sciences}
-  - {symbol: CMCSA, name: Comcast}
-  - {symbol: SBUX, name: Starbucks}
+# Altre azioni indicabili dal pannello senza valutazione notturna ({symbol, name}; nelle indicazioni solo con
+# when: sempre). Vuoto: dal 20/11/2026 le principali del Nasdaq sono nell'universo e hanno la valutazione.
+extra_stocks: []
 
 # Scostamento minimo (in % del valore del conto) per muovere una posizione: meno rotazione inutile.
 min_delta: 0.02
@@ -73,6 +46,9 @@ strategies:
     allowed_situations: [norma, tranquillo, ripresa]
     block_risk: [alto]
     max_weight: 0.15
+    # Solo i 10 titoli di partenza (universo del 26/10/2026): il confronto con QQQ resta sullo stesso insieme
+    # anche dopo l'aggiunta di altre azioni all'universo (20/11/2026).
+    only: [nvda, aapl, googl, msft, amzn, meta, avgo, tsla, mu, amd]
     secret_prefix: ALPACA_RULE
 
   # Indicazioni settimanali di Simone (config/indications/<data>.yml, scritte anche dal modulo della

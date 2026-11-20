@@ -169,6 +169,20 @@ def test_regola_pari_peso_senza_superare_il_tetto():
     assert sum(t10.weights.values()) <= 1.0 + 1e-12
 
 
+def test_regola_limitata_ai_titoli_di_partenza():
+    only = Strategy("regola_assess", "regola", "assess_rule", "ALPACA_RULE", {**RULE.params, "only": ["aapl", "msft"]})
+    a = assessment(inst("aapl"), inst("msft"), inst("nvda"))
+    t = paper.target_assess_rule(only, a, SYMBOLS)
+    assert set(t.weights) == {"AAPL", "MSFT"} and "su 2" in t.note
+
+
+def test_config_regola_resta_sui_10_titoli_di_partenza():
+    cfg = paper.load_config()
+    rule = next(s for s in cfg.strategies if s.id == "regola_assess")
+    universe = {i.id for i in paper.load_universe(paper.DEFAULT_UNIVERSE)}
+    assert len(rule.params["only"]) == 10 and set(rule.params["only"]) <= universe
+
+
 def test_regola_ignora_indici_ed_etf_e_tutto_cash_se_nessuno_passa():
     a = assessment(inst("ndx", asset_class="index"), inst("qqq", asset_class="etf"), inst("aapl", "tempesta"))
     t = paper.target_assess_rule(RULE, a, SYMBOLS)
