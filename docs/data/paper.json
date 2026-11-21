@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-20T14:28:30+00:00",
+  "generated": "2026-11-21T03:30:27+00:00",
   "min_sessions_verdict": 63,
   "strategies": [
     {
@@ -8,12 +8,12 @@
       "kind": "buy_hold",
       "is_benchmark": true,
       "start": "2026-11-19",
-      "as_of": "2026-11-19",
-      "n_sessions": 1,
-      "return": 0.0,
-      "day_return": null,
-      "cash_share": 1.0,
-      "decision_as_of": "2026-11-19",
+      "as_of": "2026-11-20",
+      "n_sessions": 2,
+      "return": -0.042801,
+      "day_return": -0.042801,
+      "cash_share": 0.0104,
+      "decision_as_of": "2026-11-20",
       "weights": [
         {
           "symbol": "QQQ",
@@ -23,16 +23,18 @@
       ],
       "series": {
         "dates": [
-          "2026-11-19"
+          "2026-11-19",
+          "2026-11-20"
         ],
         "returns": [
-          0.0
+          0.0,
+          -0.042801
         ]
       },
       "last_run": {
-        "as_of": "2026-11-19",
+        "as_of": "2026-11-20",
         "blocked": null,
-        "n_orders": 1,
+        "n_orders": 0,
         "has_account": true
       }
     },
@@ -42,12 +44,12 @@
       "kind": "assess_rule",
       "is_benchmark": false,
       "start": "2026-11-19",
-      "as_of": "2026-11-19",
-      "n_sessions": 1,
-      "return": 0.0,
-      "day_return": null,
-      "cash_share": 1.0,
-      "decision_as_of": "2026-11-19",
+      "as_of": "2026-11-20",
+      "n_sessions": 2,
+      "return": -0.004279,
+      "day_return": -0.004279,
+      "cash_share": 0.8537,
+      "decision_as_of": "2026-11-20",
       "weights": [
         {
           "symbol": "AAPL",
@@ -57,16 +59,52 @@
       ],
       "series": {
         "dates": [
-          "2026-11-19"
+          "2026-11-19",
+          "2026-11-20"
+        ],
+        "returns": [
+          0.0,
+          -0.004279
+        ]
+      },
+      "last_run": {
+        "as_of": "2026-11-20",
+        "blocked": null,
+        "n_orders": 0,
+        "has_account": true
+      }
+    },
+    {
+      "id": "indicazioni",
+      "name": "Indicazioni settimanali (le scelte di Simone)",
+      "kind": "indication",
+      "is_benchmark": false,
+      "start": "2026-11-20",
+      "as_of": "2026-11-20",
+      "n_sessions": 1,
+      "return": 0.0,
+      "day_return": null,
+      "cash_share": 0.7931,
+      "decision_as_of": "2026-11-20",
+      "weights": [
+        {
+          "symbol": "PSQ",
+          "weight": 0.2,
+          "reason": "ndx al ribasso: Nasdaq 100 in tempesta, rischio alto: segnale ancora attivo"
+        }
+      ],
+      "series": {
+        "dates": [
+          "2026-11-20"
         ],
         "returns": [
           0.0
         ]
       },
       "last_run": {
-        "as_of": "2026-11-19",
+        "as_of": "2026-11-20",
         "blocked": null,
-        "n_orders": 1,
+        "n_orders": 0,
         "has_account": true
       }
     }
@@ -75,12 +113,14 @@
     {
       "strategy": "regola_assess",
       "benchmark": "bench_qqq",
-      "n_sessions": 1,
+      "n_sessions": 2,
       "dates": [
-        "2026-11-19"
+        "2026-11-19",
+        "2026-11-20"
       ],
       "excess": [
-        0.0
+        0.0,
+        0.038522
       ],
       "verdict": "presto"
     }
@@ -94,7 +134,7 @@
       "share": 0.15,
       "close_all": false,
       "sent": "accettato",
-      "status": null
+      "status": "filled"
     },
     {
       "as_of": "2026-11-19",
@@ -104,7 +144,468 @@
       "share": 0.99,
       "close_all": false,
       "sent": "accettato",
-      "status": null
+      "status": "filled"
     }
-  ]
+  ],
+  "indications": {
+    "current": {
+      "from": "2026-11-20",
+      "author": "Simone",
+      "note": "Copertura sul Nasdaq solo nei periodi di tempesta con rischio alto. Fuori, liquidità.",
+      "file": "2026-11-20.yml",
+      "views": [
+        {
+          "target": "ndx",
+          "direction": "ribasso",
+          "instrument": "PSQ",
+          "max_exposure": 0.2,
+          "signal": "ndx",
+          "when": "segnale",
+          "short": false,
+          "enter_situations": [
+            "tempesta"
+          ],
+          "enter_risk": [
+            "alto"
+          ],
+          "exit_situations": [
+            "norma",
+            "tranquillo"
+          ]
+        }
+      ]
+    },
+    "history": [
+      {
+        "from": "2026-11-20",
+        "author": "Simone",
+        "note": "Copertura sul Nasdaq solo nei periodi di tempesta con rischio alto. Fuori, liquidità.",
+        "file": "2026-11-20.yml",
+        "views": [
+          {
+            "target": "ndx",
+            "direction": "ribasso",
+            "instrument": "PSQ",
+            "max_exposure": 0.2,
+            "signal": "ndx",
+            "when": "segnale",
+            "short": false,
+            "enter_situations": [
+              "tempesta"
+            ],
+            "enter_risk": [
+              "alto"
+            ],
+            "exit_situations": [
+              "norma",
+              "tranquillo"
+            ]
+          }
+        ]
+      }
+    ],
+    "error": null,
+    "github_repo": "ST80Dev/FinanceNow",
+    "path": "config/indications",
+    "options": {
+      "targets": [
+        {
+          "id": "ndx",
+          "name": "Nasdaq 100",
+          "kind": "index",
+          "up": "QQQ",
+          "down": "PSQ",
+          "down_note": "",
+          "short": false,
+          "has_signal": true
+        },
+        {
+          "id": "spx",
+          "name": "S&P 500",
+          "kind": "index",
+          "up": "SPY",
+          "down": "SH",
+          "down_note": "",
+          "short": false,
+          "has_signal": true
+        },
+        {
+          "id": "asml",
+          "name": "ASML",
+          "kind": "stock",
+          "up": "ASML",
+          "down": "ASML",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "adbe",
+          "name": "Adobe",
+          "kind": "stock",
+          "up": "ADBE",
+          "down": "ADBE",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "amd",
+          "name": "Advanced Micro Devices",
+          "kind": "stock",
+          "up": "AMD",
+          "down": "AMD",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "googl",
+          "name": "Alphabet (classe A)",
+          "kind": "stock",
+          "up": "GOOGL",
+          "down": "GOOGL",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "amzn",
+          "name": "Amazon",
+          "kind": "stock",
+          "up": "AMZN",
+          "down": "AMZN",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "amgn",
+          "name": "Amgen",
+          "kind": "stock",
+          "up": "AMGN",
+          "down": "AMGN",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "adi",
+          "name": "Analog Devices",
+          "kind": "stock",
+          "up": "ADI",
+          "down": "ADI",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "aapl",
+          "name": "Apple",
+          "kind": "stock",
+          "up": "AAPL",
+          "down": "AAPL",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "amat",
+          "name": "Applied Materials",
+          "kind": "stock",
+          "up": "AMAT",
+          "down": "AMAT",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "bkng",
+          "name": "Booking Holdings",
+          "kind": "stock",
+          "up": "BKNG",
+          "down": "BKNG",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "avgo",
+          "name": "Broadcom",
+          "kind": "stock",
+          "up": "AVGO",
+          "down": "AVGO",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "csco",
+          "name": "Cisco",
+          "kind": "stock",
+          "up": "CSCO",
+          "down": "CSCO",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "cmcsa",
+          "name": "Comcast",
+          "kind": "stock",
+          "up": "CMCSA",
+          "down": "CMCSA",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "cost",
+          "name": "Costco",
+          "kind": "stock",
+          "up": "COST",
+          "down": "COST",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "crwd",
+          "name": "CrowdStrike",
+          "kind": "stock",
+          "up": "CRWD",
+          "down": "CRWD",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "gild",
+          "name": "Gilead Sciences",
+          "kind": "stock",
+          "up": "GILD",
+          "down": "GILD",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "hon",
+          "name": "Honeywell",
+          "kind": "stock",
+          "up": "HON",
+          "down": "HON",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "intu",
+          "name": "Intuit",
+          "kind": "stock",
+          "up": "INTU",
+          "down": "INTU",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "isrg",
+          "name": "Intuitive Surgical",
+          "kind": "stock",
+          "up": "ISRG",
+          "down": "ISRG",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "klac",
+          "name": "KLA",
+          "kind": "stock",
+          "up": "KLAC",
+          "down": "KLAC",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "lrcx",
+          "name": "Lam Research",
+          "kind": "stock",
+          "up": "LRCX",
+          "down": "LRCX",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "lin",
+          "name": "Linde",
+          "kind": "stock",
+          "up": "LIN",
+          "down": "LIN",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "meli",
+          "name": "MercadoLibre",
+          "kind": "stock",
+          "up": "MELI",
+          "down": "MELI",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "meta",
+          "name": "Meta Platforms",
+          "kind": "stock",
+          "up": "META",
+          "down": "META",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "mu",
+          "name": "Micron Technology",
+          "kind": "stock",
+          "up": "MU",
+          "down": "MU",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "msft",
+          "name": "Microsoft",
+          "kind": "stock",
+          "up": "MSFT",
+          "down": "MSFT",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "nvda",
+          "name": "NVIDIA",
+          "kind": "stock",
+          "up": "NVDA",
+          "down": "NVDA",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "nflx",
+          "name": "Netflix",
+          "kind": "stock",
+          "up": "NFLX",
+          "down": "NFLX",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "pltr",
+          "name": "Palantir",
+          "kind": "stock",
+          "up": "PLTR",
+          "down": "PLTR",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "panw",
+          "name": "Palo Alto Networks",
+          "kind": "stock",
+          "up": "PANW",
+          "down": "PANW",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "pep",
+          "name": "PepsiCo",
+          "kind": "stock",
+          "up": "PEP",
+          "down": "PEP",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "qcom",
+          "name": "Qualcomm",
+          "kind": "stock",
+          "up": "QCOM",
+          "down": "QCOM",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "sbux",
+          "name": "Starbucks",
+          "kind": "stock",
+          "up": "SBUX",
+          "down": "SBUX",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "tmus",
+          "name": "T-Mobile US",
+          "kind": "stock",
+          "up": "TMUS",
+          "down": "TMUS",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "tsla",
+          "name": "Tesla",
+          "kind": "stock",
+          "up": "TSLA",
+          "down": "TSLA",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        },
+        {
+          "id": "txn",
+          "name": "Texas Instruments",
+          "kind": "stock",
+          "up": "TXN",
+          "down": "TXN",
+          "down_note": "",
+          "short": true,
+          "has_signal": true
+        }
+      ],
+      "situations": [
+        "tempesta",
+        "pressione",
+        "ripresa",
+        "norma",
+        "tranquillo"
+      ],
+      "risks": [
+        "alto",
+        "normale",
+        "basso"
+      ],
+      "max_view_exposure": 0.5,
+      "max_short_exposure": 0.1,
+      "short_stop_loss": 0.15,
+      "max_views": 6
+    }
+  }
 }

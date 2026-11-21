@@ -1,0 +1,3 @@
+order_id,client_order_id,as_of,strategy,symbol,side,status,filled_qty,filled_avg_price,filled_at
+807b1a17-bf04-4f0f-9684-119514f1b81c,fn-bench_qqq-2026-11-19-QQQ,2026-11-19,bench_qqq,QQQ,buy,filled,155.674042713,635.944106,2026-11-20T14:34:40.837039+00:00
+dda1f9c7-a0f5-4953-b8f6-82bf17b2c97f,fn-regola_assess-2026-11-19-AAPL,2026-11-19,regola_assess,AAPL,buy,filled,42.538681867,352.62,2026-11-20T14:30:01.727574+00:00
