@@ -1,15 +1,14 @@
 {
-  "run_started": "2026-11-20T15:18:29+00:00",
-  "run_finished": "2026-11-20T15:20:19+00:00",
+  "run_started": "2026-11-21T03:20:39+00:00",
+  "run_finished": "2026-11-21T03:22:24+00:00",
   "mode": "daily",
-  "requests": 27,
+  "requests": 39,
   "max_requests": 200,
   "disabled_sources": {
     "stooq": "STOOQ_API_KEY assente (senza chiave Stooq restituisce una pagina anti-bot)"
   },
   "summary": {
-    "up_to_date": 12,
-    "updated": 1,
+    "updated": 13,
     "backfilled": 26
   },
   "missing": [],
@@ -19,142 +18,142 @@
     "ndx": {
       "id": "ndx",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4247,
+      "new_rows": 1,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "qqq": {
       "id": "qqq",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4247,
+      "new_rows": 1,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "spx": {
       "id": "spx",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4247,
+      "new_rows": 1,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "nvda": {
       "id": "nvda",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4247,
+      "new_rows": 1,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "aapl": {
       "id": "aapl",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4247,
+      "new_rows": 1,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "googl": {
       "id": "googl",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4247,
+      "new_rows": 1,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "msft": {
       "id": "msft",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4247,
+      "new_rows": 1,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "amzn": {
       "id": "amzn",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4247,
+      "new_rows": 1,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "meta": {
       "id": "meta",
       "warnings": [],
       "status": "updated",
       "source": "yahoo",
-      "new_rows": 1,
-      "rows": 3648,
+      "new_rows": 2,
+      "rows": 3649,
       "first_date": "2012-05-18",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "avgo": {
       "id": "avgo",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4247,
+      "new_rows": 1,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "tsla": {
       "id": "tsla",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4125,
+      "new_rows": 1,
+      "rows": 4126,
       "first_date": "2010-06-29",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "mu": {
       "id": "mu",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4247,
+      "new_rows": 1,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "amd": {
       "id": "amd",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4247,
+      "new_rows": 1,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "cost": {
       "id": "cost",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "nflx": {
       "id": "nflx",
@@ -163,10 +162,10 @@
       ],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "pltr": {
       "id": "pltr",
@@ -175,20 +174,20 @@
       ],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 1543,
-      "rows": 1543,
+      "new_rows": 1544,
+      "rows": 1544,
       "first_date": "2020-09-30",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "csco": {
       "id": "csco",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "tmus": {
       "id": "tmus",
@@ -197,140 +196,140 @@
       ],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "asml": {
       "id": "asml",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "pep": {
       "id": "pep",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "lin": {
       "id": "lin",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "adbe": {
       "id": "adbe",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "qcom": {
       "id": "qcom",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "intu": {
       "id": "intu",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "txn": {
       "id": "txn",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "amat": {
       "id": "amat",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "isrg": {
       "id": "isrg",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "bkng": {
       "id": "bkng",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "amgn": {
       "id": "amgn",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "lrcx": {
       "id": "lrcx",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "klac": {
       "id": "klac",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "panw": {
       "id": "panw",
@@ -339,30 +338,30 @@
       ],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 3605,
-      "rows": 3605,
+      "new_rows": 3606,
+      "rows": 3606,
       "first_date": "2012-07-20",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "adi": {
       "id": "adi",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "crwd": {
       "id": "crwd",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 1872,
-      "rows": 1872,
+      "new_rows": 1873,
+      "rows": 1873,
       "first_date": "2019-06-12",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "meli": {
       "id": "meli",
@@ -371,50 +370,50 @@
       ],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "hon": {
       "id": "hon",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "gild": {
       "id": "gild",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "cmcsa": {
       "id": "cmcsa",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     },
     "sbux": {
       "id": "sbux",
       "warnings": [],
       "status": "backfilled",
       "source": "yahoo",
-      "new_rows": 4247,
-      "rows": 4247,
+      "new_rows": 4248,
+      "rows": 4248,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-19"
+      "last_date": "2026-11-20"
     }
   }
 }
