@@ -1,8 +1,80 @@
 {
   "series": "live",
-  "generated": "2026-11-21T03:29:39+00:00",
-  "n_logged": 323,
+  "generated": "2026-11-24T06:23:37+00:00",
+  "n_logged": 362,
   "first_date": "2026-10-23",
-  "n_evaluated": 0,
-  "horizon": 21
+  "n_evaluated": 13,
+  "horizon": 21,
+  "by_risk": {
+    "alto": {
+      "n": 3,
+      "vol_ratio": 2.2502943255977303,
+      "dd10": 1.0,
+      "up_rate": 0.0
+    },
+    "basso": {
+      "n": 2,
+      "vol_ratio": 2.9269370911801893,
+      "dd10": 1.0,
+      "up_rate": 0.0
+    },
+    "normale": {
+      "n": 8,
+      "vol_ratio": 2.1753031930238746,
+      "dd10": 0.75,
+      "up_rate": 0.375
+    }
+  },
+  "by_situation": {
+    "norma": {
+      "n": 4,
+      "vol_ratio": 2.28504826474823,
+      "dd10": 0.75,
+      "up_rate": 0.25
+    },
+    "pressione": {
+      "n": 4,
+      "vol_ratio": 2.3245071885317325,
+      "dd10": 1.0,
+      "up_rate": 0.25
+    },
+    "ripresa": {
+      "n": 1,
+      "vol_ratio": 3.001775927226216,
+      "dd10": 1.0,
+      "up_rate": 0.0
+    },
+    "tempesta": {
+      "n": 1,
+      "vol_ratio": 1.5150522089412277,
+      "dd10": 1.0,
+      "up_rate": 0.0
+    },
+    "tranquillo": {
+      "n": 3,
+      "vol_ratio": 2.3507109180190895,
+      "dd10": 0.6666666666666666,
+      "up_rate": 0.3333333333333333
+    }
+  },
+  "by_outlook": {
+    "favorevole": {
+      "n": 2,
+      "vol_ratio": 2.8533466236770497,
+      "dd10": 1.0,
+      "up_rate": 0.0
+    },
+    "neutro": {
+      "n": 10,
+      "vol_ratio": 2.2785437247049236,
+      "dd10": 0.8,
+      "up_rate": 0.3
+    },
+    "sfavorevole": {
+      "n": 1,
+      "vol_ratio": 1.5150522089412277,
+      "dd10": 1.0,
+      "up_rate": 0.0
+    }
+  }
 }
