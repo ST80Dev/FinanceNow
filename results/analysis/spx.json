@@ -4,63 +4,63 @@
   "asset_class": "index",
   "benchmark": null,
   "model_version": "0.1.0",
-  "as_of": "2026-11-23",
+  "as_of": "2026-11-24",
   "data_period": {
     "first": "2010-01-04",
-    "last": "2026-11-23",
-    "sessions": 4249
+    "last": "2026-11-24",
+    "sessions": 4250
   },
   "features_latest": {
-    "ret": 0.0462,
-    "rv_5": 0.49966,
-    "rv_21": 0.31341,
-    "rv_63": 0.19704,
-    "park_21": 0.18698,
-    "gk_21": 0.16202,
-    "park_63": 0.12421,
-    "gk_63": 0.11293,
-    "atr_pct": 0.02102,
-    "mom_1m": -0.05203,
-    "mom_3m": -0.05904,
-    "mom_6m": -0.03822,
-    "mom_12m": 0.10148,
-    "dist_ma50": -0.05123,
-    "dist_ma200": -0.01548,
-    "vol_z": 0.96493,
-    "skew_63": -0.16517,
-    "kurt_63": 5.36164,
-    "drawdown": -0.0744
+    "ret": -0.005,
+    "rv_5": 0.49745,
+    "rv_21": 0.31161,
+    "rv_63": 0.1972,
+    "park_21": 0.18783,
+    "gk_21": 0.16348,
+    "park_63": 0.12492,
+    "gk_63": 0.1139,
+    "atr_pct": 0.02059,
+    "mom_1m": -0.06397,
+    "mom_3m": -0.06383,
+    "mom_6m": -0.04338,
+    "mom_12m": 0.08671,
+    "dist_ma50": -0.05522,
+    "dist_ma200": -0.02064,
+    "vol_z": -1.20122,
+    "skew_63": -0.14638,
+    "kurt_63": 5.33005,
+    "drawdown": -0.07902
   },
   "regime": {
     "available": true,
-    "as_of": "2026-11-23",
+    "as_of": "2026-11-24",
     "current": "turbolento",
     "probabilities": {
       "calmo": 0.0,
       "normale": 0.0,
       "turbolento": 1.0
     },
-    "days_in_state": 13,
+    "days_in_state": 14,
     "states": [
       {
         "label": "calmo",
-        "share_of_days": 0.4248,
+        "share_of_days": 0.4247,
         "ret_ann": 0.0955,
         "vol_ann": 0.0943,
         "expected_duration_days": 38.2
       },
       {
         "label": "normale",
-        "share_of_days": 0.3528,
+        "share_of_days": 0.3527,
         "ret_ann": 0.1875,
         "vol_ann": 0.1377,
         "expected_duration_days": 24.3
       },
       {
         "label": "turbolento",
-        "share_of_days": 0.2224,
-        "ret_ann": 0.0346,
-        "vol_ann": 0.2887,
+        "share_of_days": 0.2226,
+        "ret_ann": 0.0329,
+        "vol_ann": 0.2885,
         "expected_duration_days": 51.3
       }
     ],
@@ -3556,7 +3556,8 @@
       "2026-11-18",
       "2026-11-19",
       "2026-11-20",
-      "2026-11-23"
+      "2026-11-23",
+      "2026-11-24"
     ],
     "state": [
       0,
@@ -7018,6 +7019,7 @@
       1,
       1,
       1,
+      2,
       2,
       2,
       2,
@@ -10496,6 +10498,7 @@
       0.994,
       1.0,
       0.999,
+      1.0,
       1.0,
       1.0,
       1.0,
