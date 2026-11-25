@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-24T06:24:31+00:00",
+  "generated": "2026-11-25T05:09:10+00:00",
   "min_sessions_verdict": 63,
   "strategies": [
     {
@@ -8,12 +8,12 @@
       "kind": "buy_hold",
       "is_benchmark": true,
       "start": "2026-11-19",
-      "as_of": "2026-11-23",
-      "n_sessions": 3,
-      "return": 0.023889,
-      "day_return": 0.06669,
-      "cash_share": 0.0098,
-      "decision_as_of": "2026-11-23",
+      "as_of": "2026-11-24",
+      "n_sessions": 4,
+      "return": -0.008506,
+      "day_return": -0.032395,
+      "cash_share": 0.0101,
+      "decision_as_of": "2026-11-24",
       "weights": [
         {
           "symbol": "QQQ",
@@ -25,16 +25,18 @@
         "dates": [
           "2026-11-19",
           "2026-11-20",
-          "2026-11-23"
+          "2026-11-23",
+          "2026-11-24"
         ],
         "returns": [
           0.0,
           -0.042801,
-          0.023889
+          0.023889,
+          -0.008506
         ]
       },
       "last_run": {
-        "as_of": "2026-11-23",
+        "as_of": "2026-11-24",
         "blocked": null,
         "n_orders": 0,
         "has_account": true
@@ -46,12 +48,12 @@
       "kind": "assess_rule",
       "is_benchmark": false,
       "start": "2026-11-19",
-      "as_of": "2026-11-23",
-      "n_sessions": 3,
-      "return": -0.000689,
-      "day_return": 0.00359,
-      "cash_share": 0.8506,
-      "decision_as_of": "2026-11-23",
+      "as_of": "2026-11-24",
+      "n_sessions": 4,
+      "return": 0.000132,
+      "day_return": 0.000821,
+      "cash_share": 0.8499,
+      "decision_as_of": "2026-11-24",
       "weights": [
         {
           "symbol": "AAPL",
@@ -63,16 +65,18 @@
         "dates": [
           "2026-11-19",
           "2026-11-20",
-          "2026-11-23"
+          "2026-11-23",
+          "2026-11-24"
         ],
         "returns": [
           0.0,
           -0.004279,
-          -0.000689
+          -0.000689,
+          0.000132
         ]
       },
       "last_run": {
-        "as_of": "2026-11-23",
+        "as_of": "2026-11-24",
         "blocked": null,
         "n_orders": 0,
         "has_account": true
@@ -84,12 +88,12 @@
       "kind": "indication",
       "is_benchmark": false,
       "start": "2026-11-20",
-      "as_of": "2026-11-23",
-      "n_sessions": 2,
-      "return": -0.014101,
-      "day_return": -0.014101,
-      "cash_share": 0.8044,
-      "decision_as_of": "2026-11-23",
+      "as_of": "2026-11-24",
+      "n_sessions": 3,
+      "return": -0.007534,
+      "day_return": 0.006567,
+      "cash_share": 0.7991,
+      "decision_as_of": "2026-11-24",
       "weights": [
         {
           "symbol": "PSQ",
@@ -100,15 +104,17 @@
       "series": {
         "dates": [
           "2026-11-20",
-          "2026-11-23"
+          "2026-11-23",
+          "2026-11-24"
         ],
         "returns": [
           0.0,
-          -0.014101
+          -0.014101,
+          -0.007534
         ]
       },
       "last_run": {
-        "as_of": "2026-11-23",
+        "as_of": "2026-11-24",
         "blocked": null,
         "n_orders": 0,
         "has_account": true
@@ -119,16 +125,18 @@
     {
       "strategy": "regola_assess",
       "benchmark": "bench_qqq",
-      "n_sessions": 3,
+      "n_sessions": 4,
       "dates": [
         "2026-11-19",
         "2026-11-20",
-        "2026-11-23"
+        "2026-11-23",
+        "2026-11-24"
       ],
       "excess": [
         0.0,
         0.038522,
-        -0.024579
+        -0.024579,
+        0.008638
       ],
       "verdict": "presto"
     }
