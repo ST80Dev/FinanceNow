@@ -1,13 +1,13 @@
 {
   "series": "live",
-  "generated": "2026-11-25T05:08:06+00:00",
+  "generated": "2026-11-26T04:24:47+00:00",
   "horizon": 21,
   "n_logged": 77,
-  "n_evaluated": 1,
+  "n_evaluated": 2,
   "by_type": {
     "drawdown_20": {
-      "n": 1,
-      "realized_vol_ratio": 2.5308718175218408,
+      "n": 2,
+      "realized_vol_ratio": 2.0423102681594623,
       "expected_vol_ratio": 1.43739,
       "baseline_vol_ratio": 1.09747,
       "realized_dd10": 1.0,
