@@ -1,15 +1,14 @@
 {
-  "run_started": "2026-11-26T04:16:03+00:00",
-  "run_finished": "2026-11-26T04:17:47+00:00",
+  "run_started": "2026-11-27T04:24:20+00:00",
+  "run_finished": "2026-11-27T04:25:59+00:00",
   "mode": "daily",
-  "requests": 40,
+  "requests": 39,
   "max_requests": 200,
   "disabled_sources": {
     "stooq": "STOOQ_API_KEY assente (senza chiave Stooq restituisce una pagina anti-bot)"
   },
   "summary": {
-    "updated": 38,
-    "refreshed": 1
+    "up_to_date": 39
   },
   "missing": [],
   "stale": [],
@@ -18,9 +17,9 @@
     "ndx": {
       "id": "ndx",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -28,9 +27,9 @@
     "qqq": {
       "id": "qqq",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -38,9 +37,9 @@
     "spx": {
       "id": "spx",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -50,9 +49,9 @@
       "warnings": [
         "1 salti > 25% in log-rendimento (da verificare): 2026-11-23"
       ],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -60,9 +59,9 @@
     "aapl": {
       "id": "aapl",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -70,9 +69,9 @@
     "googl": {
       "id": "googl",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -80,9 +79,9 @@
     "msft": {
       "id": "msft",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -90,9 +89,9 @@
     "amzn": {
       "id": "amzn",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -100,9 +99,9 @@
     "meta": {
       "id": "meta",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 3652,
       "first_date": "2012-05-18",
       "last_date": "2026-11-25"
@@ -110,9 +109,9 @@
     "avgo": {
       "id": "avgo",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -120,9 +119,9 @@
     "tsla": {
       "id": "tsla",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4129,
       "first_date": "2010-06-29",
       "last_date": "2026-11-25"
@@ -130,9 +129,9 @@
     "mu": {
       "id": "mu",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -140,9 +139,9 @@
     "amd": {
       "id": "amd",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -150,9 +149,9 @@
     "cost": {
       "id": "cost",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -160,9 +159,9 @@
     "nflx": {
       "id": "nflx",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -170,9 +169,9 @@
     "pltr": {
       "id": "pltr",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 1547,
       "first_date": "2020-09-30",
       "last_date": "2026-11-25"
@@ -180,22 +179,19 @@
     "csco": {
       "id": "csco",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
     },
     "tmus": {
       "id": "tmus",
-      "warnings": [
-        "close sovrapposti diversi (max 6.99e-03): nuovo aggiustamento",
-        "2 salti > 25% in log-rendimento (da verificare): 2011-08-02, 2012-07-26"
-      ],
-      "status": "refreshed",
+      "warnings": [],
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -203,9 +199,9 @@
     "asml": {
       "id": "asml",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -213,9 +209,9 @@
     "pep": {
       "id": "pep",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -223,9 +219,9 @@
     "lin": {
       "id": "lin",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -233,9 +229,9 @@
     "adbe": {
       "id": "adbe",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -243,9 +239,9 @@
     "qcom": {
       "id": "qcom",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -253,9 +249,9 @@
     "intu": {
       "id": "intu",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -263,9 +259,9 @@
     "txn": {
       "id": "txn",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -273,9 +269,9 @@
     "amat": {
       "id": "amat",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -283,9 +279,9 @@
     "isrg": {
       "id": "isrg",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -293,9 +289,9 @@
     "bkng": {
       "id": "bkng",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -303,9 +299,9 @@
     "amgn": {
       "id": "amgn",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -313,9 +309,9 @@
     "lrcx": {
       "id": "lrcx",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -323,9 +319,9 @@
     "klac": {
       "id": "klac",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -333,9 +329,9 @@
     "panw": {
       "id": "panw",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 3609,
       "first_date": "2012-07-20",
       "last_date": "2026-11-25"
@@ -343,9 +339,9 @@
     "adi": {
       "id": "adi",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -353,9 +349,9 @@
     "crwd": {
       "id": "crwd",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 1876,
       "first_date": "2019-06-12",
       "last_date": "2026-11-25"
@@ -363,9 +359,9 @@
     "meli": {
       "id": "meli",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -373,9 +369,9 @@
     "hon": {
       "id": "hon",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -383,9 +379,9 @@
     "gild": {
       "id": "gild",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -393,9 +389,9 @@
     "cmcsa": {
       "id": "cmcsa",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
@@ -403,9 +399,9 @@
     "sbux": {
       "id": "sbux",
       "warnings": [],
-      "status": "updated",
+      "status": "up_to_date",
       "source": "yahoo",
-      "new_rows": 1,
+      "new_rows": 0,
       "rows": 4251,
       "first_date": "2010-01-04",
       "last_date": "2026-11-25"
