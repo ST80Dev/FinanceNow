@@ -1,18 +1,36 @@
 {
   "series": "live",
-  "generated": "2026-11-27T04:33:54+00:00",
+  "generated": "2026-11-28T04:15:05+00:00",
   "horizon": 21,
-  "n_logged": 77,
-  "n_evaluated": 2,
+  "n_logged": 78,
+  "n_evaluated": 4,
   "by_type": {
     "drawdown_20": {
       "n": 2,
-      "realized_vol_ratio": 2.0423102681594623,
+      "realized_vol_ratio": 2.042232809926561,
       "expected_vol_ratio": 1.43739,
       "baseline_vol_ratio": 1.09747,
       "realized_dd10": 1.0,
       "expected_dd10": 0.450593,
       "baseline_dd10": 0.353251
+    },
+    "uscita_turbolento": {
+      "n": 1,
+      "realized_vol_ratio": 1.58652601698926,
+      "expected_vol_ratio": 1.07661,
+      "baseline_vol_ratio": 1.10604,
+      "realized_dd10": 1.0,
+      "expected_dd10": 0.281899,
+      "baseline_dd10": 0.289518
+    },
+    "vol_accelerazione": {
+      "n": 1,
+      "realized_vol_ratio": 2.726218650175984,
+      "expected_vol_ratio": 1.1859,
+      "baseline_vol_ratio": 1.11242,
+      "realized_dd10": 1.0,
+      "expected_dd10": 0.308756,
+      "baseline_dd10": 0.264369
     }
   }
 }

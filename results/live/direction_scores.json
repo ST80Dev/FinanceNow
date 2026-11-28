@@ -1,53 +1,53 @@
 {
   "series": "live",
-  "generated": "2026-11-27T04:33:57+00:00",
+  "generated": "2026-11-28T04:15:07+00:00",
   "note": "previsioni di direzione registrate da daily.yml prima di conoscere l'esito; mai ricalcolate",
-  "n_logged": 880,
+  "n_logged": 958,
   "first_origin": "2026-10-23",
   "horizons": {
     "h5": {
-      "n": 245,
-      "n_dates": 19,
+      "n": 284,
+      "n_dates": 20,
       "first_origin": "2026-10-23",
-      "last_origin": "2026-11-18",
-      "up_rate": 0.2612244897959184,
+      "last_origin": "2026-11-19",
+      "up_rate": 0.3274647887323944,
       "brier": {
-        "modello": 0.28780102439115096,
-        "freq_storica": 0.28695146633643265,
+        "modello": 0.278019745682412,
+        "freq_storica": 0.2785987536647535,
         "moneta": 0.25
       },
       "logloss": {
-        "modello": 0.7696015052578072,
-        "freq_storica": 0.7676987605297977,
+        "modello": 0.7498324216430974,
+        "freq_storica": 0.7508688258173004,
         "moneta": 0.6931471805599453
       },
-      "skill_vs_freq_storica": -0.002960633258177081,
-      "dm_vs_freq_storica": 0.22827874307161808,
+      "skill_vs_freq_storica": 0.002078286333750956,
+      "dm_vs_freq_storica": 0.08465991934558505,
       "accuracy": {
-        "modello": 0.2816326530612245,
-        "freq_storica": 0.2612244897959184
+        "modello": 0.34507042253521125,
+        "freq_storica": 0.3274647887323944
       },
       "calls": {
         "ottimista": {
-          "n": 6,
-          "share": 0.024489795918367346,
-          "up_rate": 0.6666666666666666,
-          "base_rate": 0.5358701666666666,
-          "mean_ret": 0.029972978324885696
+          "n": 12,
+          "share": 0.04225352112676056,
+          "up_rate": 0.5,
+          "base_rate": 0.5425674166666666,
+          "mean_ret": 0.0012428682827529695
         },
         "pessimista": {
           "n": 1,
-          "share": 0.004081632653061225,
+          "share": 0.0035211267605633804,
           "up_rate": 0.0,
           "base_rate": 0.565213,
           "mean_ret": -0.027738863553628975
         },
         "neutro": {
-          "n": 238,
-          "share": 0.9714285714285714,
-          "up_rate": 0.25210084033613445,
-          "base_rate": 0.5643796554621848,
-          "mean_ret": -0.03365152056881077
+          "n": 271,
+          "share": 0.954225352112676,
+          "up_rate": 0.3210332103321033,
+          "base_rate": 0.5633700073800738,
+          "mean_ret": -0.025796303241634583
         }
       },
       "calibration": [
@@ -61,68 +61,68 @@
         {
           "from": 0.55,
           "to": 0.6,
-          "n": 133,
-          "p_mean": 0.5750357518796991,
-          "up_rate": 0.23308270676691728
+          "n": 158,
+          "p_mean": 0.5756853797468354,
+          "up_rate": 0.31645569620253167
         },
         {
           "from": 0.6,
           "to": 0.65,
-          "n": 38,
-          "p_mean": 0.612251947368421,
-          "up_rate": 0.2894736842105263
+          "n": 52,
+          "p_mean": 0.6121490384615386,
+          "up_rate": 0.40384615384615385
         }
       ],
-      "coverage_80": 0.6775510204081633,
+      "coverage_80": 0.7077464788732394,
       "verdict": "nessun vantaggio dimostrato"
     },
     "h21": {
-      "n": 39,
-      "n_dates": 3,
+      "n": 52,
+      "n_dates": 4,
       "first_origin": "2026-10-23",
-      "last_origin": "2026-10-27",
-      "up_rate": 0.15384615384615385,
+      "last_origin": "2026-10-28",
+      "up_rate": 0.17307692307692307,
       "brier": {
-        "modello": 0.3683756034304872,
-        "freq_storica": 0.3524370157351026,
+        "modello": 0.36303572409501916,
+        "freq_storica": 0.3464457972489615,
         "moneta": 0.25
       },
       "logloss": {
-        "modello": 0.939927819919894,
-        "freq_storica": 0.904680526786162,
+        "modello": 0.9290446749642302,
+        "freq_storica": 0.8923809187120776,
         "moneta": 0.6931471805599453
       },
-      "skill_vs_freq_storica": -0.04522393217449183,
+      "skill_vs_freq_storica": -0.04788606754012914,
       "dm_vs_freq_storica": null,
       "accuracy": {
-        "modello": 0.15384615384615385,
-        "freq_storica": 0.15384615384615385
+        "modello": 0.17307692307692307,
+        "freq_storica": 0.17307692307692307
       },
       "calls": {
         "ottimista": {
-          "n": 5,
-          "share": 0.1282051282051282,
+          "n": 7,
+          "share": 0.1346153846153846,
           "up_rate": 0.0,
-          "base_rate": 0.5611742,
-          "mean_ret": -0.25245887388854715
+          "base_rate": 0.5784337142857143,
+          "mean_ret": -0.24078709536019072
         },
         "pessimista": {
           "n": 3,
-          "share": 0.07692307692307693,
+          "share": 0.057692307692307696,
           "up_rate": 0.0,
           "base_rate": 0.6309566666666666,
           "mean_ret": -0.0474957543003413
         },
         "neutro": {
-          "n": 31,
-          "share": 0.7948717948717948,
-          "up_rate": 0.1935483870967742,
-          "base_rate": 0.628704064516129,
-          "mean_ret": -0.09226671442525172
+          "n": 42,
+          "share": 0.8076923076923077,
+          "up_rate": 0.21428571428571427,
+          "base_rate": 0.6263590952380953,
+          "mean_ret": -0.08815512381908319
         }
       },
       "calibration": [],
-      "coverage_80": 0.41025641025641024,
+      "coverage_80": 0.4230769230769231,
       "verdict": "non valutabile"
     }
   }

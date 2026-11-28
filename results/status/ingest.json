@@ -1,6 +1,6 @@
 {
-  "run_started": "2026-11-27T04:24:20+00:00",
-  "run_finished": "2026-11-27T04:25:59+00:00",
+  "run_started": "2026-11-28T04:04:17+00:00",
+  "run_finished": "2026-11-28T04:05:57+00:00",
   "mode": "daily",
   "requests": 39,
   "max_requests": 200,
@@ -8,7 +8,7 @@
     "stooq": "STOOQ_API_KEY assente (senza chiave Stooq restituisce una pagina anti-bot)"
   },
   "summary": {
-    "up_to_date": 39
+    "updated": 39
   },
   "missing": [],
   "stale": [],
@@ -17,394 +17,394 @@
     "ndx": {
       "id": "ndx",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "qqq": {
       "id": "qqq",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "spx": {
       "id": "spx",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "nvda": {
       "id": "nvda",
       "warnings": [
         "1 salti > 25% in log-rendimento (da verificare): 2026-11-23"
       ],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "aapl": {
       "id": "aapl",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "googl": {
       "id": "googl",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "msft": {
       "id": "msft",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "amzn": {
       "id": "amzn",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "meta": {
       "id": "meta",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 3652,
+      "new_rows": 1,
+      "rows": 3653,
       "first_date": "2012-05-18",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "avgo": {
       "id": "avgo",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "tsla": {
       "id": "tsla",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4129,
+      "new_rows": 1,
+      "rows": 4130,
       "first_date": "2010-06-29",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "mu": {
       "id": "mu",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "amd": {
       "id": "amd",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "cost": {
       "id": "cost",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "nflx": {
       "id": "nflx",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "pltr": {
       "id": "pltr",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 1547,
+      "new_rows": 1,
+      "rows": 1548,
       "first_date": "2020-09-30",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "csco": {
       "id": "csco",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "tmus": {
       "id": "tmus",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "asml": {
       "id": "asml",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "pep": {
       "id": "pep",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "lin": {
       "id": "lin",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "adbe": {
       "id": "adbe",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "qcom": {
       "id": "qcom",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "intu": {
       "id": "intu",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "txn": {
       "id": "txn",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "amat": {
       "id": "amat",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "isrg": {
       "id": "isrg",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "bkng": {
       "id": "bkng",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "amgn": {
       "id": "amgn",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "lrcx": {
       "id": "lrcx",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "klac": {
       "id": "klac",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "panw": {
       "id": "panw",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 3609,
+      "new_rows": 1,
+      "rows": 3610,
       "first_date": "2012-07-20",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "adi": {
       "id": "adi",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "crwd": {
       "id": "crwd",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 1876,
+      "new_rows": 1,
+      "rows": 1877,
       "first_date": "2019-06-12",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "meli": {
       "id": "meli",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "hon": {
       "id": "hon",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "gild": {
       "id": "gild",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "cmcsa": {
       "id": "cmcsa",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     },
     "sbux": {
       "id": "sbux",
       "warnings": [],
-      "status": "up_to_date",
+      "status": "updated",
       "source": "yahoo",
-      "new_rows": 0,
-      "rows": 4251,
+      "new_rows": 1,
+      "rows": 4252,
       "first_date": "2010-01-04",
-      "last_date": "2026-11-25"
+      "last_date": "2026-11-27"
     }
   }
 }
