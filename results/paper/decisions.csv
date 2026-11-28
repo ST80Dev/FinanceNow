@@ -13,3 +13,6 @@ as_of,strategy,symbol,target_weight,reason,created_utc
 2026-11-25,bench_qqq,QQQ,0.990000,benchmark: tenuto sempre,2026-11-26T04:25:55+00:00
 2026-11-25,regola_assess,AAPL,0.150000,"Nella norma, rischio normale",2026-11-26T04:25:55+00:00
 2026-11-25,indicazioni,PSQ,0.200000,"ndx al ribasso: Nasdaq 100 in tempesta, rischio alto: segnale ancora attivo",2026-11-26T04:25:55+00:00
+2026-11-27,bench_qqq,QQQ,0.990000,benchmark: tenuto sempre,2026-11-28T04:16:17+00:00
+2026-11-27,regola_assess,AAPL,0.150000,"Nella norma, rischio normale",2026-11-28T04:16:17+00:00
+2026-11-27,indicazioni,PSQ,0.200000,"ndx al ribasso: Nasdaq 100 in tempesta, rischio alto: segnale ancora attivo",2026-11-28T04:16:18+00:00
